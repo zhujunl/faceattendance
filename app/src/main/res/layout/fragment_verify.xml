@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:paddingTop="@dimen/custom_toolbar_height"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context=".view.fragment.VerifyFragment">
+
+    <FrameLayout
+        android:id="@+id/fl_root"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent">
+
+        <com.miaxis.faceattendance.view.custom.CameraSurfaceView
+            android:id="@+id/csv_camera"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <com.miaxis.faceattendance.view.custom.RectSurfaceView
+            android:id="@+id/rsv_rect"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_panel"
+        android:orientation="vertical"
+        android:background="@color/white"
+        android:layout_width="375dp"
+        android:layout_height="match_parent">
+
+
+
+    </LinearLayout>
+
+</LinearLayout>

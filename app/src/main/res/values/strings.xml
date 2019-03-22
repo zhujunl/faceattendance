@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">FaceAttendance</string>
+    <string name="loading">初始化算法</string>
+    <string name="title">中正智能考勤</string>
+    <string name="verify_fragment">人脸考勤</string>
+    <string name="person_fragment">人员管理</string>
+    <string name="record_fragment">日志查看</string>
+    <string name="setting_fragment">设置</string>
+    <string name="quit">退出程序</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_person">添加人员</string>
+</resources>
