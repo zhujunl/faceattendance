@@ -149,7 +149,6 @@ public class AddPersonFragment extends BaseFragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        CardManager.getInstance().closeReadCard();
         mListener = null;
     }
 
@@ -157,6 +156,7 @@ public class AddPersonFragment extends BaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
         EventBus.getDefault().unregister(this);
+        CardManager.getInstance().closeReadCard();
     }
 
     private void initDialog() {
@@ -208,6 +208,7 @@ public class AddPersonFragment extends BaseFragment {
                     .name(etName.getText().toString())
                     .cardNumber(etCardNumber.getText().toString())
                     .sex(etSex.getText().toString())
+                    .nation(idCardRecord.getNation())
                     .birthday(idCardRecord.getBirthday())
                     .address(idCardRecord.getAddress())
                     .validateStart(idCardRecord.getValidateStart())
@@ -252,7 +253,7 @@ public class AddPersonFragment extends BaseFragment {
                 .map(bitmap -> {
                     String filePath = FileUtil.FACE_IMG_PATH + File.separator + person.getCardNumber() + "-" + System.currentTimeMillis() + ".jpg";
                     FileUtil.saveBitmap(filePath, bitmap);
-                    person.setFacePicturePath(filePath);
+                    person.setFacePicture(filePath);
                     PersonModel.savePerson(person);
                     return filePath;
                 })

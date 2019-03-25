@@ -36,7 +36,8 @@ public class PersonDao extends AbstractDao<Person, Long> {
         public final static Property Birthday = new Property(9, String.class, "birthday", false, "BIRTHDAY");
         public final static Property CardId = new Property(10, String.class, "cardId", false, "CARD_ID");
         public final static Property Feature = new Property(11, String.class, "feature", false, "FEATURE");
-        public final static Property FacePicturePath = new Property(12, String.class, "facePicturePath", false, "FACE_PICTURE_PATH");
+        public final static Property FacePicture = new Property(12, String.class, "facePicture", false, "FACE_PICTURE");
+        public final static Property WarehousingTime = new Property(13, String.class, "warehousingTime", false, "WAREHOUSING_TIME");
     }
 
 
@@ -64,7 +65,8 @@ public class PersonDao extends AbstractDao<Person, Long> {
                 "\"BIRTHDAY\" TEXT," + // 9: birthday
                 "\"CARD_ID\" TEXT," + // 10: cardId
                 "\"FEATURE\" TEXT," + // 11: feature
-                "\"FACE_PICTURE_PATH\" TEXT);"); // 12: facePicturePath
+                "\"FACE_PICTURE\" TEXT," + // 12: facePicture
+                "\"WAREHOUSING_TIME\" TEXT);"); // 13: warehousingTime
     }
 
     /** Drops the underlying database table. */
@@ -137,9 +139,14 @@ public class PersonDao extends AbstractDao<Person, Long> {
             stmt.bindString(12, feature);
         }
  
-        String facePicturePath = entity.getFacePicturePath();
-        if (facePicturePath != null) {
-            stmt.bindString(13, facePicturePath);
+        String facePicture = entity.getFacePicture();
+        if (facePicture != null) {
+            stmt.bindString(13, facePicture);
+        }
+ 
+        String warehousingTime = entity.getWarehousingTime();
+        if (warehousingTime != null) {
+            stmt.bindString(14, warehousingTime);
         }
     }
 
@@ -207,9 +214,14 @@ public class PersonDao extends AbstractDao<Person, Long> {
             stmt.bindString(12, feature);
         }
  
-        String facePicturePath = entity.getFacePicturePath();
-        if (facePicturePath != null) {
-            stmt.bindString(13, facePicturePath);
+        String facePicture = entity.getFacePicture();
+        if (facePicture != null) {
+            stmt.bindString(13, facePicture);
+        }
+ 
+        String warehousingTime = entity.getWarehousingTime();
+        if (warehousingTime != null) {
+            stmt.bindString(14, warehousingTime);
         }
     }
 
@@ -233,7 +245,8 @@ public class PersonDao extends AbstractDao<Person, Long> {
             cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // birthday
             cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // cardId
             cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // feature
-            cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12) // facePicturePath
+            cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12), // facePicture
+            cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13) // warehousingTime
         );
         return entity;
     }
@@ -252,7 +265,8 @@ public class PersonDao extends AbstractDao<Person, Long> {
         entity.setBirthday(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
         entity.setCardId(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
         entity.setFeature(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
-        entity.setFacePicturePath(cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12));
+        entity.setFacePicture(cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12));
+        entity.setWarehousingTime(cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13));
      }
     
     @Override

@@ -229,53 +229,14 @@ public class FileUtil {
         return mac;
     }
 
-    public static String unicode2String(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < bytes.length / 2; i++) {
-            int a = bytes[2 * i + 1];
-            if (a < 0) {
-                a = a + 256;
+    public static void deletefile(String filePath) {
+        try {
+            File file = new File(filePath);
+            if (file.exists()) {
+                file.delete();
             }
-            int b = bytes[2 * i];
-            if (b < 0) {
-                b = b + 256;
-            }
-            int c = (a << 8) | b;
-            sb.append((char) c);
-        }
-        return sb.toString();
-    }
-
-    public static String fingerPositionCovert(byte finger) {
-        switch ((int) finger) {
-            case 11:
-                return "右手拇指";
-            case 12:
-                return "右手食指";
-            case 13:
-                return "右手中指";
-            case 14:
-                return "右手环指";
-            case 15:
-                return "右手小指";
-            case 16:
-                return "左手拇指";
-            case 17:
-                return "左手食指";
-            case 18:
-                return "左手中指";
-            case 19:
-                return "左手环指";
-            case 20:
-                return "左手小指";
-            case 97:
-                return "右手不确定指位";
-            case 98:
-                return "左手不确定指位";
-            case 99:
-                return "其他不确定指位";
-            default:
-                return "其他不确定指位";
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

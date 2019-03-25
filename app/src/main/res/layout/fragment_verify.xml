@@ -25,15 +25,20 @@
 
     </FrameLayout>
 
-    <LinearLayout
-        android:id="@+id/ll_panel"
-        android:orientation="vertical"
-        android:background="@color/white"
+    <View
+        android:background="@color/darkgrey"
+        android:layout_width="1dp"
+        android:layout_height="match_parent" />
+
+    <ScrollView
         android:layout_width="375dp"
         android:layout_height="match_parent">
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_verify"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-
-    </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

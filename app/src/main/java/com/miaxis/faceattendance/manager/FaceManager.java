@@ -4,11 +4,16 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 
 import com.miaxis.faceattendance.event.DrawRectEvent;
 import com.miaxis.faceattendance.event.FeatureEvent;
 import com.miaxis.faceattendance.event.InitFaceEvent;
+import com.miaxis.faceattendance.event.VerifyPersonEvent;
+import com.miaxis.faceattendance.model.PersonModel;
+import com.miaxis.faceattendance.model.entity.Person;
+import com.miaxis.faceattendance.model.entity.RGBImage;
 import com.miaxis.faceattendance.util.FileUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -18,6 +23,7 @@ import org.zz.jni.mxImageTool;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.List;
 
 public class FaceManager {
 
@@ -38,7 +44,7 @@ public class FaceManager {
 
     public static final int ZOOM_WIDTH = 320;
     public static final int ZOOM_HEIGHT = 240;
-    private static final int INTERVEL_TIME = 500;
+    private static final int INTERVEL_TIME = 300;
     private static final int MAX_FACE_NUM = 3;
     private static final Byte lock1 = 1;
     private static final Byte lock2 = 2;
@@ -49,6 +55,8 @@ public class FaceManager {
 
     private MXFaceAPI mxFaceAPI;
     private mxImageTool dtTool;
+
+    private List<Person> personList;
 
     /**
      * 初始化人脸算法
@@ -104,17 +112,40 @@ public class FaceManager {
         if (result) {
             result = faceQuality(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT, pFaceNum[0], pFaceBuffer);
             EventBus.getDefault().post(new DrawRectEvent(pFaceNum[0], pFaceBuffer));
-            if (result && pFaceBuffer[0].quality > 75 && !isExtractWorking) {
+            if (result && pFaceBuffer[0].quality > ConfigManager.getInstance().getConfig().getQualityScore() && !isExtractWorking) {
                 isExtractWorking = true;
                 byte[] feature = extractFeature(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT, pFaceBuffer[0]);
                 if (feature != null && detectFlag) {
-                    EventBus.getDefault().post(new FeatureEvent(FeatureEvent.CAMERA_FACE, feature, zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT));
+//                    EventBus.getDefault().post(new FeatureEvent(FeatureEvent.CAMERA_FACE, feature, zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT));
+                    verifyPersonFace(new RGBImage(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT), feature);
                 }
                 isExtractWorking = false;
             }
         } else {
             EventBus.getDefault().post(new DrawRectEvent(0, null));
         }
+    }
+
+    private synchronized void verifyPersonFace(RGBImage rgbImage, byte[] feature) {
+        if (personList == null) {
+            personList = PersonModel.loadAllPerson();
+        }
+        float maxScore = 0;
+        Person maxScorePerson = null;
+        for (Person person : personList) {
+            float score = matchFeature(feature, Base64.decode(person.getFeature(), Base64.NO_WRAP));
+            if (score > maxScore) {
+                maxScore = score;
+                maxScorePerson = person;
+            }
+        }
+        if (maxScore > ConfigManager.getInstance().getConfig().getVerifyScore()) {
+            EventBus.getDefault().post(new VerifyPersonEvent(maxScorePerson, rgbImage, maxScore));
+        }
+    }
+
+    public void clearVerifyList() {
+        personList = null;
     }
 
     /**
@@ -146,7 +177,7 @@ public class FaceManager {
         if (result) {
             if (pFaceNum[0] == 1) {
                 result = faceQuality(rgbData, width, height, pFaceNum[0], pFaceBuffer);
-                if (result && pFaceBuffer[0].quality > 75) {
+                if (result && pFaceBuffer[0].quality > ConfigManager.getInstance().getConfig().getQualityScore()) {
                     byte[] feature = extractFeature(rgbData, width, height, pFaceBuffer[0]);
                     if (feature != null) {
                         EventBus.getDefault().post(new FeatureEvent(FeatureEvent.IMAGE_FACE, feature, pFaceBuffer[0]));
@@ -207,13 +238,12 @@ public class FaceManager {
      * @param height
      * @return
      */
-    private String saveRGBImageData(byte[] data, int width, int height) {
-        String imagePath = FileUtil.IMG_PATH + File.separator + System.currentTimeMillis() + ".jpg";
-        int result = dtTool.ImageSave(imagePath, data, width, height, 3);
+    public boolean saveRGBImageData(String path, byte[] data, int width, int height) {
+        int result = dtTool.ImageSave(path, data, width, height, 3);
         if (result == 1) {
-            return imagePath;
+            return true;
         }
-        return "";
+        return false;
     }
 
     private boolean checkDelay() {
@@ -269,11 +299,11 @@ public class FaceManager {
             return null;
         }
         //镜像后画框位置按照正常坐标系，不镜像的话按照反坐标系也可画框
-        re = dtTool.ImageFlip(rgbData, rotateWidth[0], rotateHeight[0], 1, rgbData);
-        if (re != 1) {
-            Log.e("asd", "镜像失败");
-            return null;
-        }
+//        re = dtTool.ImageFlip(rgbData, rotateWidth[0], rotateHeight[0], 1, rgbData);
+//        if (re != 1) {
+//            Log.e("asd", "镜像失败");
+//            return null;
+//        }
         // RGB数据压缩到指定宽高
         byte[] zoomedRgbData = new byte[zoomWidth * zoomHeight * 3];
         re = dtTool.Zoom(rgbData, rotateWidth[0], rotateHeight[0], 3, zoomWidth, zoomHeight, zoomedRgbData);

@@ -26,6 +26,9 @@ public class ConfigDao extends AbstractDao<Config, Long> {
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property UploadUrl = new Property(1, String.class, "uploadUrl", false, "UPLOAD_URL");
+        public final static Property Password = new Property(2, String.class, "password", false, "PASSWORD");
+        public final static Property QualityScore = new Property(3, float.class, "qualityScore", false, "QUALITY_SCORE");
+        public final static Property VerifyScore = new Property(4, float.class, "verifyScore", false, "VERIFY_SCORE");
     }
 
 
@@ -42,7 +45,10 @@ public class ConfigDao extends AbstractDao<Config, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"CONFIG\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY ," + // 0: id
-                "\"UPLOAD_URL\" TEXT);"); // 1: uploadUrl
+                "\"UPLOAD_URL\" TEXT," + // 1: uploadUrl
+                "\"PASSWORD\" TEXT," + // 2: password
+                "\"QUALITY_SCORE\" REAL NOT NULL ," + // 3: qualityScore
+                "\"VERIFY_SCORE\" REAL NOT NULL );"); // 4: verifyScore
     }
 
     /** Drops the underlying database table. */
@@ -64,6 +70,13 @@ public class ConfigDao extends AbstractDao<Config, Long> {
         if (uploadUrl != null) {
             stmt.bindString(2, uploadUrl);
         }
+ 
+        String password = entity.getPassword();
+        if (password != null) {
+            stmt.bindString(3, password);
+        }
+        stmt.bindDouble(4, entity.getQualityScore());
+        stmt.bindDouble(5, entity.getVerifyScore());
     }
 
     @Override
@@ -79,6 +92,13 @@ public class ConfigDao extends AbstractDao<Config, Long> {
         if (uploadUrl != null) {
             stmt.bindString(2, uploadUrl);
         }
+ 
+        String password = entity.getPassword();
+        if (password != null) {
+            stmt.bindString(3, password);
+        }
+        stmt.bindDouble(4, entity.getQualityScore());
+        stmt.bindDouble(5, entity.getVerifyScore());
     }
 
     @Override
@@ -90,7 +110,10 @@ public class ConfigDao extends AbstractDao<Config, Long> {
     public Config readEntity(Cursor cursor, int offset) {
         Config entity = new Config( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1) // uploadUrl
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // uploadUrl
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // password
+            cursor.getFloat(offset + 3), // qualityScore
+            cursor.getFloat(offset + 4) // verifyScore
         );
         return entity;
     }
@@ -99,6 +122,9 @@ public class ConfigDao extends AbstractDao<Config, Long> {
     public void readEntity(Cursor cursor, Config entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setUploadUrl(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setPassword(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setQualityScore(cursor.getFloat(offset + 3));
+        entity.setVerifyScore(cursor.getFloat(offset + 4));
      }
     
     @Override

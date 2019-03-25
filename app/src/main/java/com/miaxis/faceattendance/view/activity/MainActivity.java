@@ -14,8 +14,11 @@ import com.miaxis.faceattendance.R;
 import com.miaxis.faceattendance.view.fragment.AddPersonFragment;
 import com.miaxis.faceattendance.view.fragment.OnFragmentInteractionListener;
 import com.miaxis.faceattendance.view.fragment.PersonFragment;
+import com.miaxis.faceattendance.view.fragment.RecordFragment;
+import com.miaxis.faceattendance.view.fragment.SettingFragment;
 import com.miaxis.faceattendance.view.fragment.VerifyFragment;
 
+import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -49,6 +52,8 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     private VerifyFragment verifyFragment;
     private PersonFragment personFragment;
     private AddPersonFragment addPersonFragment;
+    private RecordFragment recordFragment;
+    private SettingFragment settingFragment;
 
     public static Intent newInstance(Context context) {
         return new Intent(context, MainActivity.class);
@@ -91,6 +96,10 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
             fragmentTransaction.detach(personFragment);
         } else if (TextUtils.equals(removeClass.getName(), AddPersonFragment.class.getName())) {
             fragmentTransaction.detach(addPersonFragment);
+        } else if (TextUtils.equals(removeClass.getName(), SettingFragment.class.getName())) {
+            fragmentTransaction.detach(settingFragment);
+        } else if (TextUtils.equals(removeClass.getName(), RecordFragment.class.getName())) {
+            fragmentTransaction.detach(recordFragment);
         } else if (TextUtils.equals(removeClass.getName(), Fragment.class.getName())) {
             getSupportFragmentManager().popBackStackImmediate(null, 1);
         }
@@ -100,6 +109,10 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
             fragmentTransaction.replace(R.id.fl_main, personFragment = PersonFragment.newInstance());
         } else if (TextUtils.equals(addClass.getName(), AddPersonFragment.class.getName())) {
             fragmentTransaction.replace(R.id.fl_main, addPersonFragment = AddPersonFragment.newInstance());
+        } else if (TextUtils.equals(addClass.getName(), RecordFragment.class.getName())) {
+            fragmentTransaction.replace(R.id.fl_main, recordFragment = RecordFragment.newInstance());
+        } else if (TextUtils.equals(addClass.getName(), SettingFragment.class.getName())) {
+            fragmentTransaction.replace(R.id.fl_main, settingFragment = SettingFragment.newInstance());
         }
         fragmentTransaction.commit();
     }
@@ -128,7 +141,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
                 dlMain.closeDrawer(GravityCompat.START);
                 break;
             case R.id.tv_setting:
-//                enterAnotherFragment(Fragment.class, SettingFragment.class, null);
+                enterAnotherFragment(Fragment.class, SettingFragment.class, null);
                 dlMain.closeDrawer(GravityCompat.START);
                 break;
             case R.id.tv_quit:

@@ -5,7 +5,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.miaxis.faceattendance"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -68,10 +68,13 @@ dependencies {
     implementation files('src/main/libs/MiaxisFaceApiV4.3.jar')
     implementation files('src/main/libs/smdt.jar')
     implementation files('src/main/libs/IDCard_HID_Driver.jar')
+    implementation 'jp.wasabeef:recyclerview-animators:3.0.0'
+    implementation files('src/main/libs/AMap_Location_V4.5.0_20190121.jar')
+    implementation files('src/main/libs/AMap_Search_V6.5.0_20180930.jar')
 }
 
 greendao {
-    schemaVersion 5
+    schemaVersion 1
     daoPackage 'com.miaxis.faceattendance.model.local.greenDao.gen'
     targetGenDir 'src/main/java'
 }

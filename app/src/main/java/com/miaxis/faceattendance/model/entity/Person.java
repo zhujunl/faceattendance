@@ -20,12 +20,13 @@ public class Person {
     private String birthday;
     private String cardId;
     private String feature;
-    private String facePicturePath;
-    @Generated(hash = 1368843380)
+    private String facePicture;
+    private String warehousingTime;
+    @Generated(hash = 900225760)
     public Person(Long id, String name, String sex, String cardNumber,
             String nation, String address, String validateStart, String validateEnd,
             String issuingAuthority, String birthday, String cardId, String feature,
-            String facePicturePath) {
+            String facePicture, String warehousingTime) {
         this.id = id;
         this.name = name;
         this.sex = sex;
@@ -38,7 +39,8 @@ public class Person {
         this.birthday = birthday;
         this.cardId = cardId;
         this.feature = feature;
-        this.facePicturePath = facePicturePath;
+        this.facePicture = facePicture;
+        this.warehousingTime = warehousingTime;
     }
     @Generated(hash = 1024547259)
     public Person() {
@@ -57,7 +59,8 @@ public class Person {
         setBirthday(builder.birthday);
         setCardId(builder.cardId);
         setFeature(builder.feature);
-        setFacePicturePath(builder.facePicturePath);
+        setFacePicture(builder.facePicture);
+        setWarehousingTime(builder.warehousingTime);
     }
 
     public Long getId() {
@@ -132,11 +135,17 @@ public class Person {
     public void setFeature(String feature) {
         this.feature = feature;
     }
-    public String getFacePicturePath() {
-        return this.facePicturePath;
+    public String getFacePicture() {
+        return this.facePicture;
     }
-    public void setFacePicturePath(String facePicturePath) {
-        this.facePicturePath = facePicturePath;
+    public void setFacePicture(String facePicture) {
+        this.facePicture = facePicture;
+    }
+    public String getWarehousingTime() {
+        return this.warehousingTime;
+    }
+    public void setWarehousingTime(String warehousingTime) {
+        this.warehousingTime = warehousingTime;
     }
 
     public static final class Builder {
@@ -152,7 +161,8 @@ public class Person {
         private String birthday;
         private String cardId;
         private String feature;
-        private String facePicturePath;
+        private String facePicture;
+        private String warehousingTime;
 
         public Builder() {
         }
@@ -217,8 +227,13 @@ public class Person {
             return this;
         }
 
-        public Builder facePicturePath(String val) {
-            facePicturePath = val;
+        public Builder facePicture(String val) {
+            facePicture = val;
+            return this;
+        }
+
+        public Builder warehousingTime(String val) {
+            warehousingTime = val;
             return this;
         }
 

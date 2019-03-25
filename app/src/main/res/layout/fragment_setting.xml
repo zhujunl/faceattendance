@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".view.fragment.SettingFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/custom_toolbar_height">
+
+        <ImageView
+            android:id="@+id/iv_save_config"
+            android:src="@drawable/ic_action_check_true"
+            android:layout_alignParentEnd="true"
+            android:padding="10dp"
+            android:layout_width="@dimen/custom_toolbar_height"
+            android:layout_height="@dimen/custom_toolbar_height" />
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_margin="40dp"
+        android:orientation="vertical"
+        android:layout_weight="5"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <View style="@style/HorizontalLine"/>
+
+            <LinearLayout style="@style/SettingItem">
+
+                <View style="@style/VerticalLine"/>
+
+                <TextView style="@style/SettingName"
+                    android:text="版本号" />
+
+                <View style="@style/VerticalLine"/>
+
+                <TextView style="@style/SettingBody"
+                    android:id="@+id/tv_version"
+                    android:background="@color/white"
+                    android:singleLine="true"
+                    android:textSize="20sp" />
+
+                <View style="@style/VerticalLine"/>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalLine"/>
+
+            <LinearLayout style="@style/SettingItem">
+
+                <View style="@style/VerticalLine"/>
+
+                <TextView style="@style/SettingName"
+                    android:text="上传地址" />
+
+                <View style="@style/VerticalLine"/>
+
+                <EditText style="@style/SettingBody"
+                    android:id="@+id/et_url"
+                    android:digits="0123456789"
+                    android:inputType="number"
+                    android:background="@color/white"
+                    android:textSize="20sp"
+                    android:singleLine="true" />
+
+                <View style="@style/VerticalLine"/>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalLine"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>
