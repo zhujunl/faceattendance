@@ -90,8 +90,12 @@ public class PersonFragment extends BaseFragment implements PersonContract.View 
     @Override
     public void loadPersonCallback(List<Person> personList) {
         if (personList != null) {
-            personAdapter.appendDataList(personList);
-            personAdapter.notifyDataSetChanged();
+            if (!personList.isEmpty()) {
+                personAdapter.appendDataList(personList);
+                personAdapter.notifyDataSetChanged();
+            } else {
+                ToastManager.toast(getContext(), "没有更多了", ToastManager.INFO);
+            }
         } else {
             ToastManager.toast(getContext(), "读取数据库失败", ToastManager.ERROR);
         }

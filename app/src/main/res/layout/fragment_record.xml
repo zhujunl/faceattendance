@@ -21,6 +21,7 @@
     </RelativeLayout>
 
     <LinearLayout
+        android:padding="16dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -85,10 +86,12 @@
         </LinearLayout>
 
         <ScrollView
+            android:background="@drawable/stroke_shape"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_record"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

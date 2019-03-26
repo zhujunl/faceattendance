@@ -10,6 +10,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.miaxis.faceattendance.R;
 import com.miaxis.faceattendance.view.fragment.AddPersonFragment;
 import com.miaxis.faceattendance.view.fragment.OnFragmentInteractionListener;
@@ -49,6 +51,8 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     @BindView(R.id.dl_main)
     DrawerLayout dlMain;
 
+    private MaterialDialog quitDialog;
+
     private VerifyFragment verifyFragment;
     private PersonFragment personFragment;
     private AddPersonFragment addPersonFragment;
@@ -71,6 +75,12 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
 
     @Override
     protected void initView() {
+        quitDialog = new MaterialDialog.Builder(this)
+                .title("确认退出？")
+                .positiveText("确认")
+                .onPositive((dialog, which) -> finish())
+                .negativeText("取消")
+                .build();
         ivDrawer.setOnClickListener(v -> {
             if (dlMain.isDrawerOpen(GravityCompat.START)) {
                 dlMain.closeDrawer(GravityCompat.START);
@@ -118,8 +128,14 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     }
 
     @Override
+    public void onBackPressed() {
+        quitDialog.show();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
+        System.exit(0);
     }
 
     private View.OnClickListener drawerClickListener = v -> {
@@ -137,7 +153,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
                 dlMain.closeDrawer(GravityCompat.START);
                 break;
             case R.id.tv_record:
-//                enterAnotherFragment(Fragment.class, RecordFragment.class, null);
+                enterAnotherFragment(Fragment.class, RecordFragment.class, null);
                 dlMain.closeDrawer(GravityCompat.START);
                 break;
             case R.id.tv_setting:

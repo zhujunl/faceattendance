@@ -65,10 +65,11 @@ dependencies {
     implementation 'com.trello.rxlifecycle3:rxlifecycle-components:3.0.0'
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
     implementation 'com.afollestad.material-dialogs:commons:0.9.6.0'
+    implementation 'jp.wasabeef:recyclerview-animators:3.0.0'
+    implementation 'org.nanohttpd:nanohttpd:2.3.1'
     implementation files('src/main/libs/MiaxisFaceApiV4.3.jar')
     implementation files('src/main/libs/smdt.jar')
     implementation files('src/main/libs/IDCard_HID_Driver.jar')
-    implementation 'jp.wasabeef:recyclerview-animators:3.0.0'
     implementation files('src/main/libs/AMap_Location_V4.5.0_20190121.jar')
     implementation files('src/main/libs/AMap_Search_V6.5.0_20180930.jar')
 }
