@@ -1,10 +1,20 @@
 package com.miaxis.faceattendance.util;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.util.Log;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.text.SimpleDateFormat;
+import java.util.Enumeration;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -99,6 +109,75 @@ public class ValueUtil {
         Pattern pattern = Pattern.compile("^(http://)([1-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])(\\.(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])){3}(:)(\\d{4})(/)[^\\s]{1,}");
         Matcher match = pattern.matcher(str);
         return match.matches();
+    }
+
+    /**
+     * 获取IP
+     *
+     * @param application
+     * @return
+     */
+    public static String getIP(Application application) {
+        String ip = "0.0.0.0";
+        ConnectivityManager connectivityManager = (ConnectivityManager) application.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+        if (info != null) {
+            int type = info.getType();
+            if (type == ConnectivityManager.TYPE_ETHERNET) {
+                ip = getEtherNetIP();
+            } else if (type == ConnectivityManager.TYPE_WIFI) {
+                ip = getWifiIP(application);
+            }
+        }
+        return ip;
+    }
+
+    /**
+     * 获取有线地址
+     *
+     * @return
+     */
+    public static String getEtherNetIP() {
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface
+                    .getNetworkInterfaces(); en.hasMoreElements();) {
+                NetworkInterface intf = en.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = intf
+                        .getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress()
+                            && inetAddress instanceof Inet4Address) {
+                        return inetAddress.getHostAddress().toString();
+                    }
+                }
+            }
+        } catch (SocketException ex) {
+            Log.e("asd", ex.toString());
+        }
+        return "0.0.0.0";
+    }
+
+    /**
+     * 获取wifiIP地址
+     *
+     * @param application
+     * @return
+     */
+    public static String getWifiIP(Application application) {
+        android.net.wifi.WifiManager wifi = (android.net.wifi.WifiManager) application.getSystemService(android.content.Context.WIFI_SERVICE);
+        WifiInfo wifiinfo = wifi.getConnectionInfo();
+        int intaddr = wifiinfo.getIpAddress();
+        byte[] byteaddr = new byte[] { (byte) (intaddr & 0xff),
+                (byte) (intaddr >> 8 & 0xff), (byte) (intaddr >> 16 & 0xff),
+                (byte) (intaddr >> 24 & 0xff) };
+        InetAddress addr = null;
+        try {
+            addr = InetAddress.getByAddress(byteaddr);
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+        String mobileIp = addr.getHostAddress();
+        return mobileIp;
     }
 
 }

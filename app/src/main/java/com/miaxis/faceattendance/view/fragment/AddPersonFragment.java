@@ -240,7 +240,7 @@ public class AddPersonFragment extends BaseFragment {
     private void onFeatureExtract(FeatureEvent event) {
         Observable.create((ObservableOnSubscribe<Bitmap>) emitter -> {
             waitDialog.getContentView().setText("特征提取完成，正在裁剪图片");
-            person.setFeature(Base64.encodeToString(event.getFeature(), Base64.NO_WRAP));
+            person.setFaceFeature(Base64.encodeToString(event.getFeature(), Base64.NO_WRAP));
             emitter.onNext(facePicture);
         })
                 .subscribeOn(AndroidSchedulers.mainThread())

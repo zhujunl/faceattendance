@@ -133,7 +133,7 @@ public class FaceManager {
         float maxScore = 0;
         Person maxScorePerson = null;
         for (Person person : personList) {
-            float score = matchFeature(feature, Base64.decode(person.getFeature(), Base64.NO_WRAP));
+            float score = matchFeature(feature, Base64.decode(person.getFaceFeature(), Base64.NO_WRAP));
             if (score > maxScore) {
                 maxScore = score;
                 maxScorePerson = person;

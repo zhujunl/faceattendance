@@ -12,6 +12,11 @@ public class ResponseEntity<E> {
     public ResponseEntity() {
     }
 
+    public ResponseEntity(String code, String message) {
+        this.code = code;
+        this.message = message;
+    }
+
     public ResponseEntity(String code, String message, E data) {
         this.code = code;
         this.message = message;

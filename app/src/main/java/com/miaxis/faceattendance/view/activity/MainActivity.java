@@ -1,18 +1,22 @@
 package com.miaxis.faceattendance.view.activity;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.miaxis.faceattendance.R;
+import com.miaxis.faceattendance.app.FaceAttendanceApp;
+import com.miaxis.faceattendance.service.HttpCommServerService;
+import com.miaxis.faceattendance.util.ValueUtil;
 import com.miaxis.faceattendance.view.fragment.AddPersonFragment;
 import com.miaxis.faceattendance.view.fragment.OnFragmentInteractionListener;
 import com.miaxis.faceattendance.view.fragment.PersonFragment;
@@ -20,7 +24,6 @@ import com.miaxis.faceattendance.view.fragment.RecordFragment;
 import com.miaxis.faceattendance.view.fragment.SettingFragment;
 import com.miaxis.faceattendance.view.fragment.VerifyFragment;
 
-import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -50,8 +53,14 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     TextView tvQuit;
     @BindView(R.id.dl_main)
     DrawerLayout dlMain;
+    @BindView(R.id.tv_server_status)
+    TextView tvServerStatus;
+    @BindView(R.id.tv_server_ip)
+    TextView tvServerIp;
 
     private MaterialDialog quitDialog;
+
+    private HttpCommServerService httpCommServerService;
 
     private VerifyFragment verifyFragment;
     private PersonFragment personFragment;
@@ -70,7 +79,8 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
 
     @Override
     protected void initData() {
-
+        Intent intent = new Intent(this, HttpCommServerService.class);
+        bindService(intent, serviceConnection, BIND_AUTO_CREATE);
     }
 
     @Override
@@ -135,6 +145,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unbindService(serviceConnection);
         System.exit(0);
     }
 
@@ -161,8 +172,36 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
                 dlMain.closeDrawer(GravityCompat.START);
                 break;
             case R.id.tv_quit:
-                finish();
+                onBackPressed();
                 break;
+        }
+    };
+
+    ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            HttpCommServerService.MyBinder binder = (HttpCommServerService.MyBinder) service;
+            httpCommServerService = binder.getService();
+            httpCommServerService.setOnServerServiceListener(onServerServiceCallback);
+            httpCommServerService.startServer();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+
+    private HttpCommServerService.OnServerServiceListener onServerServiceCallback = new HttpCommServerService.OnServerServiceListener() {
+        @Override
+        public void onServerStart(boolean result) {
+            if (result) {
+                tvServerStatus.setText("局域网服务在线中");
+                tvServerIp.setText(ValueUtil.getIP(FaceAttendanceApp.getInstance()));
+            } else {
+                tvServerStatus.setText("局域网服务启动失败");
+                tvServerIp.setText("");
+            }
         }
     };
 

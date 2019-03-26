@@ -75,7 +75,7 @@ dependencies {
 }
 
 greendao {
-    schemaVersion 1
+    schemaVersion 3
     daoPackage 'com.miaxis.faceattendance.model.local.greenDao.gen'
     targetGenDir 'src/main/java'
 }

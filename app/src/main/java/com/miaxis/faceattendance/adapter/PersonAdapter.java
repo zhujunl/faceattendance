@@ -45,7 +45,7 @@ public class PersonAdapter<T> extends RecyclerView.Adapter<PersonAdapter.MyViewH
         holder.tvPersonSex.setText(TextUtils.isEmpty(person.getSex()) ? "" : person.getSex());
         holder.tvPersonNation.setText(TextUtils.isEmpty(person.getNation()) ? "" : person.getNation());
         holder.tvCardNumber.setText(person.getCardNumber());
-        holder.tvWarehousingTime.setText("入库时间：" + person.getWarehousingTime());
+        holder.tvWarehousingTime.setText("入库时间：" + person.getRegisterTime());
         holder.tvDeletePerson.setOnClickListener(v ->
                 onItemClickListener.onItemClick(holder.tvDeletePerson, holder.getLayoutPosition()));
     }

@@ -25,7 +25,7 @@ public class PersonModel {
         if (old != null) {
             personDao.delete(old);
         }
-        person.setWarehousingTime(ValueUtil.simpleDateFormat.format(new Date()));
+        person.setRegisterTime(ValueUtil.simpleDateFormat.format(new Date()));
         personDao.insert(person);
     }
 

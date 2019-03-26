@@ -19,14 +19,14 @@ public class Person {
     private String issuingAuthority;
     private String birthday;
     private String cardId;
-    private String feature;
+    private String faceFeature;
     private String facePicture;
-    private String warehousingTime;
-    @Generated(hash = 900225760)
+    private String registerTime;
+    @Generated(hash = 499246479)
     public Person(Long id, String name, String sex, String cardNumber,
             String nation, String address, String validateStart, String validateEnd,
-            String issuingAuthority, String birthday, String cardId, String feature,
-            String facePicture, String warehousingTime) {
+            String issuingAuthority, String birthday, String cardId,
+            String faceFeature, String facePicture, String registerTime) {
         this.id = id;
         this.name = name;
         this.sex = sex;
@@ -38,9 +38,9 @@ public class Person {
         this.issuingAuthority = issuingAuthority;
         this.birthday = birthday;
         this.cardId = cardId;
-        this.feature = feature;
+        this.faceFeature = faceFeature;
         this.facePicture = facePicture;
-        this.warehousingTime = warehousingTime;
+        this.registerTime = registerTime;
     }
     @Generated(hash = 1024547259)
     public Person() {
@@ -58,9 +58,9 @@ public class Person {
         setIssuingAuthority(builder.issuingAuthority);
         setBirthday(builder.birthday);
         setCardId(builder.cardId);
-        setFeature(builder.feature);
+        setFaceFeature(builder.faceFeature);
         setFacePicture(builder.facePicture);
-        setWarehousingTime(builder.warehousingTime);
+        setRegisterTime(builder.registerTime);
     }
 
     public Long getId() {
@@ -129,11 +129,11 @@ public class Person {
     public void setCardId(String cardId) {
         this.cardId = cardId;
     }
-    public String getFeature() {
-        return this.feature;
+    public String getFaceFeature() {
+        return this.faceFeature;
     }
-    public void setFeature(String feature) {
-        this.feature = feature;
+    public void setFaceFeature(String faceFeature) {
+        this.faceFeature = faceFeature;
     }
     public String getFacePicture() {
         return this.facePicture;
@@ -141,11 +141,11 @@ public class Person {
     public void setFacePicture(String facePicture) {
         this.facePicture = facePicture;
     }
-    public String getWarehousingTime() {
-        return this.warehousingTime;
+    public String getRegisterTime() {
+        return this.registerTime;
     }
-    public void setWarehousingTime(String warehousingTime) {
-        this.warehousingTime = warehousingTime;
+    public void setRegisterTime(String registerTime) {
+        this.registerTime = registerTime;
     }
 
     public static final class Builder {
@@ -160,9 +160,9 @@ public class Person {
         private String issuingAuthority;
         private String birthday;
         private String cardId;
-        private String feature;
+        private String faceFeature;
         private String facePicture;
-        private String warehousingTime;
+        private String registerTime;
 
         public Builder() {
         }
@@ -222,8 +222,8 @@ public class Person {
             return this;
         }
 
-        public Builder feature(String val) {
-            feature = val;
+        public Builder faceFeature(String val) {
+            faceFeature = val;
             return this;
         }
 
@@ -232,8 +232,8 @@ public class Person {
             return this;
         }
 
-        public Builder warehousingTime(String val) {
-            warehousingTime = val;
+        public Builder registerTime(String val) {
+            registerTime = val;
             return this;
         }
 

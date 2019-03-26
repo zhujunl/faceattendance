@@ -240,4 +240,16 @@ public class FileUtil {
         }
     }
 
+
+    public static void deleteDirectoryFile(File file) {
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            for (File mFile : files) {
+                deleteDirectoryFile(mFile);
+            }
+        } else if (file.exists()) {
+            file.delete();
+        }
+    }
+
 }
