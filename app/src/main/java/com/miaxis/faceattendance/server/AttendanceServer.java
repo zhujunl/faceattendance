@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.google.gson.Gson;
 import com.miaxis.faceattendance.manager.ConfigManager;
 import com.miaxis.faceattendance.model.net.ResponseEntity;
+import com.miaxis.faceattendance.service.HttpCommServerService;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -23,12 +24,14 @@ public class AttendanceServer extends NanoHTTPD {
     private BasisServer basisServer;
     private PersonServer personServer;
     private RecordServer recordServer;
+    private EditPersonServer editPersonServer;
 
-    public AttendanceServer(int port) {
+    public AttendanceServer(int port, HttpCommServerService.OnServerServiceListener listener) {
         super(port);
         basisServer = new BasisServer();
         personServer = new PersonServer();
         recordServer = new RecordServer();
+        editPersonServer = new EditPersonServer(listener);
     }
 
     @Override
@@ -44,6 +47,9 @@ public class AttendanceServer extends NanoHTTPD {
                 }
                 if (session.getUri().startsWith("/miaxis/attendance/recordServer/")) {
                     responseEntity = recordServer.handleRequest(session);
+                }
+                if (session.getUri().startsWith("/miaxis/attendance/editPersonServer/")) {
+                    responseEntity = editPersonServer.handleRequest(session);
                 }
                 return newFixedLengthResponse(Response.Status.OK, NanoHTTPD.MIME_PLAINTEXT, new Gson().toJson(responseEntity));
             }
@@ -61,8 +67,6 @@ public class AttendanceServer extends NanoHTTPD {
         } catch (ResponseException e) {
             e.printStackTrace();
         }
-//        String body = session.getQueryParameterString();
-//        Map<String, List<String>> map = decodeParameters(files.get("postData"));
         Map<String, List<String>> parameters = session.getParameters();
         if (parameters != null && parameters.get("password") != null) {
             String password = parameters.get("password").get(0);

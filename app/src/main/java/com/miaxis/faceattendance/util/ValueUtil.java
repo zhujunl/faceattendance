@@ -13,6 +13,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Enumeration;
 import java.util.Locale;
@@ -178,6 +179,17 @@ public class ValueUtil {
         }
         String mobileIp = addr.getHostAddress();
         return mobileIp;
+    }
+
+    public static boolean isValidDate(String str) {
+        boolean convertSuccess = true;
+        try {
+            ValueUtil.simpleDateFormat.parse(str);
+        } catch (ParseException e) {
+             e.printStackTrace();
+            convertSuccess = false;
+        }
+        return convertSuccess;
     }
 
 }

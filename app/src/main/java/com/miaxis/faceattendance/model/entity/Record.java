@@ -1,8 +1,13 @@
 package com.miaxis.faceattendance.model.entity;
 
+import com.miaxis.faceattendance.model.entity.converter.DateConverter;
+
+import org.greenrobot.greendao.annotation.Convert;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Generated;
+
+import java.util.Date;
 
 @Entity
 public class Record {
@@ -15,13 +20,14 @@ public class Record {
     private String longitude;
     private String location;
     private String name;
-    private String result;
+    @Convert(converter = DateConverter.class, columnType = Long.class)
     private String verifyTime;
     private String score;
-    @Generated(hash = 491457769)
+    private Boolean upload;
+    @Generated(hash = 1639416128)
     public Record(Long id, String cardNumber, String facePicture, String latitude,
-            String longitude, String location, String name, String result,
-            String verifyTime, String score) {
+            String longitude, String location, String name, String verifyTime,
+            String score, Boolean upload) {
         this.id = id;
         this.cardNumber = cardNumber;
         this.facePicture = facePicture;
@@ -29,9 +35,9 @@ public class Record {
         this.longitude = longitude;
         this.location = location;
         this.name = name;
-        this.result = result;
         this.verifyTime = verifyTime;
         this.score = score;
+        this.upload = upload;
     }
     @Generated(hash = 477726293)
     public Record() {
@@ -45,9 +51,9 @@ public class Record {
         setLongitude(builder.longitude);
         setLocation(builder.location);
         setName(builder.name);
-        setResult(builder.result);
         setVerifyTime(builder.verifyTime);
         setScore(builder.score);
+        setUpload(builder.upload);
     }
 
     public Long getId() {
@@ -92,12 +98,6 @@ public class Record {
     public void setName(String name) {
         this.name = name;
     }
-    public String getResult() {
-        return this.result;
-    }
-    public void setResult(String result) {
-        this.result = result;
-    }
     public String getVerifyTime() {
         return this.verifyTime;
     }
@@ -110,6 +110,12 @@ public class Record {
     public void setScore(String score) {
         this.score = score;
     }
+    public Boolean getUpload() {
+        return this.upload;
+    }
+    public void setUpload(Boolean upload) {
+        this.upload = upload;
+    }
 
     public static final class Builder {
         private Long id;
@@ -119,9 +125,9 @@ public class Record {
         private String longitude;
         private String location;
         private String name;
-        private String result;
         private String verifyTime;
         private String score;
+        private Boolean upload;
 
         public Builder() {
         }
@@ -161,11 +167,6 @@ public class Record {
             return this;
         }
 
-        public Builder result(String val) {
-            result = val;
-            return this;
-        }
-
         public Builder verifyTime(String val) {
             verifyTime = val;
             return this;
@@ -173,6 +174,11 @@ public class Record {
 
         public Builder score(String val) {
             score = val;
+            return this;
+        }
+
+        public Builder upload(Boolean val) {
+            upload = val;
             return this;
         }
 

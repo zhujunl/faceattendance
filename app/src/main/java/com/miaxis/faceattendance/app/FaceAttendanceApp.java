@@ -2,6 +2,7 @@ package com.miaxis.faceattendance.app;
 
 import android.app.Application;
 
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.miaxis.faceattendance.MyEventBusIndex;
 import com.miaxis.faceattendance.event.InitFaceEvent;
 import com.miaxis.faceattendance.manager.AmapManager;
@@ -14,9 +15,25 @@ import com.miaxis.faceattendance.util.FileUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class FaceAttendanceApp extends Application {
 
     private static FaceAttendanceApp instance;
+
+    private static final OkHttpClient CLIENT = new OkHttpClient.Builder().
+            connectTimeout(5, TimeUnit.SECONDS).
+            readTimeout(5, TimeUnit.SECONDS).
+            writeTimeout(5, TimeUnit.SECONDS).build();
+
+    public static final Retrofit.Builder RETROFIT = new Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .client(CLIENT);
 
     @Override
     public void onCreate() {

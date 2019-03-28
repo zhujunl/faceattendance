@@ -2,6 +2,7 @@ package com.miaxis.faceattendance.view.fragment;
 
 
 import android.content.Context;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.miaxis.faceattendance.R;
@@ -69,6 +70,8 @@ public class RecordFragment extends BaseFragment implements RecordContract.View 
             }
         };
         rvRecord.addOnScrollListener(endLessOnScrollListener);
+        recordAdapter.setOnItemClickListener((view, position) -> {
+        });
         presenter.loadRecord(0, ValueUtil.PAGESIZE);
     }
 

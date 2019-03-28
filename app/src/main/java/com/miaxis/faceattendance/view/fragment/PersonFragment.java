@@ -36,10 +36,14 @@ public class PersonFragment extends BaseFragment implements PersonContract.View 
     @BindView(R.id.rv_person)
     RecyclerView rvPerson;
 
+    private MaterialDialog waitDialog;
+
     private PersonContract.Presenter presenter;
     private OnFragmentInteractionListener mListener;
     private PersonAdapter<Person> personAdapter;
     private GridEndLessOnScrollListener gridEndLessOnScrollListener;
+
+    private boolean resetFlag = false;
 
     public static PersonFragment newInstance() {
         return new PersonFragment();
@@ -61,6 +65,7 @@ public class PersonFragment extends BaseFragment implements PersonContract.View 
 
     @Override
     protected void initView() {
+        initDialog();
         ivAddPerson.setOnClickListener(v -> mListener.enterAnotherFragment(PersonFragment.class, AddPersonFragment.class, null));
         personAdapter = new PersonAdapter<>(getContext(), new ArrayList<>());
         rvPerson.setAdapter(personAdapter);
@@ -90,10 +95,17 @@ public class PersonFragment extends BaseFragment implements PersonContract.View 
     @Override
     public void loadPersonCallback(List<Person> personList) {
         if (personList != null) {
-            if (!personList.isEmpty()) {
-                personAdapter.appendDataList(personList);
-                personAdapter.notifyDataSetChanged();
+            if (resetFlag) {
+                resetFlag = false;
+                personAdapter.setDataList(personList);
+                rvPerson.removeOnScrollListener(gridEndLessOnScrollListener);
+                gridEndLessOnScrollListener.reset();
+                rvPerson.addOnScrollListener(gridEndLessOnScrollListener);
             } else {
+                personAdapter.appendDataList(personList);
+            }
+            personAdapter.notifyDataSetChanged();
+            if (personList.isEmpty()) {
                 ToastManager.toast(getContext(), "没有更多了", ToastManager.INFO);
             }
         } else {
@@ -132,6 +144,31 @@ public class PersonFragment extends BaseFragment implements PersonContract.View 
     public void onDestroyView() {
         super.onDestroyView();
         presenter.doDestroy();
+    }
+
+    public void showWaitDialogWithMessage(String message) {
+        waitDialog.setContent(message);
+        if (!waitDialog.isShowing()) {
+            waitDialog.show();
+        }
+    }
+
+    public void dismissWaitDialog() {
+        waitDialog.dismiss();
+    }
+
+    public void refreshPerson() {
+        resetFlag = true;
+        presenter.loadPerson(1, ValueUtil.PAGESIZE);
+    }
+
+    private void initDialog() {
+        waitDialog = new MaterialDialog.Builder(getContext())
+                .progress(true, 100)
+                .content("")
+                .cancelable(false)
+                .autoDismiss(false)
+                .build();
     }
 
 }

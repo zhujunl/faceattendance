@@ -3,18 +3,19 @@ package com.miaxis.faceattendance.model;
 import com.miaxis.faceattendance.manager.DaoManager;
 import com.miaxis.faceattendance.model.entity.Person;
 import com.miaxis.faceattendance.model.local.greenDao.gen.PersonDao;
+import com.miaxis.faceattendance.util.FileUtil;
 import com.miaxis.faceattendance.util.ValueUtil;
 
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
 public class PersonModel {
 
-    public static boolean checkPersonByCardNumber(String cardNumber) {
-        Person person = DaoManager.getInstance().getDaoSession().getPersonDao().queryBuilder()
+    public static Person getPersonByCardNumber(String cardNumber) {
+        return DaoManager.getInstance().getDaoSession().getPersonDao().queryBuilder()
                 .where(PersonDao.Properties.CardNumber.eq(cardNumber))
                 .unique();
-        return person == null;
     }
 
     public static void savePerson(Person person) {
@@ -41,7 +42,24 @@ public class PersonModel {
     }
 
     public static void deletePerson(Person person) {
+        FileUtil.deletefile(person.getFacePicture());
         DaoManager.getInstance().getDaoSession().getPersonDao().delete(person);
+    }
+
+    public static void deletePersonByCardNumber(String cardNumber) {
+        Person person = getPersonByCardNumber(cardNumber);
+        if (person != null) {
+            deletePerson(person);
+        }
+    }
+
+    public static long getPersonCount() {
+        return DaoManager.getInstance().getDaoSession().getPersonDao().count();
+    }
+
+    public static void clearPerson() {
+        DaoManager.getInstance().getDaoSession().getPersonDao().deleteAll();
+        FileUtil.deleteDirectoryFile(new File(FileUtil.FACE_IMG_PATH));
     }
 
 }

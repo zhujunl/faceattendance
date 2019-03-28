@@ -3,7 +3,9 @@ package com.miaxis.faceattendance.util;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
+import android.util.Base64;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -240,7 +242,6 @@ public class FileUtil {
         }
     }
 
-
     public static void deleteDirectoryFile(File file) {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
@@ -249,6 +250,50 @@ public class FileUtil {
             }
         } else if (file.exists()) {
             file.delete();
+        }
+    }
+
+    public static String pathToBase64(String path) {
+        try {
+            byte[] bytes = toByteArray(path);
+            String str = Base64.encodeToString(bytes, Base64.NO_WRAP);
+            bytes = null;
+            System.gc();
+            return str;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+
+    }
+
+    public static byte[] toByteArray(String filename) throws Exception {
+
+        File f = new File(filename);
+        if (!f.exists()) {
+            throw new FileNotFoundException(filename);
+        }
+        BufferedInputStream in = null;
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream((int) f.length())) {
+            in = new BufferedInputStream(new FileInputStream(f));
+            int buf_size = 1024;
+            byte[] buffer = new byte[buf_size];
+            int len = 0;
+            while (-1 != (len = in.read(buffer, 0, buf_size))) {
+                bos.write(buffer, 0, len);
+            }
+            return bos.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

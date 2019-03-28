@@ -1,8 +1,16 @@
 package com.miaxis.faceattendance.server;
 
-import com.miaxis.faceattendance.model.RecordModel;
-import com.miaxis.faceattendance.model.net.ResponseEntity;
+import android.text.TextUtils;
+import android.util.Base64;
 
+import com.miaxis.faceattendance.model.RecordModel;
+import com.miaxis.faceattendance.model.entity.Record;
+import com.miaxis.faceattendance.model.net.ResponseEntity;
+import com.miaxis.faceattendance.util.FileUtil;
+import com.miaxis.faceattendance.util.ValueUtil;
+
+import java.io.File;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +31,7 @@ public class RecordServer {
                 case GET_RECORD_COUNT: //获取日志总数
                     return handleGetRecordCount(session);
                 case GET_RECORD_LIST: //分页获取日志信息
+                    return handleGetRecordList(session);
                 case CLEAT_RECORD: //清除所有日志
                     return handleClearRecord(session);
             }
@@ -38,18 +47,29 @@ public class RecordServer {
         return new ResponseEntity<>(AttendanceServer.SUCCESS, "获取日志数目成功", recordCount);
     }
 
-//    private ResponseEntity handleGetRecordList(NanoHTTPD.IHTTPSession session) {
-//        Map<String, List<String>> parameters = session.getParameters();
-//        if (parameters.get("pageNum") != null
-//                && parameters.get("pageSize") != null
-//                && parameters.get("name") != null
-//                && parameters.get("cardNumber") != null
-//                && parameters.get("result") != null
-//                && parameters.get("date") != null
-//                && parameters.get("upload") != null) {
-//
-//        }
-//    }
+    private ResponseEntity handleGetRecordList(NanoHTTPD.IHTTPSession session) throws ParseException {
+        Map<String, List<String>> parameters = session.getParameters();
+        if (parameters.get("pageNum") != null && parameters.get("pageSize") != null) {
+            int pageNum = Integer.valueOf(parameters.get("pageNum").get(0));
+            int pageSize = Integer.valueOf(parameters.get("pageSize").get(0));
+            if (pageNum > 0 && pageSize > 0) {
+                String name = parameters.get("name") != null ? parameters.get("name").get(0) : "";
+                String cardNumber = parameters.get("cardNumber") != null ? parameters.get("cardNumber").get(0) : "";
+                String startDate = parameters.get("startDate") != null ? parameters.get("startDate").get(0) : "";
+                String endDate = parameters.get("endDate") != null ? parameters.get("endDate").get(0) : "";
+                Boolean upload = parameters.get("upload") != null ? Boolean.valueOf(parameters.get("upload").get(0)) : null;
+                if ((TextUtils.isEmpty(startDate) && TextUtils.isEmpty(endDate))
+                        || (ValueUtil.isValidDate(startDate) && ValueUtil.isValidDate(endDate))) {
+                    List<Record> recordList = RecordModel.queryRecord(pageNum, pageSize, name, cardNumber, startDate, endDate, upload);
+                    for (Record record : recordList) {
+                        record.setFacePicture(FileUtil.pathToBase64(record.getFacePicture()));
+                    }
+                    return new ResponseEntity<>(AttendanceServer.SUCCESS, "查询日志成功", recordList);
+                }
+            }
+        }
+        return new ResponseEntity(AttendanceServer.FAILED, "参数校验失败");
+    }
 
     private ResponseEntity handleClearRecord(NanoHTTPD.IHTTPSession session) {
         RecordModel.clearAllRecord();

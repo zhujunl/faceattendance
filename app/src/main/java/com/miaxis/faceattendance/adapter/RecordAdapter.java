@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.miaxis.faceattendance.R;
 import com.miaxis.faceattendance.model.entity.Record;
+import com.miaxis.faceattendance.util.ValueUtil;
 
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class RecordAdapter<T> extends RecyclerView.Adapter<RecordAdapter.MyViewH
         Record record = (Record) dataList.get(position);
         holder.tvRecordName.setText(record.getName());
         holder.tvRecordCardNumber.setText(record.getCardNumber());
-        holder.tvRecordResult.setText(record.getResult());
+        holder.tvRecordResult.setText("通过");
         holder.tvRecordOpdate.setText(record.getVerifyTime());
         holder.llItem.setOnClickListener(v -> onItemClickListener.onItemClick(holder.llItem, holder.getLayoutPosition()));
     }

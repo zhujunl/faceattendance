@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.miaxis.faceattendance.R;
 import com.miaxis.faceattendance.app.FaceAttendanceApp;
+import com.miaxis.faceattendance.manager.ToastManager;
 import com.miaxis.faceattendance.service.HttpCommServerService;
 import com.miaxis.faceattendance.util.ValueUtil;
 import com.miaxis.faceattendance.view.fragment.AddPersonFragment;
@@ -202,6 +203,51 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
                 tvServerStatus.setText("局域网服务启动失败");
                 tvServerIp.setText("");
             }
+        }
+
+        @Override
+        public void onStartEditPerson() {
+            runOnUiThread(() -> enterAnotherFragment(Fragment.class, PersonFragment.class, null));
+        }
+
+        @Override
+        public boolean isPersonFragmentVisible() {
+            return getVisibleFragment() instanceof PersonFragment;
+        }
+
+        @Override
+        public void onDeletePerson(boolean start) {
+            runOnUiThread(() -> {
+                if (getVisibleFragment() instanceof PersonFragment) {
+                    if (start) {
+                        personFragment.showWaitDialogWithMessage("正在删除人员，请稍后");
+                    } else {
+                        personFragment.refreshPerson();
+                        personFragment.dismissWaitDialog();
+                        ToastManager.toast(MainActivity.this, "删除人员成功", ToastManager.SUCCESS);
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void onClearPerson(boolean start) {
+            runOnUiThread(() -> {
+                if (getVisibleFragment() instanceof PersonFragment) {
+                    if (start) {
+                        personFragment.showWaitDialogWithMessage("正在清除人员，请稍后");
+                    } else {
+                        personFragment.refreshPerson();
+                        personFragment.dismissWaitDialog();
+                        ToastManager.toast(MainActivity.this, "清除人员成功", ToastManager.SUCCESS);
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void onStopEditPerson() {
+            runOnUiThread(() -> enterAnotherFragment(Fragment.class, VerifyFragment.class, null));
         }
     };
 

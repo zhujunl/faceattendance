@@ -1,8 +1,13 @@
 package com.miaxis.faceattendance.model.entity;
 
+import com.miaxis.faceattendance.model.entity.converter.DateConverter;
+
+import org.greenrobot.greendao.annotation.Convert;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Generated;
+
+import java.util.Date;
 
 @Entity
 public class Person {
@@ -21,6 +26,7 @@ public class Person {
     private String cardId;
     private String faceFeature;
     private String facePicture;
+    @Convert(converter = DateConverter.class, columnType = Long.class)
     private String registerTime;
     @Generated(hash = 499246479)
     public Person(Long id, String name, String sex, String cardNumber,

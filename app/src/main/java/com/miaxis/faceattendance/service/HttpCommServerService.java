@@ -40,6 +40,11 @@ public class HttpCommServerService extends Service {
 
     public interface OnServerServiceListener {
         void onServerStart(boolean result);
+        void onStartEditPerson();
+        boolean isPersonFragmentVisible();
+        void onDeletePerson(boolean start);
+        void onClearPerson(boolean start);
+        void onStopEditPerson();
     }
 
     public void setOnServerServiceListener(OnServerServiceListener onServerServiceListener) {
@@ -47,7 +52,7 @@ public class HttpCommServerService extends Service {
     }
 
     public void startServer() {
-        attendanceServer = new AttendanceServer(8081);
+        attendanceServer = new AttendanceServer(8081, listener);
         try {
             attendanceServer.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
             listener.onServerStart(true);

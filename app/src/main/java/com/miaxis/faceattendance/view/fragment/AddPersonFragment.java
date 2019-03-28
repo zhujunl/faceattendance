@@ -176,7 +176,7 @@ public class AddPersonFragment extends BaseFragment {
 
     private void checkPerson() {
         if (checkInput()) {
-            if (PersonModel.checkPersonByCardNumber(etCardNumber.getText().toString())) {
+            if (PersonModel.getPersonByCardNumber(etCardNumber.getText().toString()) == null) {
                 HandlePerson();
             } else {
                 new MaterialDialog.Builder(getContext())
