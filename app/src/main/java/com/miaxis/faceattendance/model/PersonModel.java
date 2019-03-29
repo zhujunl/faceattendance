@@ -18,16 +18,15 @@ public class PersonModel {
                 .unique();
     }
 
-    public static void savePerson(Person person) {
-        PersonDao personDao = DaoManager.getInstance().getDaoSession().getPersonDao();
-        Person old = personDao.queryBuilder()
+    public static synchronized void savePerson(Person person) {
+        Person old = DaoManager.getInstance().getDaoSession().getPersonDao().queryBuilder()
                 .where(PersonDao.Properties.CardNumber.eq(person.getCardNumber()))
                 .unique();
         if (old != null) {
-            personDao.delete(old);
+            deletePerson(old);
         }
         person.setRegisterTime(ValueUtil.simpleDateFormat.format(new Date()));
-        personDao.insert(person);
+        DaoManager.getInstance().getDaoSession().getPersonDao().insert(person);
     }
 
     public static List<Person> loadPersonList(int pageNum, int pageSize) {

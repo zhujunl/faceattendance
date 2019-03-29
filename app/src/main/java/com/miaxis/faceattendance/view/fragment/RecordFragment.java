@@ -2,7 +2,6 @@ package com.miaxis.faceattendance.view.fragment;
 
 
 import android.content.Context;
-import android.view.View;
 import android.widget.ImageView;
 
 import com.miaxis.faceattendance.R;
@@ -13,6 +12,7 @@ import com.miaxis.faceattendance.manager.ToastManager;
 import com.miaxis.faceattendance.model.entity.Record;
 import com.miaxis.faceattendance.presenter.RecordPresenter;
 import com.miaxis.faceattendance.util.ValueUtil;
+import com.miaxis.faceattendance.view.listener.OnFragmentInteractionListener;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -3,17 +3,16 @@ package com.miaxis.faceattendance.view.fragment;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.annimon.stream.function.Consumer;
 import com.miaxis.faceattendance.R;
 import com.miaxis.faceattendance.manager.ConfigManager;
 import com.miaxis.faceattendance.manager.ToastManager;
 import com.miaxis.faceattendance.model.entity.Config;
 import com.miaxis.faceattendance.util.ValueUtil;
+import com.miaxis.faceattendance.view.listener.OnFragmentInteractionListener;
 
 import androidx.fragment.app.Fragment;
 import butterknife.BindView;

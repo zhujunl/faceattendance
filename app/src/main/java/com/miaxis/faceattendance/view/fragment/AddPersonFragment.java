@@ -5,15 +5,17 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.hardware.Camera;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.miaxis.faceattendance.R;
 import com.miaxis.faceattendance.app.FaceAttendanceApp;
@@ -28,22 +30,22 @@ import com.miaxis.faceattendance.model.entity.IDCardRecord;
 import com.miaxis.faceattendance.model.entity.Person;
 import com.miaxis.faceattendance.util.FileUtil;
 import com.miaxis.faceattendance.view.custom.CameraSurfaceView;
+import com.miaxis.faceattendance.view.listener.OnFragmentInteractionListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import butterknife.BindView;
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -59,8 +61,8 @@ public class AddPersonFragment extends BaseFragment {
     TextView tvTakePicture;
     @BindView(R.id.et_name)
     EditText etName;
-    @BindView(R.id.et_sex)
-    EditText etSex;
+    @BindView(R.id.spinner_sex)
+    Spinner spinnerSex;
     @BindView(R.id.et_card_number)
     EditText etCardNumber;
 
@@ -115,7 +117,11 @@ public class AddPersonFragment extends BaseFragment {
             case CardEvent.READ_CARD:
                 this.idCardRecord = event.getIdCardRecord();
                 etName.setText(event.getIdCardRecord().getName());
-                etSex.setText(event.getIdCardRecord().getSex());
+                if (TextUtils.equals(event.getIdCardRecord().getSex(), "男")) {
+                    spinnerSex.setSelection(1);
+                } else {
+                    spinnerSex.setSelection(2);
+                }
                 etCardNumber.setText(event.getIdCardRecord().getCardNumber());
                 break;
         }
@@ -195,7 +201,7 @@ public class AddPersonFragment extends BaseFragment {
     private boolean checkInput() {
         if (facePicture == null
                 || TextUtils.isEmpty(etName.getText().toString())
-                || TextUtils.isEmpty(etSex.getText().toString())
+                || spinnerSex.getSelectedItemPosition() == 0
                 || TextUtils.isEmpty(etCardNumber.getText().toString())) {
             return false;
         }
@@ -207,7 +213,7 @@ public class AddPersonFragment extends BaseFragment {
             person = new Person.Builder()
                     .name(etName.getText().toString())
                     .cardNumber(etCardNumber.getText().toString())
-                    .sex(etSex.getText().toString())
+                    .sex(spinnerSex.getSelectedItemPosition() == 1 ? "男" : "女")
                     .nation(idCardRecord.getNation())
                     .birthday(idCardRecord.getBirthday())
                     .address(idCardRecord.getAddress())
@@ -220,7 +226,7 @@ public class AddPersonFragment extends BaseFragment {
             person = new Person.Builder()
                     .name(etName.getText().toString())
                     .cardNumber(etCardNumber.getText().toString())
-                    .sex(etSex.getText().toString())
+                    .sex(spinnerSex.getSelectedItemPosition() == 1 ? "男" : "女")
                     .build();
         }
     }
@@ -273,8 +279,26 @@ public class AddPersonFragment extends BaseFragment {
     private void clear() {
         etCardNumber.setText("");
         etName.setText("");
-        etSex.setText("");
+        spinnerSex.setSelection(0);
         person = null;
     }
+
+//    ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, NomProjets) {
+//        @Override
+//        public View getView(int position, View convertView, ViewGroup parent) {
+//            return setCentered(super.getView(position, convertView, parent));
+//        }
+//
+//        @Override
+//        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+//            return setCentered(super.getDropDownView(position, convertView, parent));
+//        }
+//
+//        private View setCentered(View view) {
+//            TextView textView = view.findViewById(android.R.id.text1);
+//            textView.setGravity(Gravity.CENTER);
+//            return view;
+//        }
+//    };
 
 }

@@ -1,7 +1,6 @@
 package com.miaxis.faceattendance.view.fragment;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -18,6 +17,7 @@ import com.miaxis.faceattendance.model.entity.VerifyPerson;
 import com.miaxis.faceattendance.util.ValueUtil;
 import com.miaxis.faceattendance.view.custom.CameraSurfaceView;
 import com.miaxis.faceattendance.view.custom.RectSurfaceView;
+import com.miaxis.faceattendance.view.listener.OnFragmentInteractionListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -29,7 +29,6 @@ import java.util.Date;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
-import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
 public class VerifyFragment extends BaseFragment {
 

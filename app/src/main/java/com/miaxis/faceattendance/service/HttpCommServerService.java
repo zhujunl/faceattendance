@@ -42,8 +42,7 @@ public class HttpCommServerService extends Service {
         void onServerStart(boolean result);
         void onStartEditPerson();
         boolean isPersonFragmentVisible();
-        void onDeletePerson(boolean start);
-        void onClearPerson(boolean start);
+        void onBackstageBusy(boolean start, String message);
         void onStopEditPerson();
     }
 

@@ -90,14 +90,13 @@
                     android:text="姓        名："
                     android:textSize="16sp"
                     android:gravity="center"
-                    android:layout_weight="3"
-                    android:layout_width="0dp"
+                    android:layout_width="100dp"
                     android:layout_height="match_parent" />
 
                 <EditText
                     android:id="@+id/et_name"
                     android:paddingStart="20dp"
-                    android:layout_weight="7"
+                    android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent" />
 
@@ -113,16 +112,16 @@
                     android:text="性        别："
                     android:textSize="16sp"
                     android:gravity="center"
-                    android:layout_weight="3"
-                    android:layout_width="0dp"
+                    android:layout_width="100dp"
                     android:layout_height="match_parent" />
 
-                <EditText
-                    android:id="@+id/et_sex"
-                    android:paddingStart="20dp"
-                    android:layout_weight="7"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent" />
+                <Spinner
+                    android:id="@+id/spinner_sex"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:layout_width="150dp"
+                    android:layout_height="match_parent"
+                    android:entries="@array/sex"/>
 
             </LinearLayout>
 
@@ -136,14 +135,13 @@
                     android:text="证件号码："
                     android:textSize="16sp"
                     android:gravity="center"
-                    android:layout_weight="3"
-                    android:layout_width="0dp"
+                    android:layout_width="100dp"
                     android:layout_height="match_parent" />
 
                 <EditText
                     android:id="@+id/et_card_number"
                     android:paddingStart="20dp"
-                    android:layout_weight="7"
+                    android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent" />
 

@@ -7,7 +7,6 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,8 +17,10 @@ import com.miaxis.faceattendance.app.FaceAttendanceApp;
 import com.miaxis.faceattendance.manager.ToastManager;
 import com.miaxis.faceattendance.service.HttpCommServerService;
 import com.miaxis.faceattendance.util.ValueUtil;
+import com.miaxis.faceattendance.view.listener.OnLimitClickHelper;
+import com.miaxis.faceattendance.view.listener.OnLimitClickListener;
 import com.miaxis.faceattendance.view.fragment.AddPersonFragment;
-import com.miaxis.faceattendance.view.fragment.OnFragmentInteractionListener;
+import com.miaxis.faceattendance.view.listener.OnFragmentInteractionListener;
 import com.miaxis.faceattendance.view.fragment.PersonFragment;
 import com.miaxis.faceattendance.view.fragment.RecordFragment;
 import com.miaxis.faceattendance.view.fragment.SettingFragment;
@@ -30,7 +31,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity implements OnFragmentInteractionListener {
 
@@ -92,19 +92,19 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
                 .onPositive((dialog, which) -> finish())
                 .negativeText("取消")
                 .build();
-        ivDrawer.setOnClickListener(v -> {
+        ivDrawer.setOnClickListener(new OnLimitClickHelper(v -> {
             if (dlMain.isDrawerOpen(GravityCompat.START)) {
                 dlMain.closeDrawer(GravityCompat.START);
             } else {
                 dlMain.openDrawer(GravityCompat.START);
             }
-        });
-        tvVerify.setOnClickListener(drawerClickListener);
-        tvPerson.setOnClickListener(drawerClickListener);
-        tvAddPerson.setOnClickListener(drawerClickListener);
-        tvRecord.setOnClickListener(drawerClickListener);
-        tvSetting.setOnClickListener(drawerClickListener);
-        tvQuit.setOnClickListener(drawerClickListener);
+        }));
+        tvVerify.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
+        tvPerson.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
+        tvAddPerson.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
+        tvRecord.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
+        tvSetting.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
+        tvQuit.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
         getSupportFragmentManager().beginTransaction().replace(R.id.fl_main, verifyFragment = VerifyFragment.newInstance()).commit();
     }
 
@@ -150,27 +150,33 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
         System.exit(0);
     }
 
-    private View.OnClickListener drawerClickListener = v -> {
+    private OnLimitClickListener drawerClickListener = v -> {
+        dlMain.closeDrawer(GravityCompat.START);
         switch (v.getId()) {
             case R.id.tv_verify:
-                enterAnotherFragment(Fragment.class, VerifyFragment.class, null);
-                dlMain.closeDrawer(GravityCompat.START);
+                if (!(getVisibleFragment() instanceof VerifyFragment)) {
+                    enterAnotherFragment(Fragment.class, VerifyFragment.class, null);
+                }
                 break;
             case R.id.tv_person:
-                enterAnotherFragment(Fragment.class, PersonFragment.class, null);
-                dlMain.closeDrawer(GravityCompat.START);
+                if (!(getVisibleFragment() instanceof PersonFragment)) {
+                    enterAnotherFragment(Fragment.class, PersonFragment.class, null);
+                }
                 break;
             case R.id.tv_add_person:
-                enterAnotherFragment(Fragment.class, AddPersonFragment.class, null);
-                dlMain.closeDrawer(GravityCompat.START);
+                if (!(getVisibleFragment() instanceof AddPersonFragment)) {
+                    enterAnotherFragment(Fragment.class, AddPersonFragment.class, null);
+                }
                 break;
             case R.id.tv_record:
-                enterAnotherFragment(Fragment.class, RecordFragment.class, null);
-                dlMain.closeDrawer(GravityCompat.START);
+                if (!(getVisibleFragment() instanceof RecordFragment)) {
+                    enterAnotherFragment(Fragment.class, RecordFragment.class, null);
+                }
                 break;
             case R.id.tv_setting:
-                enterAnotherFragment(Fragment.class, SettingFragment.class, null);
-                dlMain.closeDrawer(GravityCompat.START);
+                if (!(getVisibleFragment() instanceof SettingFragment)) {
+                    enterAnotherFragment(Fragment.class, SettingFragment.class, null);
+                }
                 break;
             case R.id.tv_quit:
                 onBackPressed();
@@ -216,30 +222,15 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
         }
 
         @Override
-        public void onDeletePerson(boolean start) {
+        public void onBackstageBusy(boolean start, String message) {
             runOnUiThread(() -> {
                 if (getVisibleFragment() instanceof PersonFragment) {
                     if (start) {
-                        personFragment.showWaitDialogWithMessage("正在删除人员，请稍后");
+                        personFragment.showWaitDialogWithMessage(message);
                     } else {
                         personFragment.refreshPerson();
                         personFragment.dismissWaitDialog();
-                        ToastManager.toast(MainActivity.this, "删除人员成功", ToastManager.SUCCESS);
-                    }
-                }
-            });
-        }
-
-        @Override
-        public void onClearPerson(boolean start) {
-            runOnUiThread(() -> {
-                if (getVisibleFragment() instanceof PersonFragment) {
-                    if (start) {
-                        personFragment.showWaitDialogWithMessage("正在清除人员，请稍后");
-                    } else {
-                        personFragment.refreshPerson();
-                        personFragment.dismissWaitDialog();
-                        ToastManager.toast(MainActivity.this, "清除人员成功", ToastManager.SUCCESS);
+                        ToastManager.toast(MainActivity.this, message, ToastManager.INFO);
                     }
                 }
             });

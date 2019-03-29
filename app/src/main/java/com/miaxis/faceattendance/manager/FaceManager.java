@@ -2,6 +2,7 @@ package com.miaxis.faceattendance.manager;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -94,7 +95,7 @@ public class FaceManager {
     }
 
     /**
-     * 摄像头onPreviewFrame回调
+     * 摄像头onPreviewFrame回调，通过EventBus回调事件
      * @param data onPreviewFrame-data
      */
     public void verify(byte[] data) {
@@ -159,7 +160,7 @@ public class FaceManager {
     }
 
     /**
-     * 通过图像（文件格式）获取特征
+     * 通过图像（文件格式）获取特征，完成后发送EventBus事件
      * @param data
      * @param width
      * @param height
@@ -195,6 +196,40 @@ public class FaceManager {
     }
 
     /**
+     * 通过图像（文件格式）获取特征
+     * @param fileData
+     * @return
+     */
+    public byte[] getFeatureByFileImage(byte[] fileData) {
+        Bitmap bitmap = BitmapFactory.decodeByteArray(fileData, 0, fileData.length);
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        if ((float) width / height != 0.75f) {
+            return null;
+        }
+        bitmap.recycle();
+        byte[] rgbData = imageFileDecode(fileData, width, height);
+        if (rgbData == null) {
+            return null;
+        }
+        int[] pFaceNum = new int[] {1};
+        MXFaceInfoEx[] pFaceBuffer = makeFaceContainer(MAX_FACE_NUM);
+        boolean result = faceDetect(rgbData, width, height, pFaceNum, pFaceBuffer);
+        if (result) {
+            if (pFaceNum[0] == 1) {
+                result = faceQuality(rgbData, width, height, pFaceNum[0], pFaceBuffer);
+                if (result && pFaceBuffer[0].quality > ConfigManager.getInstance().getConfig().getQualityScore()) {
+                    byte[] feature = extractFeature(rgbData, width, height, pFaceBuffer[0]);
+                    if (feature != null) {
+                        return feature;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * 比对特征，人证比对0.7，人像比对0.8
      * @param alpha
      * @param beta
@@ -213,13 +248,13 @@ public class FaceManager {
     }
 
     /**
-     * 将640 * 480的图像按中心位置截取为386 * 480的图像
+     * 将640 * 480的图像按中心位置截取为360 * 480的图像
      */
     public Bitmap tailoringFace(Bitmap bitmap, MXFaceInfoEx mxFaceInfoEx) throws IllegalArgumentException {
-        if (mxFaceInfoEx.x < 127 || mxFaceInfoEx.x > 513) {
+        if (mxFaceInfoEx.x < 140 || mxFaceInfoEx.x > 500) {
             return null;
         }
-        return Bitmap.createBitmap(bitmap, 128, 0, 386, 480);//截取
+        return Bitmap.createBitmap(bitmap, 128, 0, 360, 480);//截取
     }
 
     /**

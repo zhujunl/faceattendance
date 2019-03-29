@@ -1,14 +1,18 @@
 package com.miaxis.faceattendance.server;
 
 import android.text.TextUtils;
+import android.util.Base64;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.miaxis.faceattendance.manager.FaceManager;
 import com.miaxis.faceattendance.model.PersonModel;
 import com.miaxis.faceattendance.model.entity.Person;
 import com.miaxis.faceattendance.model.net.ResponseEntity;
 import com.miaxis.faceattendance.service.HttpCommServerService;
+import com.miaxis.faceattendance.util.FileUtil;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +22,6 @@ public class EditPersonServer {
 
     private static final String START_EDIT_PERSON = "/miaxis/attendance/editPersonServer/startEditPerson";
     private static final String ADD_PERSON_BY_PHOTO = "/miaxis/attendance/editPersonServer/addPersonByPhoto";
-    private static final String ADD_PERSON_BY_FEATURE = "/miaxis/attendance/editPersonServer/addPersonByFeature";
     private static final String ADD_PERSON_LIST_BY_FEATURE = "/miaxis/attendance/editPersonServer/addPersonListByFeature";
     private static final String DELETE_PERSON_LIST = "/miaxis/attendance/editPersonServer/deletePersonList";
     private static final String CLEAR_PERSON = "/miaxis/attendance/editPersonServer/clearPerson";
@@ -36,8 +39,9 @@ public class EditPersonServer {
                 case START_EDIT_PERSON: //开始编辑人员
                     return handleStartEditPerson(session);
                 case ADD_PERSON_BY_PHOTO: //通过照片新增单个人员
-                case ADD_PERSON_BY_FEATURE: //通过人脸特征新增单个人员
+                    return handleAddPersonByPhoto(session);
                 case ADD_PERSON_LIST_BY_FEATURE: //通过特征批量添加人员
+                    return handleAddPersonListByFeature(session);
                 case DELETE_PERSON_LIST: //批量删除人员
                     return handleDeletePersonList(session);
                 case CLEAR_PERSON: //清除所有人员
@@ -57,36 +61,113 @@ public class EditPersonServer {
         return new ResponseEntity(AttendanceServer.SUCCESS, "开始编辑人员成功，请查看设备是否进入人员管理页面");
     }
 
-    private ResponseEntity handleDeletePersonList(NanoHTTPD.IHTTPSession session) {
-        Map<String, List<String>> parameters = session.getParameters();
-        if (parameters.get("cardNumberList") != null) {
-            String json = parameters.get("cardNumberList").get(0);
-            if (!TextUtils.isEmpty(json)) {
-                List<String> cardNumberList = new Gson().fromJson(json, new TypeToken<List<String>>() {}.getType());
-                listener.onDeletePerson(true);
-                for (String cardNumber : cardNumberList) {
-                    PersonModel.deletePersonByCardNumber(cardNumber);
+    private ResponseEntity handleAddPersonByPhoto(NanoHTTPD.IHTTPSession session) {
+        if (listener.isPersonFragmentVisible()) {
+            Map<String, List<String>> parameters = session.getParameters();
+            if (parameters.get("personData") != null) {
+                String json = parameters.get("personData").get(0).trim();
+                Person person = new Gson().fromJson(json, Person.class);
+                if (!TextUtils.isEmpty(person.getName())
+                        && !TextUtils.isEmpty(person.getCardNumber())
+                        && !TextUtils.isEmpty(person.getSex())
+                        && !TextUtils.isEmpty(person.getFacePicture())) {
+                    listener.onBackstageBusy(true, "正在提取特征");
+                    byte[] imageData = Base64.decode(person.getFacePicture(), Base64.NO_WRAP);
+                    byte[] feature = FaceManager.getInstance().getFeatureByFileImage(imageData);
+                    if (feature != null) {
+                        person.setFaceFeature(Base64.encodeToString(feature, Base64.NO_WRAP));
+                        String path = FileUtil.FACE_IMG_PATH + File.separator + person.getCardNumber() + System.currentTimeMillis() + ".jpg";
+                        FileUtil.createFileWithByte(imageData, path);
+                        person.setFacePicture(path);
+                        person.setId(null);
+                        PersonModel.savePerson(person);
+                        listener.onBackstageBusy(false, "添加人员成功");
+                        return new ResponseEntity(AttendanceServer.SUCCESS, "添加人员成功");
+                    } else {
+                        listener.onBackstageBusy(false, "添加人员失败");
+                        return new ResponseEntity(AttendanceServer.FAILED, "提取特征失败");
+                    }
                 }
-                listener.onDeletePerson(false);
-                return new ResponseEntity(AttendanceServer.SUCCESS, "删除人员成功");
             }
+            return new ResponseEntity(AttendanceServer.FAILED, "参数校验失败");
         }
-        return new ResponseEntity(AttendanceServer.FAILED, "参数校验失败");
+        return new ResponseEntity(AttendanceServer.FAILED, "请在人员管理页面进行操作");
+    }
+
+    private ResponseEntity handleAddPersonListByFeature(NanoHTTPD.IHTTPSession session) {
+        if (listener.isPersonFragmentVisible()) {
+            Map<String, List<String>> parameters = session.getParameters();
+            if (parameters.get("personDataList") != null) {
+                String json = parameters.get("personDataList").get(0).trim();
+                List<Person> personList = new Gson().fromJson(json, new TypeToken<List<Person>>() {}.getType());
+                boolean check = true;
+                for (Person person : personList) {
+                    if (TextUtils.isEmpty(person.getName())
+                            || TextUtils.isEmpty(person.getCardNumber())
+                            || TextUtils.isEmpty(person.getSex())
+                            || TextUtils.isEmpty(person.getFaceFeature())
+                            || TextUtils.isEmpty(person.getFacePicture())) {
+                        check = false;
+                        break;
+                    } else {
+                        person.setId(null);
+                    }
+                }
+                if (check) {
+                    listener.onBackstageBusy(true, "批量添加人员处理中");
+                    for (Person person : personList) {
+                        byte[] imageData = Base64.decode(person.getFacePicture(), Base64.NO_WRAP);
+                        String path = FileUtil.FACE_IMG_PATH + File.separator + person.getCardNumber() + System.currentTimeMillis() + ".jpg";
+                        FileUtil.createFileWithByte(imageData, path);
+                        person.setFacePicture(path);
+                        PersonModel.savePerson(person);
+                    }
+                    listener.onBackstageBusy(false, "批量添加人员成功");
+                    return new ResponseEntity(AttendanceServer.SUCCESS, "批量添加人员成功");
+                }
+            }
+            return new ResponseEntity(AttendanceServer.FAILED, "参数校验失败");
+        }
+        return new ResponseEntity(AttendanceServer.FAILED, "请在人员管理页面进行操作");
+    }
+
+    private ResponseEntity handleDeletePersonList(NanoHTTPD.IHTTPSession session) {
+        if (listener.isPersonFragmentVisible()) {
+            Map<String, List<String>> parameters = session.getParameters();
+            if (parameters.get("cardNumberList") != null) {
+                String json = parameters.get("cardNumberList").get(0);
+                if (!TextUtils.isEmpty(json)) {
+                    List<String> cardNumberList = new Gson().fromJson(json, new TypeToken<List<String>>() {
+                    }.getType());
+                    listener.onBackstageBusy(true, "正在删除人员");
+                    for (String cardNumber : cardNumberList) {
+                        PersonModel.deletePersonByCardNumber(cardNumber);
+                    }
+                    listener.onBackstageBusy(false, "删除人员成功");
+                    return new ResponseEntity(AttendanceServer.SUCCESS, "删除人员成功");
+                }
+            }
+            return new ResponseEntity(AttendanceServer.FAILED, "参数校验失败");
+        }
+        return new ResponseEntity(AttendanceServer.FAILED, "请在人员管理页面进行操作");
     }
 
     private ResponseEntity handleClearPerson(NanoHTTPD.IHTTPSession session) {
         if (listener.isPersonFragmentVisible()) {
-            listener.onClearPerson(true);
+            listener.onBackstageBusy(true, "正在清除人员");
             PersonModel.clearPerson();
-            listener.onClearPerson(false);
+            listener.onBackstageBusy(false, "清除人员成功");
             return new ResponseEntity(AttendanceServer.SUCCESS, "清除人员成功");
         }
         return new ResponseEntity(AttendanceServer.FAILED, "请在人员管理页面进行操作");
     }
 
     private ResponseEntity handleStopEditPerson(NanoHTTPD.IHTTPSession session) {
-        listener.onStopEditPerson();
-        return new ResponseEntity(AttendanceServer.SUCCESS, "结束编辑人员成功，请查看设备是否返回人脸考勤页面");
+        if (listener.isPersonFragmentVisible()) {
+            listener.onStopEditPerson();
+            return new ResponseEntity(AttendanceServer.SUCCESS, "结束编辑人员成功，请查看设备是否返回人脸考勤页面");
+        }
+        return new ResponseEntity(AttendanceServer.FAILED, "请在人员管理页面进行操作");
     }
 
 }

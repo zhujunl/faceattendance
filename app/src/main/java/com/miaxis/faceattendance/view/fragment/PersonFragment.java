@@ -2,10 +2,8 @@ package com.miaxis.faceattendance.view.fragment;
 
 
 import android.content.Context;
-import android.view.View;
 import android.widget.ImageView;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.miaxis.faceattendance.R;
 import com.miaxis.faceattendance.adapter.PersonAdapter;
@@ -15,11 +13,11 @@ import com.miaxis.faceattendance.manager.ToastManager;
 import com.miaxis.faceattendance.model.entity.Person;
 import com.miaxis.faceattendance.presenter.PersonPresenter;
 import com.miaxis.faceattendance.util.ValueUtil;
+import com.miaxis.faceattendance.view.listener.OnFragmentInteractionListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
