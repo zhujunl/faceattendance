@@ -33,7 +33,7 @@ public class ValueUtil {
     public static final int NO_CARD     = 134;
     public static final int mFingerDataSize = 512;
 
-    public static final int PAGESIZE = 8;
+    public static final int PAGESIZE = 16;
 
     public static final String[] FOLK = { "汉", "蒙古", "回", "藏", "维吾尔", "苗", "彝", "壮", "布依", "朝鲜",
             "满", "侗", "瑶", "白", "土家", "哈尼", "哈萨克", "傣", "黎", "傈僳", "佤", "畲",

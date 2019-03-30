@@ -32,10 +32,11 @@ public class RecordDao extends AbstractDao<Record, Long> {
         public final static Property Latitude = new Property(3, String.class, "latitude", false, "LATITUDE");
         public final static Property Longitude = new Property(4, String.class, "longitude", false, "LONGITUDE");
         public final static Property Location = new Property(5, String.class, "location", false, "LOCATION");
-        public final static Property Name = new Property(6, String.class, "name", false, "NAME");
-        public final static Property VerifyTime = new Property(7, Long.class, "verifyTime", false, "VERIFY_TIME");
-        public final static Property Score = new Property(8, String.class, "score", false, "SCORE");
-        public final static Property Upload = new Property(9, Boolean.class, "upload", false, "UPLOAD");
+        public final static Property Sex = new Property(6, String.class, "sex", false, "SEX");
+        public final static Property Name = new Property(7, String.class, "name", false, "NAME");
+        public final static Property VerifyTime = new Property(8, Long.class, "verifyTime", false, "VERIFY_TIME");
+        public final static Property Score = new Property(9, String.class, "score", false, "SCORE");
+        public final static Property Upload = new Property(10, Boolean.class, "upload", false, "UPLOAD");
     }
 
     private final DateConverter verifyTimeConverter = new DateConverter();
@@ -58,10 +59,11 @@ public class RecordDao extends AbstractDao<Record, Long> {
                 "\"LATITUDE\" TEXT," + // 3: latitude
                 "\"LONGITUDE\" TEXT," + // 4: longitude
                 "\"LOCATION\" TEXT," + // 5: location
-                "\"NAME\" TEXT," + // 6: name
-                "\"VERIFY_TIME\" INTEGER," + // 7: verifyTime
-                "\"SCORE\" TEXT," + // 8: score
-                "\"UPLOAD\" INTEGER);"); // 9: upload
+                "\"SEX\" TEXT," + // 6: sex
+                "\"NAME\" TEXT," + // 7: name
+                "\"VERIFY_TIME\" INTEGER," + // 8: verifyTime
+                "\"SCORE\" TEXT," + // 9: score
+                "\"UPLOAD\" INTEGER);"); // 10: upload
     }
 
     /** Drops the underlying database table. */
@@ -104,24 +106,29 @@ public class RecordDao extends AbstractDao<Record, Long> {
             stmt.bindString(6, location);
         }
  
+        String sex = entity.getSex();
+        if (sex != null) {
+            stmt.bindString(7, sex);
+        }
+ 
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(7, name);
+            stmt.bindString(8, name);
         }
  
         String verifyTime = entity.getVerifyTime();
         if (verifyTime != null) {
-            stmt.bindLong(8, verifyTimeConverter.convertToDatabaseValue(verifyTime));
+            stmt.bindLong(9, verifyTimeConverter.convertToDatabaseValue(verifyTime));
         }
  
         String score = entity.getScore();
         if (score != null) {
-            stmt.bindString(9, score);
+            stmt.bindString(10, score);
         }
  
         Boolean upload = entity.getUpload();
         if (upload != null) {
-            stmt.bindLong(10, upload ? 1L: 0L);
+            stmt.bindLong(11, upload ? 1L: 0L);
         }
     }
 
@@ -159,24 +166,29 @@ public class RecordDao extends AbstractDao<Record, Long> {
             stmt.bindString(6, location);
         }
  
+        String sex = entity.getSex();
+        if (sex != null) {
+            stmt.bindString(7, sex);
+        }
+ 
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(7, name);
+            stmt.bindString(8, name);
         }
  
         String verifyTime = entity.getVerifyTime();
         if (verifyTime != null) {
-            stmt.bindLong(8, verifyTimeConverter.convertToDatabaseValue(verifyTime));
+            stmt.bindLong(9, verifyTimeConverter.convertToDatabaseValue(verifyTime));
         }
  
         String score = entity.getScore();
         if (score != null) {
-            stmt.bindString(9, score);
+            stmt.bindString(10, score);
         }
  
         Boolean upload = entity.getUpload();
         if (upload != null) {
-            stmt.bindLong(10, upload ? 1L: 0L);
+            stmt.bindLong(11, upload ? 1L: 0L);
         }
     }
 
@@ -194,10 +206,11 @@ public class RecordDao extends AbstractDao<Record, Long> {
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // latitude
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // longitude
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // location
-            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // name
-            cursor.isNull(offset + 7) ? null : verifyTimeConverter.convertToEntityProperty(cursor.getLong(offset + 7)), // verifyTime
-            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // score
-            cursor.isNull(offset + 9) ? null : cursor.getShort(offset + 9) != 0 // upload
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // sex
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // name
+            cursor.isNull(offset + 8) ? null : verifyTimeConverter.convertToEntityProperty(cursor.getLong(offset + 8)), // verifyTime
+            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // score
+            cursor.isNull(offset + 10) ? null : cursor.getShort(offset + 10) != 0 // upload
         );
         return entity;
     }
@@ -210,10 +223,11 @@ public class RecordDao extends AbstractDao<Record, Long> {
         entity.setLatitude(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
         entity.setLongitude(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
         entity.setLocation(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
-        entity.setName(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
-        entity.setVerifyTime(cursor.isNull(offset + 7) ? null : verifyTimeConverter.convertToEntityProperty(cursor.getLong(offset + 7)));
-        entity.setScore(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
-        entity.setUpload(cursor.isNull(offset + 9) ? null : cursor.getShort(offset + 9) != 0);
+        entity.setSex(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
+        entity.setName(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
+        entity.setVerifyTime(cursor.isNull(offset + 8) ? null : verifyTimeConverter.convertToEntityProperty(cursor.getLong(offset + 8)));
+        entity.setScore(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
+        entity.setUpload(cursor.isNull(offset + 10) ? null : cursor.getShort(offset + 10) != 0);
      }
     
     @Override

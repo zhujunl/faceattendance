@@ -20,7 +20,8 @@
 
     </RelativeLayout>
 
-    <ScrollView
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/srl_person"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -30,6 +31,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-    </ScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </LinearLayout>

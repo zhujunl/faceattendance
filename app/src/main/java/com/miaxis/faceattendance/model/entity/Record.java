@@ -19,21 +19,23 @@ public class Record {
     private String latitude;
     private String longitude;
     private String location;
+    private String sex;
     private String name;
     @Convert(converter = DateConverter.class, columnType = Long.class)
     private String verifyTime;
     private String score;
     private Boolean upload;
-    @Generated(hash = 1639416128)
+    @Generated(hash = 1747385493)
     public Record(Long id, String cardNumber, String facePicture, String latitude,
-            String longitude, String location, String name, String verifyTime,
-            String score, Boolean upload) {
+            String longitude, String location, String sex, String name,
+            String verifyTime, String score, Boolean upload) {
         this.id = id;
         this.cardNumber = cardNumber;
         this.facePicture = facePicture;
         this.latitude = latitude;
         this.longitude = longitude;
         this.location = location;
+        this.sex = sex;
         this.name = name;
         this.verifyTime = verifyTime;
         this.score = score;
@@ -50,6 +52,7 @@ public class Record {
         setLatitude(builder.latitude);
         setLongitude(builder.longitude);
         setLocation(builder.location);
+        setSex(builder.sex);
         setName(builder.name);
         setVerifyTime(builder.verifyTime);
         setScore(builder.score);
@@ -92,6 +95,12 @@ public class Record {
     public void setLocation(String location) {
         this.location = location;
     }
+    public String getSex() {
+        return this.sex;
+    }
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
     public String getName() {
         return this.name;
     }
@@ -124,6 +133,7 @@ public class Record {
         private String latitude;
         private String longitude;
         private String location;
+        private String sex;
         private String name;
         private String verifyTime;
         private String score;
@@ -159,6 +169,11 @@ public class Record {
 
         public Builder location(String val) {
             location = val;
+            return this;
+        }
+
+        public Builder sex(String val) {
+            sex = val;
             return this;
         }
 

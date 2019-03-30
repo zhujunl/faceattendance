@@ -54,13 +54,14 @@ public class RecordServer {
             int pageSize = Integer.valueOf(parameters.get("pageSize").get(0));
             if (pageNum > 0 && pageSize > 0) {
                 String name = parameters.get("name") != null ? parameters.get("name").get(0) : "";
+                String sex = parameters.get("sex") != null ? parameters.get("sex").get(0) : "";
                 String cardNumber = parameters.get("cardNumber") != null ? parameters.get("cardNumber").get(0) : "";
                 String startDate = parameters.get("startDate") != null ? parameters.get("startDate").get(0) : "";
                 String endDate = parameters.get("endDate") != null ? parameters.get("endDate").get(0) : "";
                 Boolean upload = parameters.get("upload") != null ? Boolean.valueOf(parameters.get("upload").get(0)) : null;
                 if ((TextUtils.isEmpty(startDate) && TextUtils.isEmpty(endDate))
                         || (ValueUtil.isValidDate(startDate) && ValueUtil.isValidDate(endDate))) {
-                    List<Record> recordList = RecordModel.queryRecord(pageNum, pageSize, name, cardNumber, startDate, endDate, upload);
+                    List<Record> recordList = RecordModel.queryRecord(pageNum, pageSize, name, sex, cardNumber, startDate, endDate, upload);
                     for (Record record : recordList) {
                         record.setFacePicture(FileUtil.pathToBase64(record.getFacePicture()));
                     }

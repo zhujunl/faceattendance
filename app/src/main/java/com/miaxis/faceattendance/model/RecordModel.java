@@ -41,10 +41,17 @@ public class RecordModel {
         FileUtil.deleteDirectoryFile(new File(FileUtil.IMG_PATH));
     }
 
-    public static List<Record> queryRecord(int pageNum, int pageSize, String name, String cardNumber, String startDate, String endDate, Boolean upload) throws ParseException {
+    public static List<Record> queryRecord(int pageNum, int pageSize, String name, String sex, String cardNumber, String startDate, String endDate, Boolean upload) throws ParseException {
         QueryBuilder<Record> queryBuilder = DaoManager.getInstance().getDaoSession().getRecordDao().queryBuilder();
         if (!TextUtils.isEmpty(name)) {
             queryBuilder.where(RecordDao.Properties.Name.eq(name));
+        }
+        if (!TextUtils.isEmpty(sex)) {
+            if (TextUtils.equals(sex, "男")) {
+                queryBuilder.where(RecordDao.Properties.Sex.eq("男"));
+            } else if (TextUtils.equals(sex, "女")) {
+                queryBuilder.where(RecordDao.Properties.Sex.eq("女"));
+            }
         }
         if (!TextUtils.isEmpty(cardNumber)) {
             queryBuilder.where(RecordDao.Properties.CardNumber.eq(cardNumber));

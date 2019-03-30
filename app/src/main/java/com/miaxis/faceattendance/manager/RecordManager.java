@@ -54,6 +54,7 @@ public class RecordManager {
                     .longitude(String.valueOf(AmapManager.getInstance().getaMapLocation().getLongitude()))
                     .location(AmapManager.getInstance().getaMapLocation().getAddress())
                     .name(person.getName())
+                    .sex(person.getSex())
                     .verifyTime(time)
                     .score(String.valueOf(event.getScore()))
                     .upload(Boolean.FALSE)

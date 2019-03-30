@@ -40,8 +40,9 @@ public class RecordAdapter<T> extends RecyclerView.Adapter<RecordAdapter.MyViewH
     public void onBindViewHolder(@NonNull final RecordAdapter.MyViewHolder holder, int position) {
         Record record = (Record) dataList.get(position);
         holder.tvRecordName.setText(record.getName());
+        holder.tvRecordSex.setText(record.getSex());
         holder.tvRecordCardNumber.setText(record.getCardNumber());
-        holder.tvRecordResult.setText("通过");
+        holder.tvRecordStatus.setText(record.getUpload() ? "已上传" : "未上传");
         holder.tvRecordOpdate.setText(record.getVerifyTime());
         holder.llItem.setOnClickListener(v -> onItemClickListener.onItemClick(holder.llItem, holder.getLayoutPosition()));
     }
@@ -75,10 +76,12 @@ public class RecordAdapter<T> extends RecyclerView.Adapter<RecordAdapter.MyViewH
 
         @BindView(R.id.tv_record_name)
         TextView tvRecordName;
+        @BindView(R.id.tv_record_sex)
+        TextView tvRecordSex;
         @BindView(R.id.tv_record_card_number)
         TextView tvRecordCardNumber;
-        @BindView(R.id.tv_record_result)
-        TextView tvRecordResult;
+        @BindView(R.id.tv_record_status)
+        TextView tvRecordStatus;
         @BindView(R.id.tv_record_opdate)
         TextView tvRecordOpdate;
         @BindView(R.id.ll_item)

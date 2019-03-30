@@ -96,6 +96,9 @@ public class AddPersonFragment extends BaseFragment {
     @Override
     protected void initView() {
         initDialog();
+        String[] arr = getResources().getStringArray(R.array.sex);
+        ArrayAdapter<String> sexAdapter = new ArrayAdapter<>(getContext(), R.layout.item_spinner_start, R.id.tv_spinner, arr);
+        spinnerSex.setAdapter(sexAdapter);
         tvTakePicture.setOnClickListener(v -> {
             if (TextUtils.equals(tvTakePicture.getText().toString(), "点击拍照")) {
                 CameraManager.getInstance().takePicture((data, camera) -> {
@@ -282,23 +285,5 @@ public class AddPersonFragment extends BaseFragment {
         spinnerSex.setSelection(0);
         person = null;
     }
-
-//    ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, NomProjets) {
-//        @Override
-//        public View getView(int position, View convertView, ViewGroup parent) {
-//            return setCentered(super.getView(position, convertView, parent));
-//        }
-//
-//        @Override
-//        public View getDropDownView(int position, View convertView, ViewGroup parent) {
-//            return setCentered(super.getDropDownView(position, convertView, parent));
-//        }
-//
-//        private View setCentered(View view) {
-//            TextView textView = view.findViewById(android.R.id.text1);
-//            textView.setGravity(Gravity.CENTER);
-//            return view;
-//        }
-//    };
 
 }

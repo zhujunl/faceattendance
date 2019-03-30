@@ -21,6 +21,7 @@ import java.util.List;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import butterknife.BindView;
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
@@ -31,6 +32,8 @@ public class PersonFragment extends BaseFragment implements PersonContract.View 
 
     @BindView(R.id.iv_add_person)
     ImageView ivAddPerson;
+    @BindView(R.id.srl_person)
+    SwipeRefreshLayout srlPerson;
     @BindView(R.id.rv_person)
     RecyclerView rvPerson;
 
@@ -86,6 +89,7 @@ public class PersonFragment extends BaseFragment implements PersonContract.View 
                 presenter.loadPerson(currentPage, ValueUtil.PAGESIZE);
             }
         };
+        srlPerson.setOnRefreshListener(() -> srlPerson.setRefreshing(false));
         rvPerson.addOnScrollListener(gridEndLessOnScrollListener);
         presenter.loadPerson(1, ValueUtil.PAGESIZE);
     }

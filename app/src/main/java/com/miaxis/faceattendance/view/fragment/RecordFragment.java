@@ -20,6 +20,7 @@ import java.util.List;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import butterknife.BindView;
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
@@ -30,6 +31,8 @@ public class RecordFragment extends BaseFragment implements RecordContract.View 
 
     @BindView(R.id.iv_search)
     ImageView ivSearch;
+    @BindView(R.id.srl_record)
+    SwipeRefreshLayout srlRecord;
     @BindView(R.id.rv_record)
     RecyclerView rvRecord;
 
@@ -72,6 +75,7 @@ public class RecordFragment extends BaseFragment implements RecordContract.View 
         rvRecord.addOnScrollListener(endLessOnScrollListener);
         recordAdapter.setOnItemClickListener((view, position) -> {
         });
+        srlRecord.setOnRefreshListener(() -> srlRecord.setRefreshing(false));
         presenter.loadRecord(0, ValueUtil.PAGESIZE);
     }
 
