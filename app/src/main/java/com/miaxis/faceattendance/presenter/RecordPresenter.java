@@ -25,9 +25,9 @@ public class RecordPresenter extends BasePresenter<FragmentEvent> implements Rec
     }
 
     @Override
-    public void loadRecord(int pageNum, int pageSize) {
+    public void loadRecord(int pageNum, int pageSize, String name, String sex, String cardNumber, Boolean upload, String startDate, String endDate) {
         Observable.create((ObservableOnSubscribe<List<Record>>)
-                emitter -> emitter.onNext(RecordModel.loadRecordList(pageNum, pageSize)))
+                emitter -> emitter.onNext(RecordModel.queryRecord(pageNum, pageSize, name, sex, cardNumber, startDate, endDate, upload)))
                 .subscribeOn(Schedulers.io())
                 .compose(getProvider().bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())

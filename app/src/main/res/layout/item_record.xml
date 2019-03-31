@@ -48,7 +48,7 @@
         <TextView
             android:id="@+id/tv_record_status"
             style="@style/record_item"
-            android:layout_weight="1"
+            android:layout_weight="0.5"
             android:layout_width="0dp"
             android:layout_height="match_parent" />
 

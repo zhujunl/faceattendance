@@ -10,6 +10,6 @@ public interface RecordContract {
     }
 
     interface Presenter extends BaseContract.Presenter {
-        void loadRecord(int pageNum, int pageSize);
+        void loadRecord(int pageNum, int pageSize, String name, String sex, String cardNumber, Boolean upload, String startDate, String endDate);
     }
 }

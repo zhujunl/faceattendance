@@ -44,7 +44,7 @@ public class RecordModel {
     public static List<Record> queryRecord(int pageNum, int pageSize, String name, String sex, String cardNumber, String startDate, String endDate, Boolean upload) throws ParseException {
         QueryBuilder<Record> queryBuilder = DaoManager.getInstance().getDaoSession().getRecordDao().queryBuilder();
         if (!TextUtils.isEmpty(name)) {
-            queryBuilder.where(RecordDao.Properties.Name.eq(name));
+            queryBuilder.where(RecordDao.Properties.Name.like("%" + name + "%"));
         }
         if (!TextUtils.isEmpty(sex)) {
             if (TextUtils.equals(sex, "男")) {
@@ -54,7 +54,7 @@ public class RecordModel {
             }
         }
         if (!TextUtils.isEmpty(cardNumber)) {
-            queryBuilder.where(RecordDao.Properties.CardNumber.eq(cardNumber));
+            queryBuilder.where(RecordDao.Properties.CardNumber.like("%" + cardNumber + "%"));
         }
         if (!TextUtils.isEmpty(startDate) && !TextUtils.isEmpty(endDate)) {
             queryBuilder.where(RecordDao.Properties.VerifyTime.ge(ValueUtil.simpleDateFormat.parse(startDate).getTime()));
