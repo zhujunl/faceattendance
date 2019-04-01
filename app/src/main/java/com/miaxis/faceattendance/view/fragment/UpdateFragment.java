@@ -64,7 +64,7 @@ public class UpdateFragment extends BaseFragment {
 
     @Override
     protected void initData() {
-        downloadFile(url.getPath(), FileUtil.MAIN_PATH + File.separator + url.getFile());
+        downloadFile(url.toString(), FileUtil.MAIN_PATH + File.separator + url.getFile());
     }
 
     @Override
@@ -72,7 +72,7 @@ public class UpdateFragment extends BaseFragment {
         btnBack.setOnClickListener(v -> mListener.enterAnotherFragment(UpdateFragment.class, VerifyFragment.class, null));
         btnRetry.setOnClickListener(v -> {
             llDownloadFailed.setVisibility(View.INVISIBLE);
-            downloadFile(url.getPath(), FileUtil.MAIN_PATH + File.separator + url.getFile());
+            downloadFile(url.toString(), FileUtil.MAIN_PATH + File.separator + url.toString().substring(url.toString().lastIndexOf('/') + 1));
         });
     }
 
@@ -171,7 +171,7 @@ public class UpdateFragment extends BaseFragment {
     }
 
     private void onDownloadFinish(String message) {
-        ToastManager.toast(getContext(), message, ToastManager.SUCCESS);
+        ToastManager.toast(getContext(), message, ToastManager.INFO);
         llDownloadFailed.setVisibility(View.VISIBLE);
         connectCountDown(15);
     }

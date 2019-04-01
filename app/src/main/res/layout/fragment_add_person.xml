@@ -95,6 +95,7 @@
 
                 <EditText
                     android:id="@+id/et_name"
+                    android:singleLine="true"
                     android:paddingStart="20dp"
                     android:layout_weight="1"
                     android:layout_width="0dp"
@@ -141,6 +142,7 @@
 
                 <EditText
                     android:id="@+id/et_card_number"
+                    android:singleLine="true"
                     android:paddingStart="20dp"
                     android:layout_weight="1"
                     android:layout_width="0dp"

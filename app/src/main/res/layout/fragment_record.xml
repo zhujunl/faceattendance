@@ -44,6 +44,7 @@
             <EditText
                 android:id="@+id/et_name"
                 style="@style/record_item"
+                android:singleLine="true"
                 android:hint="请输入姓名"
                 android:background="@null"
                 android:layout_weight="1"
@@ -71,6 +72,7 @@
                 android:id="@+id/et_card_number"
                 android:hint="请输入证件号码"
                 style="@style/record_item"
+                android:singleLine="true"
                 android:background="@null"
                 android:layout_weight="1"
                 android:layout_width="0dp"
