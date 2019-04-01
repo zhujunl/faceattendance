@@ -17,6 +17,7 @@ import com.miaxis.faceattendance.app.FaceAttendanceApp;
 import com.miaxis.faceattendance.manager.ToastManager;
 import com.miaxis.faceattendance.service.HttpCommServerService;
 import com.miaxis.faceattendance.util.ValueUtil;
+import com.miaxis.faceattendance.view.fragment.UpdateFragment;
 import com.miaxis.faceattendance.view.listener.OnLimitClickHelper;
 import com.miaxis.faceattendance.view.listener.OnLimitClickListener;
 import com.miaxis.faceattendance.view.fragment.AddPersonFragment;
@@ -25,6 +26,8 @@ import com.miaxis.faceattendance.view.fragment.PersonFragment;
 import com.miaxis.faceattendance.view.fragment.RecordFragment;
 import com.miaxis.faceattendance.view.fragment.SettingFragment;
 import com.miaxis.faceattendance.view.fragment.VerifyFragment;
+
+import java.net.URL;
 
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -68,6 +71,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     private AddPersonFragment addPersonFragment;
     private RecordFragment recordFragment;
     private SettingFragment settingFragment;
+    private UpdateFragment updateFragment;
 
     public static Intent newInstance(Context context) {
         return new Intent(context, MainActivity.class);
@@ -121,6 +125,8 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
             fragmentTransaction.detach(settingFragment);
         } else if (TextUtils.equals(removeClass.getName(), RecordFragment.class.getName())) {
             fragmentTransaction.detach(recordFragment);
+        } else if (TextUtils.equals(removeClass.getName(), UpdateFragment.class.getName())) {
+            fragmentTransaction.detach(updateFragment);
         } else if (TextUtils.equals(removeClass.getName(), Fragment.class.getName())) {
             getSupportFragmentManager().popBackStackImmediate(null, 1);
         }
@@ -134,6 +140,15 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
             fragmentTransaction.replace(R.id.fl_main, recordFragment = RecordFragment.newInstance());
         } else if (TextUtils.equals(addClass.getName(), SettingFragment.class.getName())) {
             fragmentTransaction.replace(R.id.fl_main, settingFragment = SettingFragment.newInstance());
+        } else if (TextUtils.equals(addClass.getName(), UpdateFragment.class.getName())) {
+            if (bundle != null) {
+                URL url = (URL) bundle.getSerializable("url");
+                fragmentTransaction.replace(R.id.fl_main, updateFragment = UpdateFragment.newInstance(url));
+            } else {
+                ToastManager.toast(this, "发现错误数据，缺少Bundle", ToastManager.ERROR);
+                enterAnotherFragment(Fragment.class, VerifyFragment.class, null);
+                return;
+            }
         }
         fragmentTransaction.commit();
     }
@@ -212,8 +227,8 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
         }
 
         @Override
-        public void onStartEditPerson() {
-            runOnUiThread(() -> enterAnotherFragment(Fragment.class, PersonFragment.class, null));
+        public void onEnterFragment(Class<? extends Fragment> fragmentClass, Bundle bundle) {
+            runOnUiThread(() -> enterAnotherFragment(Fragment.class, fragmentClass, bundle));
         }
 
         @Override
@@ -234,11 +249,6 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
                     }
                 }
             });
-        }
-
-        @Override
-        public void onStopEditPerson() {
-            runOnUiThread(() -> enterAnotherFragment(Fragment.class, VerifyFragment.class, null));
         }
     };
 

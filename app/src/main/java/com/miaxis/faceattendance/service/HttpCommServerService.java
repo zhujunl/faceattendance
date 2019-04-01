@@ -3,6 +3,7 @@ package com.miaxis.faceattendance.service;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -10,6 +11,7 @@ import com.miaxis.faceattendance.server.AttendanceServer;
 
 import java.io.IOException;
 
+import androidx.fragment.app.Fragment;
 import fi.iki.elonen.NanoHTTPD;
 
 public class HttpCommServerService extends Service {
@@ -40,10 +42,9 @@ public class HttpCommServerService extends Service {
 
     public interface OnServerServiceListener {
         void onServerStart(boolean result);
-        void onStartEditPerson();
+        void onEnterFragment(Class<? extends Fragment> fragmentClass, Bundle bundle);
         boolean isPersonFragmentVisible();
         void onBackstageBusy(boolean start, String message);
-        void onStopEditPerson();
     }
 
     public void setOnServerServiceListener(OnServerServiceListener onServerServiceListener) {

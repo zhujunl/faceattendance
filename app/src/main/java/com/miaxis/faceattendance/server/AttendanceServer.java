@@ -28,7 +28,7 @@ public class AttendanceServer extends NanoHTTPD {
 
     public AttendanceServer(int port, HttpCommServerService.OnServerServiceListener listener) {
         super(port);
-        basisServer = new BasisServer();
+        basisServer = new BasisServer(listener);
         personServer = new PersonServer();
         recordServer = new RecordServer();
         editPersonServer = new EditPersonServer(listener);

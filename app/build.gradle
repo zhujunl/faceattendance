@@ -67,6 +67,7 @@ dependencies {
     implementation 'com.afollestad.material-dialogs:commons:0.9.6.0'
     implementation 'jp.wasabeef:recyclerview-animators:3.0.0'
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
+    implementation 'com.liulishuo.filedownloader:library:1.7.5'
     implementation files('src/main/libs/MiaxisFaceApiV4.3.jar')
     implementation files('src/main/libs/smdt.jar')
     implementation files('src/main/libs/IDCard_HID_Driver.jar')
@@ -75,7 +76,7 @@ dependencies {
 }
 
 greendao {
-    schemaVersion 7
+    schemaVersion 8
     daoPackage 'com.miaxis.faceattendance.model.local.greenDao.gen'
     targetGenDir 'src/main/java'
 }

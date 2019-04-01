@@ -13,14 +13,16 @@ public class Config {
     private String password;
     private float qualityScore;
     private float verifyScore;
-    @Generated(hash = 329258956)
+    private int recordClearThreshold;
+    @Generated(hash = 617149812)
     public Config(Long id, String uploadUrl, String password, float qualityScore,
-            float verifyScore) {
+            float verifyScore, int recordClearThreshold) {
         this.id = id;
         this.uploadUrl = uploadUrl;
         this.password = password;
         this.qualityScore = qualityScore;
         this.verifyScore = verifyScore;
+        this.recordClearThreshold = recordClearThreshold;
     }
     @Generated(hash = 589037648)
     public Config() {
@@ -32,6 +34,7 @@ public class Config {
         setPassword(builder.password);
         setQualityScore(builder.qualityScore);
         setVerifyScore(builder.verifyScore);
+        setRecordClearThreshold(builder.recordClearThreshold);
     }
 
     public Long getId() {
@@ -64,6 +67,12 @@ public class Config {
     public void setVerifyScore(float verifyScore) {
         this.verifyScore = verifyScore;
     }
+    public int getRecordClearThreshold() {
+        return this.recordClearThreshold;
+    }
+    public void setRecordClearThreshold(int recordClearThreshold) {
+        this.recordClearThreshold = recordClearThreshold;
+    }
 
     public static final class Builder {
         private Long id;
@@ -71,6 +80,7 @@ public class Config {
         private String password;
         private float qualityScore;
         private float verifyScore;
+        private int recordClearThreshold;
 
         public Builder() {
         }
@@ -97,6 +107,11 @@ public class Config {
 
         public Builder verifyScore(float val) {
             verifyScore = val;
+            return this;
+        }
+
+        public Builder recordClearThreshold(int val) {
+            recordClearThreshold = val;
             return this;
         }
 

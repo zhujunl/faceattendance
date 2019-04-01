@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.fragment.UpdateFragment">
+
+    <androidx.core.widget.ContentLoadingProgressBar
+        android:id="@+id/clpg_download"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:progressDrawable="@drawable/progress_bar"
+        android:max="100"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:id="@+id/ll_download_failed"
+        android:visibility="invisible"
+        android:layout_below="@id/clpg_download"
+        android:layout_marginTop="100dp"
+        android:layout_marginStart="200dp"
+        android:layout_marginEnd="200dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btn_back"
+            android:text="返回首页"
+            android:background="@drawable/btn_bg_circle"
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <Space
+            android:layout_weight="0.5"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+
+        <Button
+            android:id="@+id/btn_retry"
+            android:text="重试"
+            android:background="@drawable/btn_bg_circle"
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -28,6 +28,7 @@ public class ValueUtil {
     public static final String DEFAULT_PASSWORD = "666666";
     public static final float DEFAULT_QUALITY_SCORE = 75f;
     public static final float DEFAULT_VERIFY_SCORE = 0.8f;
+    public static final int DEFAULT_RECORD_CLEAR_THRESHOLD = 500;
 
     public static final int GET_CARD_ID = 0;
     public static final int NO_CARD     = 134;

@@ -11,6 +11,8 @@ import com.miaxis.faceattendance.model.entity.Person;
 import com.miaxis.faceattendance.model.net.ResponseEntity;
 import com.miaxis.faceattendance.service.HttpCommServerService;
 import com.miaxis.faceattendance.util.FileUtil;
+import com.miaxis.faceattendance.view.fragment.PersonFragment;
+import com.miaxis.faceattendance.view.fragment.VerifyFragment;
 
 import java.io.File;
 import java.util.List;
@@ -57,7 +59,7 @@ public class EditPersonServer {
     }
 
     private ResponseEntity handleStartEditPerson(NanoHTTPD.IHTTPSession session) {
-        listener.onStartEditPerson();
+        listener.onEnterFragment(PersonFragment.class, null);
         return new ResponseEntity(AttendanceServer.SUCCESS, "开始编辑人员成功，请查看设备是否进入人员管理页面");
     }
 
@@ -164,7 +166,7 @@ public class EditPersonServer {
 
     private ResponseEntity handleStopEditPerson(NanoHTTPD.IHTTPSession session) {
         if (listener.isPersonFragmentVisible()) {
-            listener.onStopEditPerson();
+            listener.onEnterFragment(VerifyFragment.class, null);
             return new ResponseEntity(AttendanceServer.SUCCESS, "结束编辑人员成功，请查看设备是否返回人脸考勤页面");
         }
         return new ResponseEntity(AttendanceServer.FAILED, "请在人员管理页面进行操作");

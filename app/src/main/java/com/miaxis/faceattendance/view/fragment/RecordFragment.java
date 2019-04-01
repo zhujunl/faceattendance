@@ -116,8 +116,7 @@ public class RecordFragment extends BaseFragment implements RecordContract.View 
             }
         };
         rvRecord.addOnScrollListener(endLessOnScrollListener);
-        recordAdapter.setOnItemClickListener((view, position) -> {
-        });
+        recordAdapter.setOnItemClickListener((view, position) -> RecordDialogFragment.newInstance(recordAdapter.getData(position)).show(getChildFragmentManager(), "RecordDialogFragment"));
         srlRecord.setOnRefreshListener(() -> srlRecord.setRefreshing(false));
         presenter.loadRecord(0, ValueUtil.PAGESIZE, nameCriteria, sexCriteria, cardNumberCriteria, uploadCriteria, startDateCriteria, endDateCriteria);
     }

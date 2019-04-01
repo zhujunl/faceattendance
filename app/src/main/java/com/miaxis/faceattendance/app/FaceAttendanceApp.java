@@ -3,6 +3,7 @@ package com.miaxis.faceattendance.app;
 import android.app.Application;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import com.liulishuo.filedownloader.FileDownloader;
 import com.miaxis.faceattendance.MyEventBusIndex;
 import com.miaxis.faceattendance.event.InitFaceEvent;
 import com.miaxis.faceattendance.manager.AmapManager;
@@ -48,6 +49,7 @@ public class FaceAttendanceApp extends Application {
 
     public void initApplicationAsync() {
         FileUtil.initDirectory();
+        FileDownloader.setup(this);
         DaoManager.getInstance().initDbHelper(getApplicationContext(), "FaceAttendance.db");
         TTSManager.getInstance().init(getApplicationContext());
         AmapManager.getInstance().startLocation(this);

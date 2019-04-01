@@ -70,6 +70,7 @@ public class RecordManager {
                     record.setFacePicture(imagePath);
                     RecordModel.saveRecord(record);
                     uploadRecord(record);
+                    clearRecordByThreshold();
                 }, throwable -> Log.e("asd", "RecordManager::saveRecord" + throwable.getMessage()));
     }
 
@@ -93,6 +94,13 @@ public class RecordManager {
                         record.setUpload(Boolean.TRUE);
                         RecordModel.updateRecord(record);
                     }, Throwable::printStackTrace);
+        }
+    }
+
+    private void clearRecordByThreshold() {
+        long recordCount = RecordModel.getRecordCount();
+        if (recordCount > ConfigManager.getInstance().getConfig().getRecordClearThreshold()) {
+            RecordModel.clearRecord((int) recordCount / 2);
         }
     }
 

@@ -24,14 +24,6 @@ public class RecordModel {
         DaoManager.getInstance().getDaoSession().getRecordDao().update(record);
     }
 
-    public static List<Record> loadRecordList(int pageNum, int pageSize) {
-        return DaoManager.getInstance().getDaoSession().getRecordDao().queryBuilder()
-                .orderDesc(RecordDao.Properties.VerifyTime)
-                .offset((pageNum - 1) * pageSize)
-                .limit(pageSize)
-                .list();
-    }
-
     public static long getRecordCount() {
         return DaoManager.getInstance().getDaoSession().getRecordDao().count();
     }
@@ -67,6 +59,17 @@ public class RecordModel {
                 .offset((pageNum - 1) * pageSize)
                 .limit(pageSize)
                 .list();
+    }
+
+    public static void clearRecord(int limit) {
+        List<Record> recordList = DaoManager.getInstance().getDaoSession().getRecordDao().queryBuilder()
+                .orderAsc(RecordDao.Properties.VerifyTime)
+                .limit(limit)
+                .list();
+        for (Record record : recordList) {
+            FileUtil.deletefile(record.getFacePicture());
+        }
+        DaoManager.getInstance().getDaoSession().getRecordDao().deleteInTx(recordList);
     }
 
 }

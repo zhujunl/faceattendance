@@ -2,6 +2,7 @@ package com.miaxis.faceattendance.server;
 
 import android.app.AlarmManager;
 import android.content.Context;
+import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.miaxis.faceattendance.app.FaceAttendanceApp;
@@ -9,8 +10,12 @@ import com.miaxis.faceattendance.manager.ConfigManager;
 import com.miaxis.faceattendance.model.ConfigModel;
 import com.miaxis.faceattendance.model.entity.Config;
 import com.miaxis.faceattendance.model.net.ResponseEntity;
+import com.miaxis.faceattendance.service.HttpCommServerService;
 import com.miaxis.faceattendance.util.ValueUtil;
+import com.miaxis.faceattendance.view.fragment.UpdateFragment;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
@@ -27,10 +32,14 @@ public class BasisServer {
     private static final String SET_SYSTEM_TIME = "/miaxis/attendance/baseServer/setSystemTime";
     private static final String SET_RECORD_UPLOAD_URL = "/miaxis/attendance/baseServer/setRecordUploadUrl";
     private static final String SET_VERIFY_THRESHOLD = "/miaxis/attendance/baseServer/setVerifyThreshold";
+    private static final String SET_RECORD_CLEAR_THRESHOLD = "/miaxis/attendance/baseServer/setRecordClearThreshold";
     private static final String GET_VERSION_NUMBER = "/miaxis/attendance/baseServer/getVesionNumber";
     private static final String VERSION_UPDATE = "/miaxis/attendance/baseServer/versionUpdate";
 
-    public BasisServer() {
+    private HttpCommServerService.OnServerServiceListener listener;
+
+    public BasisServer(HttpCommServerService.OnServerServiceListener listener) {
+        this.listener = listener;
     }
 
     public ResponseEntity handleRequest(NanoHTTPD.IHTTPSession session) {
@@ -48,9 +57,12 @@ public class BasisServer {
                     return handleSetRecordUploadUrl(session);
                 case SET_VERIFY_THRESHOLD: //设置比对阈值
                     return handleSetVerifyThreshold(session);
+                case SET_RECORD_CLEAR_THRESHOLD:
+                    return handleSetRecordClearThreshold(session);
                 case GET_VERSION_NUMBER: //获取版本号
                     return handleGetVersionNumber(session);
                 case VERSION_UPDATE: //版本更新
+                    return handleVersionUpdate(session);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -145,9 +157,50 @@ public class BasisServer {
         return new ResponseEntity(AttendanceServer.FAILED, "参数校验错误");
     }
 
+    private ResponseEntity handleSetRecordClearThreshold(NanoHTTPD.IHTTPSession session) {
+        Map<String, List<String>> parameters = session.getParameters();
+        if (parameters.get("recordClearThreshold") != null) {
+            String recordClearThreshold = parameters.get("recordClearThreshold").get(0);
+            int threshold = 0;
+            try {
+                threshold = Integer.valueOf(recordClearThreshold);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+            if (threshold >= 100 && threshold <= 1000) {
+                Config config = ConfigManager.getInstance().getConfig();
+                config.setRecordClearThreshold(threshold);
+                ConfigModel.saveConfig(config);
+                ConfigManager.getInstance().setConfig(config);
+                return new ResponseEntity(AttendanceServer.SUCCESS, "设置日志清除阈值成功");
+            }
+        }
+        return new ResponseEntity(AttendanceServer.FAILED, "参数校验错误");
+    }
+
     private ResponseEntity handleGetVersionNumber(NanoHTTPD.IHTTPSession session) {
         String version = ValueUtil.getCurVersion(FaceAttendanceApp.getInstance());
         return new ResponseEntity<>(AttendanceServer.SUCCESS, "获取版本号成功", version);
+    }
+
+    private ResponseEntity handleVersionUpdate(NanoHTTPD.IHTTPSession session) {
+        Map<String, List<String>> parameters = session.getParameters();
+        if (parameters.get("fileUrl") != null) {
+            String fileUrl = parameters.get("fileUrl").get(0);
+            URL url = null;
+            try {
+                url = new URL(fileUrl);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            if (url != null) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("url", url);
+                listener.onEnterFragment(UpdateFragment.class, bundle);
+                return new ResponseEntity(AttendanceServer.SUCCESS, "调用更新请求成功，请查看是否开始下载");
+            }
+        }
+        return new ResponseEntity(AttendanceServer.FAILED, "参数校验错误");
     }
 
 }

@@ -29,6 +29,7 @@ public class ConfigDao extends AbstractDao<Config, Long> {
         public final static Property Password = new Property(2, String.class, "password", false, "PASSWORD");
         public final static Property QualityScore = new Property(3, float.class, "qualityScore", false, "QUALITY_SCORE");
         public final static Property VerifyScore = new Property(4, float.class, "verifyScore", false, "VERIFY_SCORE");
+        public final static Property RecordClearThreshold = new Property(5, int.class, "recordClearThreshold", false, "RECORD_CLEAR_THRESHOLD");
     }
 
 
@@ -48,7 +49,8 @@ public class ConfigDao extends AbstractDao<Config, Long> {
                 "\"UPLOAD_URL\" TEXT," + // 1: uploadUrl
                 "\"PASSWORD\" TEXT," + // 2: password
                 "\"QUALITY_SCORE\" REAL NOT NULL ," + // 3: qualityScore
-                "\"VERIFY_SCORE\" REAL NOT NULL );"); // 4: verifyScore
+                "\"VERIFY_SCORE\" REAL NOT NULL ," + // 4: verifyScore
+                "\"RECORD_CLEAR_THRESHOLD\" INTEGER NOT NULL );"); // 5: recordClearThreshold
     }
 
     /** Drops the underlying database table. */
@@ -77,6 +79,7 @@ public class ConfigDao extends AbstractDao<Config, Long> {
         }
         stmt.bindDouble(4, entity.getQualityScore());
         stmt.bindDouble(5, entity.getVerifyScore());
+        stmt.bindLong(6, entity.getRecordClearThreshold());
     }
 
     @Override
@@ -99,6 +102,7 @@ public class ConfigDao extends AbstractDao<Config, Long> {
         }
         stmt.bindDouble(4, entity.getQualityScore());
         stmt.bindDouble(5, entity.getVerifyScore());
+        stmt.bindLong(6, entity.getRecordClearThreshold());
     }
 
     @Override
@@ -113,7 +117,8 @@ public class ConfigDao extends AbstractDao<Config, Long> {
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // uploadUrl
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // password
             cursor.getFloat(offset + 3), // qualityScore
-            cursor.getFloat(offset + 4) // verifyScore
+            cursor.getFloat(offset + 4), // verifyScore
+            cursor.getInt(offset + 5) // recordClearThreshold
         );
         return entity;
     }
@@ -125,6 +130,7 @@ public class ConfigDao extends AbstractDao<Config, Long> {
         entity.setPassword(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setQualityScore(cursor.getFloat(offset + 3));
         entity.setVerifyScore(cursor.getFloat(offset + 4));
+        entity.setRecordClearThreshold(cursor.getInt(offset + 5));
      }
     
     @Override
