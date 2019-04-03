@@ -22,8 +22,8 @@ public class CameraManager {
 
     /** ================================ 静态内部类单例 ================================ **/
 
-    public static final int PRE_WIDTH = 640;
-    public static final int PRE_HEIGHT = 480;
+    public static final int PRE_WIDTH = 320;
+    public static final int PRE_HEIGHT = 240;
     public static final int PIC_WIDTH = 640;
     public static final int PIC_HEIGHT = 480;
 
@@ -31,7 +31,7 @@ public class CameraManager {
 
     public void openCamera(SurfaceHolder holder, Camera.PreviewCallback previewCallback) {
         try {
-            EventBus.getDefault().post(new OpenCameraEvent(PRE_WIDTH, PIC_HEIGHT));
+            EventBus.getDefault().post(new OpenCameraEvent(PRE_WIDTH, PRE_HEIGHT));
             mCamera = Camera.open();
             Camera.Parameters parameters = mCamera.getParameters();
 //            List<Camera.Size> sizeList = parameters.getSupportedPreviewSizes();
@@ -67,6 +67,12 @@ public class CameraManager {
     public void startPreview() {
         if (mCamera != null) {
             mCamera.startPreview();
+        }
+    }
+
+    public void stopPreview() {
+        if (mCamera != null) {
+            mCamera.stopPreview();
         }
     }
 

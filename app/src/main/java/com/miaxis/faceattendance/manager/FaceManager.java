@@ -117,7 +117,6 @@ public class FaceManager {
                 isExtractWorking = true;
                 byte[] feature = extractFeature(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT, pFaceBuffer[0]);
                 if (feature != null && detectFlag) {
-//                    EventBus.getDefault().post(new FeatureEvent(FeatureEvent.CAMERA_FACE, feature, zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT));
                     verifyPersonFace(new RGBImage(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT), feature);
                 }
                 isExtractWorking = false;

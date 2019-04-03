@@ -48,11 +48,19 @@ public class RecordManager {
     public void saveRecord(VerifyPersonEvent event, String time) {
         Observable.create((ObservableOnSubscribe<Record>) emitter -> {
             Person person = event.getPerson();
+            String latitude = "";
+            String longitude = "";
+            String location = "";
+            if (AmapManager.getInstance().getaMapLocation() != null) {
+                latitude = String.valueOf(AmapManager.getInstance().getaMapLocation().getLatitude());
+                longitude = String.valueOf(AmapManager.getInstance().getaMapLocation().getLongitude());
+                location = AmapManager.getInstance().getaMapLocation().getAddress();
+            }
             Record record = new Record.Builder()
                     .cardNumber(person.getCardNumber())
-                    .latitude(String.valueOf(AmapManager.getInstance().getaMapLocation().getLatitude()))
-                    .longitude(String.valueOf(AmapManager.getInstance().getaMapLocation().getLongitude()))
-                    .location(AmapManager.getInstance().getaMapLocation().getAddress())
+                    .latitude(latitude)
+                    .longitude(longitude)
+                    .location(location)
                     .name(person.getName())
                     .sex(person.getSex())
                     .verifyTime(time)

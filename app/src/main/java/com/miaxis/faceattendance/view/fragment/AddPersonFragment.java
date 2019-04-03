@@ -31,6 +31,7 @@ import com.miaxis.faceattendance.model.entity.Person;
 import com.miaxis.faceattendance.util.FileUtil;
 import com.miaxis.faceattendance.view.custom.CameraSurfaceView;
 import com.miaxis.faceattendance.view.listener.OnFragmentInteractionListener;
+import com.miaxis.faceattendance.view.listener.OnLimitClickHelper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -99,18 +100,19 @@ public class AddPersonFragment extends BaseFragment {
         String[] arr = getResources().getStringArray(R.array.sex);
         ArrayAdapter<String> sexAdapter = new ArrayAdapter<>(getContext(), R.layout.item_spinner_start, R.id.tv_spinner, arr);
         spinnerSex.setAdapter(sexAdapter);
-        tvTakePicture.setOnClickListener(v -> {
-            if (TextUtils.equals(tvTakePicture.getText().toString(), "点击拍照")) {
+        tvTakePicture.setOnClickListener(new OnLimitClickHelper(v -> {
+            if (TextUtils.equals(tvTakePicture.getText().toString(), "点  击  拍  照")) {
+                tvTakePicture.setText("重  新  拍  摄");
                 CameraManager.getInstance().takePicture((data, camera) -> {
+                    CameraManager.getInstance().stopPreview();
                     facePicture = BitmapFactory.decodeByteArray(data, 0, data.length);
-                    tvTakePicture.setText("重新拍摄");
                 });
-            } else if (TextUtils.equals(tvTakePicture.getText().toString(), "重新拍摄")) {
+            } else if (TextUtils.equals(tvTakePicture.getText().toString(), "重  新  拍  摄")) {
+                tvTakePicture.setText("点  击  拍  照");
                 facePicture = null;
                 CameraManager.getInstance().startPreview();
-                tvTakePicture.setText("点击拍照");
             }
-        });
+        }));
         ivSave.setOnClickListener(v -> checkDialog.show());
     }
 

@@ -1,9 +1,11 @@
 package com.miaxis.faceattendance.view.fragment;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.miaxis.faceattendance.R;
 import com.miaxis.faceattendance.adapter.VerifyAdapter;
@@ -18,6 +20,7 @@ import com.miaxis.faceattendance.util.ValueUtil;
 import com.miaxis.faceattendance.view.custom.CameraSurfaceView;
 import com.miaxis.faceattendance.view.custom.RectSurfaceView;
 import com.miaxis.faceattendance.view.listener.OnFragmentInteractionListener;
+import com.miaxis.faceattendance.view.listener.OnLimitClickHelper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -40,6 +43,8 @@ public class VerifyFragment extends BaseFragment {
     FrameLayout flRoot;
     @BindView(R.id.rv_verify)
     RecyclerView rvVerify;
+    @BindView(R.id.tv_open_verify)
+    TextView tvOpenVerify;
 
     private VerifyAdapter<VerifyPerson> verifyAdapter;
     private OnFragmentInteractionListener mListener;
@@ -70,6 +75,18 @@ public class VerifyFragment extends BaseFragment {
         verifyAdapter = new VerifyAdapter<>(getContext(), new ArrayList<>());
         rvVerify.setAdapter(verifyAdapter);
         rvVerify.setLayoutManager(new LinearLayoutManager(getContext()));
+        tvOpenVerify.setOnClickListener(new OnLimitClickHelper(v -> {
+            if (TextUtils.equals(tvOpenVerify.getText().toString(), "比对开关：开")) {
+                FaceManager.getInstance().setVerify(false);
+                tvOpenVerify.setText("比对开关：关");
+                verifyAdapter.setDataList(new ArrayList<>());
+                verifyAdapter.notifyDataSetChanged();
+                rsvRect.clearDraw();
+            } else if (TextUtils.equals(tvOpenVerify.getText().toString(), "比对开关：关")) {
+                tvOpenVerify.setText("比对开关：开");
+                FaceManager.getInstance().setVerify(true);
+            }
+        }));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
