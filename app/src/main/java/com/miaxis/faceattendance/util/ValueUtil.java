@@ -7,7 +7,9 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.WindowManager;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -191,6 +193,22 @@ public class ValueUtil {
             convertSuccess = false;
         }
         return convertSuccess;
+    }
+
+    public static int getScreenHeight(Context context) {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(outMetrics);
+        return outMetrics.heightPixels;
+    }
+
+    public static int getStateBarHeight(Context context){
+        int result = 0;
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
     }
 
 }

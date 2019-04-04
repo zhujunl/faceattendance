@@ -2,6 +2,7 @@ package com.miaxis.faceattendance.manager;
 
 import android.app.Application;
 import android.app.smdt.SmdtManager;
+import android.content.Context;
 import android.os.Build;
 
 public class GpioManager {
@@ -22,7 +23,6 @@ public class GpioManager {
     public static final int GPIO_INTERVAL = 100;
 
     private SmdtManager smdtManager;
-
     private boolean humanInductionFlag = true;
 
     public void init(Application application) {
@@ -72,6 +72,14 @@ public class GpioManager {
         try {
             Thread.sleep(GPIO_INTERVAL);
             smdtManager.smdtSetGpioValue(3, false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setSmdtStatusBar(Context context, boolean value) {
+        try {
+            smdtManager.smdtSetStatusBar(context, value);
         } catch (Exception e) {
             e.printStackTrace();
         }

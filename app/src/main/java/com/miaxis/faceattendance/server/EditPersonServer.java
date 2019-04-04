@@ -59,8 +59,12 @@ public class EditPersonServer {
     }
 
     private ResponseEntity handleStartEditPerson(NanoHTTPD.IHTTPSession session) {
-        listener.onEnterFragment(PersonFragment.class, null);
-        return new ResponseEntity(AttendanceServer.SUCCESS, "开始编辑人员成功，请查看设备是否进入人员管理页面");
+        boolean result = listener.onEnterFragment(PersonFragment.class, null);
+        if (result) {
+            return new ResponseEntity(AttendanceServer.SUCCESS, "开始编辑人员成功，请查看设备是否进入人员管理页面");
+        } else {
+            return new ResponseEntity(AttendanceServer.FAILED, "请确保应用界面可见");
+        }
     }
 
     private ResponseEntity handleAddPersonByPhoto(NanoHTTPD.IHTTPSession session) {
@@ -166,8 +170,12 @@ public class EditPersonServer {
 
     private ResponseEntity handleStopEditPerson(NanoHTTPD.IHTTPSession session) {
         if (listener.isPersonFragmentVisible()) {
-            listener.onEnterFragment(VerifyFragment.class, null);
-            return new ResponseEntity(AttendanceServer.SUCCESS, "结束编辑人员成功，请查看设备是否返回人脸考勤页面");
+            boolean result = listener.onEnterFragment(VerifyFragment.class, null);
+            if (result) {
+                return new ResponseEntity(AttendanceServer.SUCCESS, "结束编辑人员成功，请查看设备是否返回人脸考勤页面");
+            } else {
+                return new ResponseEntity(AttendanceServer.FAILED, "请确保应用界面可见");
+            }
         }
         return new ResponseEntity(AttendanceServer.FAILED, "请在人员管理页面进行操作");
     }

@@ -4,7 +4,11 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.miaxis.faceattendance.R;
@@ -13,6 +17,7 @@ import com.miaxis.faceattendance.event.DrawRectEvent;
 import com.miaxis.faceattendance.event.OpenCameraEvent;
 import com.miaxis.faceattendance.event.VerifyPersonEvent;
 import com.miaxis.faceattendance.manager.FaceManager;
+import com.miaxis.faceattendance.manager.GpioManager;
 import com.miaxis.faceattendance.manager.RecordManager;
 import com.miaxis.faceattendance.model.entity.Person;
 import com.miaxis.faceattendance.model.entity.VerifyPerson;
@@ -37,14 +42,16 @@ public class VerifyFragment extends BaseFragment {
 
     @BindView(R.id.csv_camera)
     CameraSurfaceView csvCamera;
-    @BindView(R.id.rsv_rect)
-    RectSurfaceView rsvRect;
-    @BindView(R.id.fl_root)
-    FrameLayout flRoot;
+    @BindView(R.id.rl_root)
+    RelativeLayout rlRoot;
     @BindView(R.id.rv_verify)
     RecyclerView rvVerify;
     @BindView(R.id.tv_open_verify)
     TextView tvOpenVerify;
+    @BindView(R.id.iv_verify_frame)
+    ImageView ivVerifyFrame;
+    @BindView(R.id.tv_hint)
+    TextView tvHint;
 
     private VerifyAdapter<VerifyPerson> verifyAdapter;
     private OnFragmentInteractionListener mListener;
@@ -81,7 +88,6 @@ public class VerifyFragment extends BaseFragment {
                 tvOpenVerify.setText("比对开关：关");
                 verifyAdapter.setDataList(new ArrayList<>());
                 verifyAdapter.notifyDataSetChanged();
-                rsvRect.clearDraw();
             } else if (TextUtils.equals(tvOpenVerify.getText().toString(), "比对开关：关")) {
                 tvOpenVerify.setText("比对开关：开");
                 FaceManager.getInstance().setVerify(true);
@@ -91,18 +97,13 @@ public class VerifyFragment extends BaseFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onOpenCameraEvent(OpenCameraEvent event) {
-        int rootWidth = flRoot.getWidth();
+        int rootWidth = rlRoot.getWidth();
         int rootHeight = rootWidth * event.getPreviewHeight() / event.getPreviewWidth();
-        resetLayoutParams(flRoot, rootWidth, rootHeight);
+//        int rootHeight = (int) (ValueUtil.getScreenHeight(getContext()) - ValueUtil.getStateBarHeight(getContext()) - getContext().getResources().getDimension(R.dimen.custom_toolbar_height));
+//        int rootWidth = rootHeight * event.getPreviewWidth() / event.getPreviewHeight();
+        resetLayoutParams(rlRoot, rootWidth, rootHeight);
         resetLayoutParams(csvCamera, rootWidth, rootHeight);
-        resetLayoutParams(rsvRect, rootWidth, rootHeight);
-        rsvRect.setRootSize(rootWidth, rootHeight);
-        rsvRect.setZoomRate((float) rootWidth / FaceManager.ZOOM_WIDTH);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onDrawRectEvent(DrawRectEvent event) {
-        rsvRect.drawRect(event.getFaceInfos(), event.getFaceNum());
+        resetLayoutParams(ivVerifyFrame, rootWidth, rootHeight);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -118,6 +119,22 @@ public class VerifyFragment extends BaseFragment {
             verifyAdapter.insertData(0, verifyPerson);
             rvVerify.scrollToPosition(0);
             RecordManager.getInstance().saveRecord(event, verifyPerson.getTime());
+        } else {
+            tvHint.setText("您 已 经 考 勤");
+            tvHint.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDrawRectEvent(DrawRectEvent event) {
+        if (event.getFaceNum() == 0) {
+            tvHint.setVisibility(View.INVISIBLE);
+        } else if (event.getFaceNum() == -1) {
+            tvHint.setText("请 正 对 屏 幕");
+            tvHint.setVisibility(View.VISIBLE);
+        } else {
+            tvHint.setText("检 测 到 人 脸");
+            tvHint.setVisibility(View.VISIBLE);
         }
     }
 

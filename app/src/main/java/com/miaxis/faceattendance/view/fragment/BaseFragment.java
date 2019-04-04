@@ -2,6 +2,7 @@ package com.miaxis.faceattendance.view.fragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -28,6 +29,7 @@ public abstract class BaseFragment extends RxFragment {
         bind = ButterKnife.bind(this, view);
         initData();
         initView();
+        view.setOnTouchListener((view1, motionEvent) -> getActivity().onTouchEvent(motionEvent));
         return view;
     }
 

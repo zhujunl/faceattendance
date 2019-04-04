@@ -42,7 +42,7 @@ public class HttpCommServerService extends Service {
 
     public interface OnServerServiceListener {
         void onServerStart(boolean result);
-        void onEnterFragment(Class<? extends Fragment> fragmentClass, Bundle bundle);
+        boolean onEnterFragment(Class<? extends Fragment> fragmentClass, Bundle bundle);
         boolean isPersonFragmentVisible();
         void onBackstageBusy(boolean start, String message);
     }

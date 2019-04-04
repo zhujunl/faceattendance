@@ -26,23 +26,50 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <FrameLayout
-            android:id="@+id/fl_root"
+        <RelativeLayout
+            android:id="@+id/rl_root"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent">
 
-            <com.miaxis.faceattendance.view.custom.CameraSurfaceView
-                android:id="@+id/csv_camera"
+            <FrameLayout
+                android:background="#00FFFFFF"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.miaxis.faceattendance.view.custom.CameraSurfaceView
+                    android:id="@+id/csv_camera"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </FrameLayout>
+
+            <ImageView
+                android:id="@+id/iv_verify_frame"
+                android:src="@mipmap/add_person_background"
+                android:scaleType="fitXY"
+                android:layout_gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <com.miaxis.faceattendance.view.custom.RectSurfaceView
-                android:id="@+id/rsv_rect"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+            <TextView
+                android:id="@+id/tv_hint"
+                android:visibility="invisible"
+                android:text="检 测 到 人 脸"
+                android:textSize="30sp"
+                android:textColor="@color/colorPrimary"
+                android:gravity="center"
+                android:padding="15dp"
+                android:layout_centerInParent="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="50dp"
+                android:background="@drawable/qing_stroke_bg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-        </FrameLayout>
+        </RelativeLayout>
 
         <View
             android:background="@color/darkgrey"

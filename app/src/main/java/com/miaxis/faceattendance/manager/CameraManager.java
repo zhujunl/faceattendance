@@ -22,8 +22,8 @@ public class CameraManager {
 
     /** ================================ 静态内部类单例 ================================ **/
 
-    public static final int PRE_WIDTH = 320;
-    public static final int PRE_HEIGHT = 240;
+    public static final int PRE_WIDTH = 640;
+    public static final int PRE_HEIGHT = 480;
     public static final int PIC_WIDTH = 640;
     public static final int PIC_HEIGHT = 480;
 

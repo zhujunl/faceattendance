@@ -196,8 +196,12 @@ public class BasisServer {
             if (url != null) {
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("url", url);
-                listener.onEnterFragment(UpdateFragment.class, bundle);
-                return new ResponseEntity(AttendanceServer.SUCCESS, "调用更新请求成功，请查看是否开始下载");
+                boolean result = listener.onEnterFragment(UpdateFragment.class, bundle);
+                if (result) {
+                    return new ResponseEntity(AttendanceServer.SUCCESS, "调用更新请求成功，请查看是否开始下载");
+                } else {
+                    return new ResponseEntity(AttendanceServer.FAILED, "请确保应用界面可见");
+                }
             }
         }
         return new ResponseEntity(AttendanceServer.FAILED, "参数校验错误");

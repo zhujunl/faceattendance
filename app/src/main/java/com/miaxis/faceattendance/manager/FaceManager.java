@@ -45,7 +45,7 @@ public class FaceManager {
 
     public static final int ZOOM_WIDTH = 320;
     public static final int ZOOM_HEIGHT = 240;
-    private static final int INTERVEL_TIME = 300;
+    private static final int INTERVEL_TIME = 1500;
     private static final int MAX_FACE_NUM = 3;
     private static final Byte lock1 = 1;
     private static final Byte lock2 = 2;
@@ -120,6 +120,8 @@ public class FaceManager {
                     verifyPersonFace(new RGBImage(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT), feature);
                 }
                 isExtractWorking = false;
+            } else {
+                EventBus.getDefault().post(new DrawRectEvent(-1, null));
             }
         } else {
             EventBus.getDefault().post(new DrawRectEvent(0, null));

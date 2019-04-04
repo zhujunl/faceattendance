@@ -1,10 +1,14 @@
 package com.miaxis.faceattendance.view.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
+import com.miaxis.faceattendance.manager.GpioManager;
 import com.trello.rxlifecycle3.components.support.RxAppCompatActivity;
 
 import org.greenrobot.eventbus.EventBus;
