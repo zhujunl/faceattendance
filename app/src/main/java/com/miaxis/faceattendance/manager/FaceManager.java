@@ -253,7 +253,7 @@ public class FaceManager {
         if (mxFaceInfoEx.x < 140 || mxFaceInfoEx.x > 500) {
             return null;
         }
-        return Bitmap.createBitmap(bitmap, 128, 0, 360, 480);//截取
+        return Bitmap.createBitmap(bitmap, 141, 0, 360, 480);//截取
     }
 
     /**
