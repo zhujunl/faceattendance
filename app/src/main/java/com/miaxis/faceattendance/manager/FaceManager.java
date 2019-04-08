@@ -182,7 +182,7 @@ public class FaceManager {
                 if (result && pFaceBuffer[0].quality > ConfigManager.getInstance().getConfig().getQualityScore()) {
                     byte[] feature = extractFeature(rgbData, width, height, pFaceBuffer[0]);
                     if (feature != null) {
-                        EventBus.getDefault().post(new FeatureEvent(FeatureEvent.IMAGE_FACE, feature, pFaceBuffer[0]));
+                        EventBus.getDefault().post(new FeatureEvent(FeatureEvent.IMAGE_FACE, rgbData, width, height, feature, pFaceBuffer[0]));
                         return;
                     }
                     message = "提取人脸特征失败";
@@ -280,6 +280,19 @@ public class FaceManager {
             return true;
         }
         return false;
+    }
+
+    public byte[] imageEncode(byte[] rgbBuf, int width, int height) {
+        byte[] fileBuf = new byte[width * height * 4];
+        int[] fileLength = new int[] {0};
+        int re = dtTool.ImageEncode(rgbBuf, width, height, ".jpg", fileBuf, fileLength);
+        if (re == 1 && fileLength[0] != 0) {
+            byte[] fileImage = new byte[fileLength[0]];
+            System.arraycopy(fileBuf, 0, fileImage, 0, fileImage.length);
+            return fileImage;
+        } else {
+            return null;
+        }
     }
 
     private boolean checkDelay() {

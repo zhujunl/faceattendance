@@ -47,6 +47,7 @@ import butterknife.BindView;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -243,20 +244,25 @@ public class AddPersonFragment extends BaseFragment {
         new Thread(() -> {
             Matrix matrix = new Matrix();
             matrix.postRotate(180);
-            facePicture = Bitmap.createBitmap(facePicture, 0, 0, facePicture.getWidth(), facePicture.getHeight(), matrix, true);
-            FaceManager.getInstance().getFeatureByBitmap(facePicture);
+            Bitmap picture = Bitmap.createBitmap(facePicture, 0, 0, facePicture.getWidth(), facePicture.getHeight(), matrix, true);
+            FaceManager.getInstance().getFeatureByBitmap(picture);
         }).start();
     }
 
     private void onFeatureExtract(FeatureEvent event) {
-        Observable.create((ObservableOnSubscribe<Bitmap>) emitter -> {
+        Observable.create((ObservableOnSubscribe<FeatureEvent>) emitter -> {
             waitDialog.getContentView().setText("特征提取完成，正在裁剪图片");
             person.setFaceFeature(Base64.encodeToString(event.getFeature(), Base64.NO_WRAP));
-            emitter.onNext(facePicture);
+            emitter.onNext(event);
         })
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .compose(bindToLifecycle())
                 .observeOn(Schedulers.io())
+                .map(featureEvent -> {
+                    byte[] fileImage = FaceManager.getInstance().imageEncode(featureEvent.getImage(), featureEvent.getWidth(), featureEvent.getHeight());
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(fileImage, 0, fileImage.length);
+                    return bitmap;
+                })
                 .map(bitmap -> FaceManager.getInstance().tailoringFace(bitmap, event.getMxFaceInfoEx()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(bitmap -> waitDialog.getContentView().setText("裁剪完成，正在保存"))

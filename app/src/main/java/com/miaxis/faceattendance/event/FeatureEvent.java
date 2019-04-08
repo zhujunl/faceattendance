@@ -20,18 +20,13 @@ public class FeatureEvent {
         this.message = message;
     }
 
-    public FeatureEvent(int mode, byte[] feature, MXFaceInfoEx mxFaceInfoEx) {
+    public FeatureEvent(int mode, byte[] image, int width, int height, byte[] feature, MXFaceInfoEx mxFaceInfoEx) {
         this.mode = mode;
-        this.feature = feature;
-        this.mxFaceInfoEx = mxFaceInfoEx;
-    }
-
-    public FeatureEvent(int mode, byte[] feature, byte[] image, int width, int height) {
-        this.mode = mode;
-        this.feature = feature;
         this.image = image;
         this.width = width;
         this.height = height;
+        this.feature = feature;
+        this.mxFaceInfoEx = mxFaceInfoEx;
     }
 
     public int getMode() {
