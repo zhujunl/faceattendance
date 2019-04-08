@@ -2,6 +2,7 @@ package com.miaxis.faceattendance.view.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,10 +24,17 @@ import butterknife.Unbinder;
 public abstract class BaseActivity extends RxAppCompatActivity {
 
     protected Unbinder bind;
+    protected boolean normal = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+            normal = false;
+            finish();
+            return;
+        }
+        normal = true;
         setContentView(setContentView());
         bind = ButterKnife.bind(this);
         initData();

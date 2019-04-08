@@ -34,19 +34,20 @@
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="55e86d3d9d21fff2864c06ebe0ad99aa" />
+            android:value="8855f6003997151e55ea25aeb0e4b6fe" />
+
         <meta-data
             android:name="com.miaxis.faceattendance.app.MyGlideAppModule"
             android:value="GlideModule" />
 
-        <activity android:name=".view.activity.StartActivity">
+        <activity android:name=".view.activity.MainActivity"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.activity.MainActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -51,8 +51,8 @@ public class BasisServer {
                     return handleSetDevicePassword(session);
                 case GET_SYSTEM_TIME: //获取系统时间
                     return handleGetSystemTime(session);
-                case SET_SYSTEM_TIME: //设置系统时间
-                    return handleSetSystemTime(session);
+//                case SET_SYSTEM_TIME: //设置系统时间
+//                    return handleSetSystemTime(session);
                 case SET_RECORD_UPLOAD_URL: //设置日志上传路径
                     return handleSetRecordUploadUrl(session);
                 case SET_VERIFY_THRESHOLD: //设置比对阈值

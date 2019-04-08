@@ -58,7 +58,7 @@ public class FaceAttendanceApp extends Application {
         ConfigManager.getInstance().checkConfig();
         CrashExceptionManager.getInstance().init(this);
         int result = FaceManager.getInstance().initFaceST(getApplicationContext(), FileUtil.MODEL_PATH, FileUtil.LICENCE_PATH);
-        EventBus.getDefault().postSticky(new InitFaceEvent(result));
+        EventBus.getDefault().post(new InitFaceEvent(result));
     }
 
 }

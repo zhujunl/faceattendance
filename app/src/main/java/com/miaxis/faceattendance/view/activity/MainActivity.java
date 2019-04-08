@@ -1,5 +1,6 @@
 package com.miaxis.faceattendance.view.activity;
 
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -7,25 +8,37 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.miaxis.faceattendance.R;
 import com.miaxis.faceattendance.app.FaceAttendanceApp;
+import com.miaxis.faceattendance.app.GlideApp;
+import com.miaxis.faceattendance.event.InitFaceEvent;
 import com.miaxis.faceattendance.manager.ToastManager;
 import com.miaxis.faceattendance.service.HttpCommServerService;
 import com.miaxis.faceattendance.util.ValueUtil;
-import com.miaxis.faceattendance.view.fragment.UpdateFragment;
-import com.miaxis.faceattendance.view.listener.OnLimitClickHelper;
-import com.miaxis.faceattendance.view.listener.OnLimitClickListener;
 import com.miaxis.faceattendance.view.fragment.AddPersonFragment;
-import com.miaxis.faceattendance.view.listener.OnFragmentInteractionListener;
 import com.miaxis.faceattendance.view.fragment.PersonFragment;
 import com.miaxis.faceattendance.view.fragment.RecordFragment;
 import com.miaxis.faceattendance.view.fragment.SettingFragment;
+import com.miaxis.faceattendance.view.fragment.UpdateFragment;
 import com.miaxis.faceattendance.view.fragment.VerifyFragment;
+import com.miaxis.faceattendance.view.listener.OnFragmentInteractionListener;
+import com.miaxis.faceattendance.view.listener.OnLimitClickHelper;
+import com.miaxis.faceattendance.view.listener.OnLimitClickListener;
+import com.tbruyelle.rxpermissions2.RxPermissions;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.net.URL;
 
@@ -34,6 +47,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import butterknife.BindView;
+import butterknife.ButterKnife;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends BaseActivity implements OnFragmentInteractionListener {
 
@@ -61,6 +78,14 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     TextView tvServerStatus;
     @BindView(R.id.tv_server_ip)
     TextView tvServerIp;
+    @BindView(R.id.iv_loading)
+    ImageView ivLoading;
+    @BindView(R.id.tv_loading)
+    TextView tvLoading;
+    @BindView(R.id.rl_init)
+    RelativeLayout rlInit;
+    @BindView(R.id.rl_toolbar)
+    RelativeLayout rlToolbar;
 
     private MaterialDialog quitDialog;
 
@@ -86,12 +111,34 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
 
     @Override
     protected void initData() {
-        Intent intent = new Intent(this, HttpCommServerService.class);
-        bindService(intent, serviceConnection, BIND_AUTO_CREATE);
+        EventBus.getDefault().register(this);
+        rlToolbar.setVisibility(View.INVISIBLE);
+        dlMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        Disposable subscribe = new RxPermissions(this)
+                .request(Manifest.permission.CAMERA,
+                        Manifest.permission.READ_PHONE_STATE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .compose(bindToLifecycle())
+                .observeOn(Schedulers.io())
+                .doOnNext(aBoolean -> {
+                    if (aBoolean) {
+                        FaceAttendanceApp.getInstance().initApplicationAsync();
+                    } else {
+                        throw new Exception("拒绝权限");
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(success -> {
+                }, throwable -> Toast.makeText(MainActivity.this, "拒绝权限将无法正常使用", Toast.LENGTH_SHORT).show());
     }
 
     @Override
     protected void initView() {
+        GlideApp.with(this).load(R.raw.loading).into(ivLoading);
         quitDialog = new MaterialDialog.Builder(this)
                 .title("确认退出？")
                 .positiveText("确认")
@@ -111,12 +158,32 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
         tvRecord.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
         tvSetting.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
         tvQuit.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
-        getSupportFragmentManager().beginTransaction().replace(R.id.fl_main, verifyFragment = VerifyFragment.newInstance()).commit();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onInitCWEvent(InitFaceEvent e) {
+        switch (e.getResult()) {
+            case InitFaceEvent.ERR_FILE_COMPARE:
+                tvLoading.setText("文件校验失败");
+                break;
+            case InitFaceEvent.ERR_LICENCE:
+                tvLoading.setText("读取授权文件失败");
+                break;
+            case InitFaceEvent.INIT_SUCCESS:
+                tvLoading.setText("初始化算法成功");
+                onInitFace();
+                break;
+            default:
+                tvLoading.setText("初始化算法失败");
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        if (pause) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fl_main, verifyFragment = VerifyFragment.newInstance()).commit();
+        }
         pause = false;
     }
 
@@ -124,6 +191,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     protected void onPause() {
         super.onPause();
         pause = true;
+        getSupportFragmentManager().popBackStackImmediate(null, 1);
     }
 
     @Override
@@ -169,14 +237,29 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
 
     @Override
     public void onBackPressed() {
-        quitDialog.show();
+        if (dlMain.isDrawerOpen(GravityCompat.START)) {
+            quitDialog.show();
+        } else {
+            ivDrawer.performClick();
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(serviceConnection);
-        System.exit(0);
+        if (normal) {
+            EventBus.getDefault().unregister(this);
+            unbindService(serviceConnection);
+        }
+    }
+
+    private void onInitFace() {
+        Intent intent = new Intent(this, HttpCommServerService.class);
+        bindService(intent, serviceConnection, BIND_AUTO_CREATE);
+        dlMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        rlInit.setVisibility(View.GONE);
+        rlToolbar.setVisibility(View.VISIBLE);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fl_main, verifyFragment = VerifyFragment.newInstance()).commit();
     }
 
     private OnLimitClickListener drawerClickListener = v -> {
@@ -208,7 +291,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
                 }
                 break;
             case R.id.tv_quit:
-                onBackPressed();
+                quitDialog.show();
                 break;
         }
     };
@@ -216,6 +299,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.e("asd", "onServiceConnected");
             HttpCommServerService.MyBinder binder = (HttpCommServerService.MyBinder) service;
             httpCommServerService = binder.getService();
             httpCommServerService.setOnServerServiceListener(onServerServiceCallback);
@@ -224,7 +308,8 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-
+            Log.e("asd", "onServiceDisconnected");
+            httpCommServerService.stopServer();
         }
     };
 

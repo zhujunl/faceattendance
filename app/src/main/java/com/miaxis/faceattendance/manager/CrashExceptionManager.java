@@ -7,8 +7,11 @@ import android.os.Looper;
 import android.os.SystemClock;
 import android.widget.Toast;
 
+import com.miaxis.faceattendance.util.FileUtil;
+import com.miaxis.faceattendance.util.ValueUtil;
 import com.miaxis.faceattendance.view.activity.MainActivity;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,6 +59,7 @@ public class CrashExceptionManager implements Thread.UncaughtExceptionHandler {
             Toast.makeText(mContext, "很抱歉，程序出现异常，即将重新启动", Toast.LENGTH_LONG).show();
             Looper.loop();
         }).start();
+        FileUtil.writeStringToFile(ValueUtil.simpleDateFormat.format(new Date()) + "：" + FileUtil.LOG_FILE, ex.getMessage());
         try {
             thread.sleep(2000);
         } catch (InterruptedException e) {

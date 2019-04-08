@@ -73,7 +73,6 @@ public class VerifyFragment extends BaseFragment {
     protected void initData() {
         EventBus.getDefault().register(this);
         FaceManager.getInstance().clearVerifyList();
-        FaceManager.getInstance().setVerify(true);
         FaceManager.getInstance().setDelay(true);
     }
 
@@ -88,6 +87,7 @@ public class VerifyFragment extends BaseFragment {
                 tvOpenVerify.setText("比对开关：关");
                 verifyAdapter.setDataList(new ArrayList<>());
                 verifyAdapter.notifyDataSetChanged();
+                tvHint.setVisibility(View.INVISIBLE);
             } else if (TextUtils.equals(tvOpenVerify.getText().toString(), "比对开关：关")) {
                 tvOpenVerify.setText("比对开关：开");
                 FaceManager.getInstance().setVerify(true);
@@ -136,6 +136,20 @@ public class VerifyFragment extends BaseFragment {
             tvHint.setText("检 测 到 人 脸");
             tvHint.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (TextUtils.equals(tvOpenVerify.getText(), "比对开关：开")) {
+            FaceManager.getInstance().setVerify(true);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        FaceManager.getInstance().setVerify(false);
     }
 
     @Override

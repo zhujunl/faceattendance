@@ -19,6 +19,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 
 public class FileUtil {
 
@@ -28,6 +30,7 @@ public class FileUtil {
     public static final String IMG_PATH = MAIN_PATH + File.separator + "zzFaces";
     public static final String FACE_IMG_PATH = MAIN_PATH + File.separator + "faceImg";
     public static final String MODEL_PATH = MAIN_PATH + File.separator + "zzFaceModel";
+    public static final String LOG_FILE = MAIN_PATH + File.separator + "log.txt";
 
     public static void initDirectory() {
         File path = new File(FileUtil.PATH);
@@ -49,6 +52,14 @@ public class FileUtil {
         path = new File(FileUtil.FACE_IMG_PATH);
         if (!path.exists()) {
             path.mkdirs();
+        }
+        path = new File(FileUtil.LOG_FILE);
+        if (!path.exists()) {
+            try {
+                path.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -73,7 +84,7 @@ public class FileUtil {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
-            if (os != null ) {
+            if (os != null) {
                 try {
                     os.close();
                 } catch (IOException e) {
@@ -117,8 +128,7 @@ public class FileUtil {
     /**
      * 根据byte数组生成文件
      *
-     * @param bytes
-     *            生成文件用到的byte数组
+     * @param bytes 生成文件用到的byte数组
      */
     public static void createFileWithByte(byte[] bytes, String filePath) {
         // TODO Auto-generated method stub
@@ -169,7 +179,7 @@ public class FileUtil {
 
     public static void saveBitmap(String fileName, Bitmap bitmap) {
         File avaterFile = new File(fileName);//设置文件名称
-        if(avaterFile.exists()){
+        if (avaterFile.exists()) {
             avaterFile.delete();
         }
         try {
@@ -208,19 +218,16 @@ public class FileUtil {
         return out.toByteArray();
     }
 
-    public static String  getLocalMac() {
-        String mac=null;
+    public static String getLocalMac() {
+        String mac = null;
         String str = "";
-        try
-        {
+        try {
             Process pp = Runtime.getRuntime().exec("cat /sys/class/net/wlan0/address ");
             InputStreamReader ir = new InputStreamReader(pp.getInputStream());
             LineNumberReader input = new LineNumberReader(ir);
-            for (; null != str;)
-            {
+            for (; null != str; ) {
                 str = input.readLine();
-                if (str != null)
-                {
+                if (str != null) {
                     mac = str.trim();// 去空格
                     break;
                 }
@@ -290,6 +297,33 @@ public class FileUtil {
             try {
                 if (in != null) {
                     in.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void writeStringToFile(String path, String content) {
+        File file = new File(path);
+        FileOutputStream fos = null;
+        OutputStreamWriter writer = null;
+        try {
+            fos = new FileOutputStream(file);
+            writer = new OutputStreamWriter(fos, Charset.forName("utf-8"));
+            writer.write(content);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+                if (fos != null) {
+                    fos.close();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
