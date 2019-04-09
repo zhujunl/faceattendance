@@ -26,8 +26,14 @@ public class CameraManager {
     public static final int PRE_HEIGHT = 480;
     public static final int PIC_WIDTH = 640;
     public static final int PIC_HEIGHT = 480;
+    private static final int RETRY_TIMES = 3;
 
     private Camera mCamera;
+    private int retryTime = 0;
+
+    public void resetRetryTime() {
+        this.retryTime = 0;
+    }
 
     public void openCamera(SurfaceHolder holder, Camera.PreviewCallback previewCallback) {
         try {
@@ -44,6 +50,13 @@ public class CameraManager {
             mCamera.startPreview();
         } catch (Exception e) {
             e.printStackTrace();
+            new Thread(() -> {
+                if (retryTime <= RETRY_TIMES) {
+                    GpioManager.getInstance().resetCameraGpio();
+                    retryTime++;
+                    openCamera(holder, previewCallback);
+                }
+            }).start();
         }
     }
 

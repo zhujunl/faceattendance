@@ -130,67 +130,42 @@ public class FileUtil {
      *
      * @param bytes 生成文件用到的byte数组
      */
-    public static void createFileWithByte(byte[] bytes, String filePath) {
-        // TODO Auto-generated method stub
-        /**
-         * 创建File对象，其中包含文件所在的目录以及文件的命名
-         */
+    public static void createFileWithByte(byte[] bytes, String filePath) throws IOException {
         File file = new File(filePath);
         // 创建FileOutputStream对象
         FileOutputStream outputStream = null;
         // 创建BufferedOutputStream对象
         BufferedOutputStream bufferedOutputStream = null;
-        try {
-            // 如果文件存在则删除
-            if (file.exists()) {
-                file.delete();
-            }
-            // 在文件系统中根据路径创建一个新的空文件
-            file.createNewFile();
-            // 获取FileOutputStream对象
-            outputStream = new FileOutputStream(file);
-            // 获取BufferedOutputStream对象
-            bufferedOutputStream = new BufferedOutputStream(outputStream);
-            // 往文件所在的缓冲输出流中写byte数据
-            bufferedOutputStream.write(bytes);
-            // 刷出缓冲输出流，该步很关键，要是不执行flush()方法，那么文件的内容是空的。
-            bufferedOutputStream.flush();
-        } catch (Exception e) {
-            // 打印异常信息
-            e.printStackTrace();
-        } finally {
-            // 关闭创建的流对象
-            if (outputStream != null) {
-                try {
-                    outputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (bufferedOutputStream != null) {
-                try {
-                    bufferedOutputStream.close();
-                } catch (Exception e2) {
-                    e2.printStackTrace();
-                }
-            }
+        // 如果文件存在则删除
+        if (file.exists()) {
+            file.delete();
         }
+        // 在文件系统中根据路径创建一个新的空文件
+        file.createNewFile();
+        // 获取FileOutputStream对象
+        outputStream = new FileOutputStream(file);
+        // 获取BufferedOutputStream对象
+        bufferedOutputStream = new BufferedOutputStream(outputStream);
+        // 往文件所在的缓冲输出流中写byte数据
+        bufferedOutputStream.write(bytes);
+        // 刷出缓冲输出流，该步很关键，要是不执行flush()方法，那么文件的内容是空的。
+        bufferedOutputStream.flush();
+        // 关闭创建的流对象
+        outputStream.close();
+        bufferedOutputStream.close();
+
     }
 
-    public static void saveBitmap(String fileName, Bitmap bitmap) {
+    public static void saveBitmap(String fileName, Bitmap bitmap) throws IOException {
         File avaterFile = new File(fileName);//设置文件名称
         if (avaterFile.exists()) {
             avaterFile.delete();
         }
-        try {
-            avaterFile.createNewFile();
-            FileOutputStream fos = new FileOutputStream(avaterFile);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-            fos.flush();
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        avaterFile.createNewFile();
+        FileOutputStream fos = new FileOutputStream(avaterFile);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+        fos.flush();
+        fos.close();
     }
 
     public static byte[] inputStream2ByteArray(String filePath) {

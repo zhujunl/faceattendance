@@ -27,6 +27,7 @@ import com.miaxis.faceattendance.manager.FaceManager;
 import com.miaxis.faceattendance.manager.ToastManager;
 import com.miaxis.faceattendance.model.PersonModel;
 import com.miaxis.faceattendance.model.entity.IDCardRecord;
+import com.miaxis.faceattendance.model.entity.MyException;
 import com.miaxis.faceattendance.model.entity.Person;
 import com.miaxis.faceattendance.util.FileUtil;
 import com.miaxis.faceattendance.view.custom.CameraSurfaceView;
@@ -47,6 +48,7 @@ import butterknife.BindView;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
@@ -218,7 +220,7 @@ public class AddPersonFragment extends BaseFragment {
         if (idCardRecord != null && TextUtils.equals(etCardNumber.getText().toString(), idCardRecord.getCardNumber())) {
             person = new Person.Builder()
                     .name(etName.getText().toString())
-                    .cardNumber(etCardNumber.getText().toString())
+                    .cardNumber(etCardNumber.getText().toString().replaceAll("\\p{P}", ""))
                     .sex(spinnerSex.getSelectedItemPosition() == 1 ? "男" : "女")
                     .nation(idCardRecord.getNation())
                     .birthday(idCardRecord.getBirthday())
@@ -231,7 +233,7 @@ public class AddPersonFragment extends BaseFragment {
         } else {
             person = new Person.Builder()
                     .name(etName.getText().toString())
-                    .cardNumber(etCardNumber.getText().toString())
+                    .cardNumber(etCardNumber.getText().toString().replaceAll("\\p{P}", ""))
                     .sex(spinnerSex.getSelectedItemPosition() == 1 ? "男" : "女")
                     .build();
         }
@@ -260,8 +262,12 @@ public class AddPersonFragment extends BaseFragment {
                 .observeOn(Schedulers.io())
                 .map(featureEvent -> {
                     byte[] fileImage = FaceManager.getInstance().imageEncode(featureEvent.getImage(), featureEvent.getWidth(), featureEvent.getHeight());
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(fileImage, 0, fileImage.length);
-                    return bitmap;
+                    if (fileImage != null) {
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(fileImage, 0, fileImage.length);
+                        return bitmap;
+                    } else {
+                        throw new MyException("图像数据转码失败");
+                    }
                 })
                 .map(bitmap -> FaceManager.getInstance().tailoringFace(bitmap, event.getMxFaceInfoEx()))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -270,9 +276,15 @@ public class AddPersonFragment extends BaseFragment {
                 .map(bitmap -> {
                     String filePath = FileUtil.FACE_IMG_PATH + File.separator + person.getCardNumber() + "-" + System.currentTimeMillis() + ".jpg";
                     FileUtil.saveBitmap(filePath, bitmap);
-                    person.setFacePicture(filePath);
-                    PersonModel.savePerson(person);
                     return filePath;
+                })
+                .doOnNext(s -> {
+                    if (new File(s).exists()) {
+                        person.setFacePicture(s);
+                        PersonModel.savePerson(person);
+                    } else {
+                        throw new MyException("头像落地文件未找到");
+                    }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
@@ -283,7 +295,11 @@ public class AddPersonFragment extends BaseFragment {
                         }, throwable -> {
                             tvTakePicture.performClick();
                             waitDialog.dismiss();
-                            ToastManager.toast(getContext(), "请将人脸对齐中心区域", ToastManager.ERROR);
+                            String errorMessage = "保存过程中出错，请对准摄像头画面中心后重新添加";
+                            if (throwable instanceof MyException) {
+                                errorMessage = throwable.getMessage();
+                            }
+                            ToastManager.toast(getContext(), errorMessage, ToastManager.ERROR);
                         });
     }
 

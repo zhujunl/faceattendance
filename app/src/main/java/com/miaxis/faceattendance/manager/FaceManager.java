@@ -173,7 +173,7 @@ public class FaceManager {
             return;
         }
         String message = "未检测到人脸";
-        int[] pFaceNum = new int[] {1};
+        int[] pFaceNum = new int[] {0};
         MXFaceInfoEx[] pFaceBuffer = makeFaceContainer(MAX_FACE_NUM);
         boolean result = faceDetect(rgbData, width, height, pFaceNum, pFaceBuffer);
         if (result) {
@@ -189,7 +189,7 @@ public class FaceManager {
                 } else {
                     message = "人脸质量评分过低";
                 }
-            } else {
+            } else if (pFaceNum[0] > 1) {
                 message = "检测到多张人脸";
             }
         }

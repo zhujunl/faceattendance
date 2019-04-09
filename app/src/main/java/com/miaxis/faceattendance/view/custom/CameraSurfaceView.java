@@ -9,6 +9,7 @@ import android.view.SurfaceView;
 
 import com.miaxis.faceattendance.manager.CameraManager;
 import com.miaxis.faceattendance.manager.FaceManager;
+import com.miaxis.faceattendance.manager.GpioManager;
 
 public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Camera.PreviewCallback {
 
@@ -25,6 +26,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        CameraManager.getInstance().resetRetryTime();
         CameraManager.getInstance().openCamera(mSurfaceHolder, this);
     }
 

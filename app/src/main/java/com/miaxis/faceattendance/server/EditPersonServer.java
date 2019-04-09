@@ -15,6 +15,7 @@ import com.miaxis.faceattendance.view.fragment.PersonFragment;
 import com.miaxis.faceattendance.view.fragment.VerifyFragment;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -67,7 +68,7 @@ public class EditPersonServer {
         }
     }
 
-    private ResponseEntity handleAddPersonByPhoto(NanoHTTPD.IHTTPSession session) {
+    private ResponseEntity handleAddPersonByPhoto(NanoHTTPD.IHTTPSession session) throws IOException {
         if (listener.isPersonFragmentVisible()) {
             Map<String, List<String>> parameters = session.getParameters();
             if (parameters.get("personData") != null) {
@@ -81,14 +82,20 @@ public class EditPersonServer {
                     byte[] imageData = Base64.decode(person.getFacePicture(), Base64.NO_WRAP);
                     byte[] feature = FaceManager.getInstance().getFeatureByFileImage(imageData);
                     if (feature != null) {
+                        person.setCardNumber(person.getCardNumber().replaceAll("\\p{P}", ""));
                         person.setFaceFeature(Base64.encodeToString(feature, Base64.NO_WRAP));
                         String path = FileUtil.FACE_IMG_PATH + File.separator + person.getCardNumber() + System.currentTimeMillis() + ".jpg";
                         FileUtil.createFileWithByte(imageData, path);
                         person.setFacePicture(path);
                         person.setId(null);
-                        PersonModel.savePerson(person);
-                        listener.onBackstageBusy(false, "添加人员成功");
-                        return new ResponseEntity(AttendanceServer.SUCCESS, "添加人员成功");
+                        if (new File(path).exists()) {
+                            PersonModel.savePerson(person);
+                            listener.onBackstageBusy(false, "添加人员成功");
+                            return new ResponseEntity(AttendanceServer.SUCCESS, "添加人员成功");
+                        } else {
+                            listener.onBackstageBusy(false, "添加人员失败");
+                            return new ResponseEntity(AttendanceServer.SUCCESS, "人像图片落地失败");
+                        }
                     } else {
                         listener.onBackstageBusy(false, "添加人员失败");
                         return new ResponseEntity(AttendanceServer.FAILED, "提取特征失败");
@@ -100,7 +107,7 @@ public class EditPersonServer {
         return new ResponseEntity(AttendanceServer.FAILED, "请在人员管理页面进行操作");
     }
 
-    private ResponseEntity handleAddPersonListByFeature(NanoHTTPD.IHTTPSession session) {
+    private ResponseEntity handleAddPersonListByFeature(NanoHTTPD.IHTTPSession session) throws IOException {
         if (listener.isPersonFragmentVisible()) {
             Map<String, List<String>> parameters = session.getParameters();
             if (parameters.get("personDataList") != null) {
@@ -120,16 +127,22 @@ public class EditPersonServer {
                     }
                 }
                 if (check) {
+                    StringBuilder error = new StringBuilder();
                     listener.onBackstageBusy(true, "批量添加人员处理中");
                     for (Person person : personList) {
                         byte[] imageData = Base64.decode(person.getFacePicture(), Base64.NO_WRAP);
+                        person.setCardNumber(person.getCardNumber().replaceAll("\\p{P}", ""));
                         String path = FileUtil.FACE_IMG_PATH + File.separator + person.getCardNumber() + System.currentTimeMillis() + ".jpg";
                         FileUtil.createFileWithByte(imageData, path);
                         person.setFacePicture(path);
-                        PersonModel.savePerson(person);
+                        if (new File(path).exists()) {
+                            PersonModel.savePerson(person);
+                        } else {
+                            error.append(person.getName()).append("-").append(person.getCardNumber()).append(";");
+                        }
                     }
                     listener.onBackstageBusy(false, "批量添加人员成功");
-                    return new ResponseEntity(AttendanceServer.SUCCESS, "批量添加人员成功");
+                    return new ResponseEntity(AttendanceServer.SUCCESS, "批量添加人员成功" + (error.toString().isEmpty() ? "" : "，但是：" + error.toString() + "人员绑定失败"));
                 }
             }
             return new ResponseEntity(AttendanceServer.FAILED, "参数校验失败");

@@ -53,6 +53,21 @@ public class GpioManager {
         }
     }
 
+    public void resetCameraGpio() {
+        smdtManager.smdtSetGpioValue(2, false);
+        try {
+            Thread.sleep(800);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        smdtManager.smdtSetGpioValue(2, true);
+        try {
+            Thread.sleep(800);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 打开闪光灯
      */
