@@ -98,7 +98,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     private SettingFragment settingFragment;
     private UpdateFragment updateFragment;
 
-    private boolean pause = false;
+    private boolean stop = false;
 
     public static Intent newInstance(Context context) {
         return new Intent(context, MainActivity.class);
@@ -181,17 +181,13 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     @Override
     protected void onResume() {
         super.onResume();
-        if (pause) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fl_main, verifyFragment = VerifyFragment.newInstance()).commit();
-        }
-        pause = false;
+        stop = false;
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        pause = true;
-        getSupportFragmentManager().popBackStackImmediate(null, 1);
+    protected void onStop() {
+        super.onStop();
+        stop = true;
     }
 
     @Override
@@ -327,7 +323,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
 
         @Override
         public boolean onEnterFragment(Class<? extends Fragment> fragmentClass, Bundle bundle) {
-            if (pause) {
+            if (stop) {
                 return false;
             }
             runOnUiThread(() -> enterAnotherFragment(Fragment.class, fragmentClass, bundle));

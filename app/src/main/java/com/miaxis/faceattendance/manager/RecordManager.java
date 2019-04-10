@@ -73,7 +73,7 @@ public class RecordManager {
                 .observeOn(Schedulers.io())
                 .subscribe(record -> {
                     RGBImage rgbImage = event.getRgbImage();
-                    String imagePath = FileUtil.IMG_PATH + File.separator + record.getName() + System.currentTimeMillis() + ".jpg";
+                    String imagePath = FileUtil.IMG_PATH + File.separator + record.getCardNumber() + "-" + System.currentTimeMillis() + ".jpg";
                     FaceManager.getInstance().saveRGBImageData(imagePath, rgbImage.getRgbImage(), rgbImage.getWidth(), rgbImage.getHeight());
                     record.setFacePicture(imagePath);
                     RecordModel.saveRecord(record);

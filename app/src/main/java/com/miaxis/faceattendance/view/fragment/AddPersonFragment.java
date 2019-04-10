@@ -190,12 +190,12 @@ public class AddPersonFragment extends BaseFragment {
 
     private void checkPerson() {
         if (checkInput()) {
-            if (PersonModel.getPersonByCardNumber(etCardNumber.getText().toString()) == null) {
+            if (PersonModel.getPersonByCardNumber(etCardNumber.getText().toString().replaceAll("\\p{P}", "")) == null) {
                 HandlePerson();
             } else {
                 new MaterialDialog.Builder(getContext())
                         .title("重复人员")
-                        .content("库中已包含证件号码为\"" + etCardNumber.getText().toString() + "\"的人员，是否覆盖？")
+                        .content("库中已包含证件号码为\"" + etCardNumber.getText().toString().replaceAll("\\p{P}", "") + "\"的人员，是否覆盖？")
                         .positiveText("覆盖")
                         .onPositive((dialog, which) -> HandlePerson())
                         .negativeText("放弃")
@@ -210,14 +210,14 @@ public class AddPersonFragment extends BaseFragment {
         if (facePicture == null
                 || TextUtils.isEmpty(etName.getText().toString())
                 || spinnerSex.getSelectedItemPosition() == 0
-                || TextUtils.isEmpty(etCardNumber.getText().toString())) {
+                || TextUtils.isEmpty(etCardNumber.getText().toString().replaceAll("\\p{P}", ""))) {
             return false;
         }
         return true;
     }
 
     private void buildPerson() {
-        if (idCardRecord != null && TextUtils.equals(etCardNumber.getText().toString(), idCardRecord.getCardNumber())) {
+        if (idCardRecord != null && TextUtils.equals(etCardNumber.getText().toString().replaceAll("\\p{P}", ""), idCardRecord.getCardNumber())) {
             person = new Person.Builder()
                     .name(etName.getText().toString())
                     .cardNumber(etCardNumber.getText().toString().replaceAll("\\p{P}", ""))
