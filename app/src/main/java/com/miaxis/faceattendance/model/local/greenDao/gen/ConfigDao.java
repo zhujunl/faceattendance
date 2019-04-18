@@ -26,10 +26,12 @@ public class ConfigDao extends AbstractDao<Config, Long> {
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property UploadUrl = new Property(1, String.class, "uploadUrl", false, "UPLOAD_URL");
-        public final static Property Password = new Property(2, String.class, "password", false, "PASSWORD");
-        public final static Property QualityScore = new Property(3, float.class, "qualityScore", false, "QUALITY_SCORE");
-        public final static Property VerifyScore = new Property(4, float.class, "verifyScore", false, "VERIFY_SCORE");
-        public final static Property RecordClearThreshold = new Property(5, int.class, "recordClearThreshold", false, "RECORD_CLEAR_THRESHOLD");
+        public final static Property CardUploadUrl = new Property(2, String.class, "cardUploadUrl", false, "CARD_UPLOAD_URL");
+        public final static Property Password = new Property(3, String.class, "password", false, "PASSWORD");
+        public final static Property QualityScore = new Property(4, float.class, "qualityScore", false, "QUALITY_SCORE");
+        public final static Property VerifyScore = new Property(5, float.class, "verifyScore", false, "VERIFY_SCORE");
+        public final static Property CardVerifyScore = new Property(6, float.class, "cardVerifyScore", false, "CARD_VERIFY_SCORE");
+        public final static Property RecordClearThreshold = new Property(7, int.class, "recordClearThreshold", false, "RECORD_CLEAR_THRESHOLD");
     }
 
 
@@ -47,10 +49,12 @@ public class ConfigDao extends AbstractDao<Config, Long> {
         db.execSQL("CREATE TABLE " + constraint + "\"CONFIG\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY ," + // 0: id
                 "\"UPLOAD_URL\" TEXT," + // 1: uploadUrl
-                "\"PASSWORD\" TEXT," + // 2: password
-                "\"QUALITY_SCORE\" REAL NOT NULL ," + // 3: qualityScore
-                "\"VERIFY_SCORE\" REAL NOT NULL ," + // 4: verifyScore
-                "\"RECORD_CLEAR_THRESHOLD\" INTEGER NOT NULL );"); // 5: recordClearThreshold
+                "\"CARD_UPLOAD_URL\" TEXT," + // 2: cardUploadUrl
+                "\"PASSWORD\" TEXT," + // 3: password
+                "\"QUALITY_SCORE\" REAL NOT NULL ," + // 4: qualityScore
+                "\"VERIFY_SCORE\" REAL NOT NULL ," + // 5: verifyScore
+                "\"CARD_VERIFY_SCORE\" REAL NOT NULL ," + // 6: cardVerifyScore
+                "\"RECORD_CLEAR_THRESHOLD\" INTEGER NOT NULL );"); // 7: recordClearThreshold
     }
 
     /** Drops the underlying database table. */
@@ -73,13 +77,19 @@ public class ConfigDao extends AbstractDao<Config, Long> {
             stmt.bindString(2, uploadUrl);
         }
  
+        String cardUploadUrl = entity.getCardUploadUrl();
+        if (cardUploadUrl != null) {
+            stmt.bindString(3, cardUploadUrl);
+        }
+ 
         String password = entity.getPassword();
         if (password != null) {
-            stmt.bindString(3, password);
+            stmt.bindString(4, password);
         }
-        stmt.bindDouble(4, entity.getQualityScore());
-        stmt.bindDouble(5, entity.getVerifyScore());
-        stmt.bindLong(6, entity.getRecordClearThreshold());
+        stmt.bindDouble(5, entity.getQualityScore());
+        stmt.bindDouble(6, entity.getVerifyScore());
+        stmt.bindDouble(7, entity.getCardVerifyScore());
+        stmt.bindLong(8, entity.getRecordClearThreshold());
     }
 
     @Override
@@ -96,13 +106,19 @@ public class ConfigDao extends AbstractDao<Config, Long> {
             stmt.bindString(2, uploadUrl);
         }
  
+        String cardUploadUrl = entity.getCardUploadUrl();
+        if (cardUploadUrl != null) {
+            stmt.bindString(3, cardUploadUrl);
+        }
+ 
         String password = entity.getPassword();
         if (password != null) {
-            stmt.bindString(3, password);
+            stmt.bindString(4, password);
         }
-        stmt.bindDouble(4, entity.getQualityScore());
-        stmt.bindDouble(5, entity.getVerifyScore());
-        stmt.bindLong(6, entity.getRecordClearThreshold());
+        stmt.bindDouble(5, entity.getQualityScore());
+        stmt.bindDouble(6, entity.getVerifyScore());
+        stmt.bindDouble(7, entity.getCardVerifyScore());
+        stmt.bindLong(8, entity.getRecordClearThreshold());
     }
 
     @Override
@@ -115,10 +131,12 @@ public class ConfigDao extends AbstractDao<Config, Long> {
         Config entity = new Config( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // uploadUrl
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // password
-            cursor.getFloat(offset + 3), // qualityScore
-            cursor.getFloat(offset + 4), // verifyScore
-            cursor.getInt(offset + 5) // recordClearThreshold
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // cardUploadUrl
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // password
+            cursor.getFloat(offset + 4), // qualityScore
+            cursor.getFloat(offset + 5), // verifyScore
+            cursor.getFloat(offset + 6), // cardVerifyScore
+            cursor.getInt(offset + 7) // recordClearThreshold
         );
         return entity;
     }
@@ -127,10 +145,12 @@ public class ConfigDao extends AbstractDao<Config, Long> {
     public void readEntity(Cursor cursor, Config entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setUploadUrl(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setPassword(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setQualityScore(cursor.getFloat(offset + 3));
-        entity.setVerifyScore(cursor.getFloat(offset + 4));
-        entity.setRecordClearThreshold(cursor.getInt(offset + 5));
+        entity.setCardUploadUrl(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setPassword(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setQualityScore(cursor.getFloat(offset + 4));
+        entity.setVerifyScore(cursor.getFloat(offset + 5));
+        entity.setCardVerifyScore(cursor.getFloat(offset + 6));
+        entity.setRecordClearThreshold(cursor.getInt(offset + 7));
      }
     
     @Override

@@ -10,18 +10,23 @@ public class Config {
     @Id
     private Long id;
     private String uploadUrl;
+    private String cardUploadUrl;
     private String password;
     private float qualityScore;
     private float verifyScore;
+    private float cardVerifyScore;
     private int recordClearThreshold;
-    @Generated(hash = 617149812)
-    public Config(Long id, String uploadUrl, String password, float qualityScore,
-            float verifyScore, int recordClearThreshold) {
+    @Generated(hash = 279804431)
+    public Config(Long id, String uploadUrl, String cardUploadUrl, String password,
+            float qualityScore, float verifyScore, float cardVerifyScore,
+            int recordClearThreshold) {
         this.id = id;
         this.uploadUrl = uploadUrl;
+        this.cardUploadUrl = cardUploadUrl;
         this.password = password;
         this.qualityScore = qualityScore;
         this.verifyScore = verifyScore;
+        this.cardVerifyScore = cardVerifyScore;
         this.recordClearThreshold = recordClearThreshold;
     }
     @Generated(hash = 589037648)
@@ -31,9 +36,11 @@ public class Config {
     private Config(Builder builder) {
         setId(builder.id);
         setUploadUrl(builder.uploadUrl);
+        setCardUploadUrl(builder.cardUploadUrl);
         setPassword(builder.password);
         setQualityScore(builder.qualityScore);
         setVerifyScore(builder.verifyScore);
+        setCardVerifyScore(builder.cardVerifyScore);
         setRecordClearThreshold(builder.recordClearThreshold);
     }
 
@@ -48,6 +55,12 @@ public class Config {
     }
     public void setUploadUrl(String uploadUrl) {
         this.uploadUrl = uploadUrl;
+    }
+    public String getCardUploadUrl() {
+        return this.cardUploadUrl;
+    }
+    public void setCardUploadUrl(String cardUploadUrl) {
+        this.cardUploadUrl = cardUploadUrl;
     }
     public String getPassword() {
         return this.password;
@@ -67,6 +80,12 @@ public class Config {
     public void setVerifyScore(float verifyScore) {
         this.verifyScore = verifyScore;
     }
+    public float getCardVerifyScore() {
+        return this.cardVerifyScore;
+    }
+    public void setCardVerifyScore(float cardVerifyScore) {
+        this.cardVerifyScore = cardVerifyScore;
+    }
     public int getRecordClearThreshold() {
         return this.recordClearThreshold;
     }
@@ -77,9 +96,11 @@ public class Config {
     public static final class Builder {
         private Long id;
         private String uploadUrl;
+        private String cardUploadUrl;
         private String password;
         private float qualityScore;
         private float verifyScore;
+        private float cardVerifyScore;
         private int recordClearThreshold;
 
         public Builder() {
@@ -95,6 +116,11 @@ public class Config {
             return this;
         }
 
+        public Builder cardUploadUrl(String val) {
+            cardUploadUrl = val;
+            return this;
+        }
+
         public Builder password(String val) {
             password = val;
             return this;
@@ -107,6 +133,11 @@ public class Config {
 
         public Builder verifyScore(float val) {
             verifyScore = val;
+            return this;
+        }
+
+        public Builder cardVerifyScore(float val) {
+            cardVerifyScore = val;
             return this;
         }
 

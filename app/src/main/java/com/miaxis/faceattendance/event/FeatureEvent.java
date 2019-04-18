@@ -1,5 +1,7 @@
 package com.miaxis.faceattendance.event;
 
+import com.miaxis.faceattendance.model.entity.RGBImage;
+
 import org.zz.faceapi.MXFaceInfoEx;
 
 public class FeatureEvent {
@@ -10,21 +12,17 @@ public class FeatureEvent {
     private int mode;
     private byte[] feature;
     private MXFaceInfoEx mxFaceInfoEx;
-    private byte[] image;
-    private int width;
-    private int height;
     private String message;
+    private RGBImage rgbImage;
 
     public FeatureEvent(int mode, String message) {
         this.mode = mode;
         this.message = message;
     }
 
-    public FeatureEvent(int mode, byte[] image, int width, int height, byte[] feature, MXFaceInfoEx mxFaceInfoEx) {
+    public FeatureEvent(int mode, RGBImage rgbImage, byte[] feature, MXFaceInfoEx mxFaceInfoEx) {
         this.mode = mode;
-        this.image = image;
-        this.width = width;
-        this.height = height;
+        this.rgbImage = rgbImage;
         this.feature = feature;
         this.mxFaceInfoEx = mxFaceInfoEx;
     }
@@ -45,30 +43,6 @@ public class FeatureEvent {
         this.feature = feature;
     }
 
-    public void setImage(byte[] image) {
-        this.image = image;
-    }
-
-    public byte[] getImage() {
-        return image;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
     public MXFaceInfoEx getMxFaceInfoEx() {
         return mxFaceInfoEx;
     }
@@ -83,5 +57,13 @@ public class FeatureEvent {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public RGBImage getRgbImage() {
+        return rgbImage;
+    }
+
+    public void setRgbImage(RGBImage rgbImage) {
+        this.rgbImage = rgbImage;
     }
 }

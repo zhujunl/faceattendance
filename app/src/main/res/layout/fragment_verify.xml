@@ -57,7 +57,6 @@
             <TextView
                 android:id="@+id/tv_hint"
                 android:visibility="invisible"
-                android:text="检 测 到 人 脸"
                 android:textSize="30sp"
                 android:textColor="@color/colorPrimary"
                 android:gravity="center"

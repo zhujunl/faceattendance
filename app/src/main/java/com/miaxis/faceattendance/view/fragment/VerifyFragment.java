@@ -13,13 +13,22 @@ import android.widget.TextView;
 
 import com.miaxis.faceattendance.R;
 import com.miaxis.faceattendance.adapter.VerifyAdapter;
+import com.miaxis.faceattendance.app.FaceAttendanceApp;
+import com.miaxis.faceattendance.event.CardEvent;
 import com.miaxis.faceattendance.event.DrawRectEvent;
+import com.miaxis.faceattendance.event.FeatureEvent;
 import com.miaxis.faceattendance.event.OpenCameraEvent;
 import com.miaxis.faceattendance.event.VerifyPersonEvent;
+import com.miaxis.faceattendance.manager.CardManager;
+import com.miaxis.faceattendance.manager.ConfigManager;
 import com.miaxis.faceattendance.manager.FaceManager;
 import com.miaxis.faceattendance.manager.GpioManager;
 import com.miaxis.faceattendance.manager.RecordManager;
+import com.miaxis.faceattendance.manager.ToastManager;
+import com.miaxis.faceattendance.manager.WhitelistManager;
+import com.miaxis.faceattendance.model.entity.IDCardRecord;
 import com.miaxis.faceattendance.model.entity.Person;
+import com.miaxis.faceattendance.model.entity.RGBImage;
 import com.miaxis.faceattendance.model.entity.VerifyPerson;
 import com.miaxis.faceattendance.util.ValueUtil;
 import com.miaxis.faceattendance.view.custom.CameraSurfaceView;
@@ -37,6 +46,12 @@ import java.util.Date;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class VerifyFragment extends BaseFragment {
 
@@ -55,6 +70,9 @@ public class VerifyFragment extends BaseFragment {
 
     private VerifyAdapter<VerifyPerson> verifyAdapter;
     private OnFragmentInteractionListener mListener;
+    private boolean cardMode = false;
+    private IDCardRecord idCardRecord;
+    private FeatureEvent cameraFeatureData;
 
     public static VerifyFragment newInstance() {
         return new VerifyFragment();
@@ -73,7 +91,9 @@ public class VerifyFragment extends BaseFragment {
     protected void initData() {
         EventBus.getDefault().register(this);
         FaceManager.getInstance().clearVerifyList();
+        FaceManager.getInstance().setIntervelTime(FaceManager.DEFAULT_INTERVEL_TIME);
         FaceManager.getInstance().setDelay(true);
+        CardManager.getInstance().startReadCard(FaceAttendanceApp.getInstance());
     }
 
     @Override
@@ -82,13 +102,13 @@ public class VerifyFragment extends BaseFragment {
         rvVerify.setAdapter(verifyAdapter);
         rvVerify.setLayoutManager(new LinearLayoutManager(getContext()));
         tvOpenVerify.setOnClickListener(new OnLimitClickHelper(v -> {
-            if (TextUtils.equals(tvOpenVerify.getText().toString(), "比对开关：开")) {
+            if (TextUtils.equals(tvOpenVerify.getText().toString(), "比对开关：开") && !cardMode) {
                 FaceManager.getInstance().setVerify(false);
                 tvOpenVerify.setText("比对开关：关");
                 verifyAdapter.setDataList(new ArrayList<>());
                 verifyAdapter.notifyDataSetChanged();
                 tvHint.setVisibility(View.INVISIBLE);
-            } else if (TextUtils.equals(tvOpenVerify.getText().toString(), "比对开关：关")) {
+            } else if (TextUtils.equals(tvOpenVerify.getText().toString(), "比对开关：关") && !cardMode) {
                 tvOpenVerify.setText("比对开关：开");
                 FaceManager.getInstance().setVerify(true);
             }
@@ -128,7 +148,9 @@ public class VerifyFragment extends BaseFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDrawRectEvent(DrawRectEvent event) {
         if (event.getFaceNum() == 0) {
-            tvHint.setVisibility(View.INVISIBLE);
+            if (!cardMode) {
+                tvHint.setVisibility(View.INVISIBLE);
+            }
         } else if (event.getFaceNum() == -1) {
             tvHint.setText("请 正 对 屏 幕");
             tvHint.setVisibility(View.VISIBLE);
@@ -136,6 +158,74 @@ public class VerifyFragment extends BaseFragment {
             tvHint.setText("检 测 到 人 脸");
             tvHint.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onCardEvent(CardEvent event) {
+        switch (event.getMode()) {
+            case CardEvent.FIND_CARD:
+                cardMode = true;
+                tvHint.setText("开 始 读 卡");
+                tvHint.setVisibility(View.VISIBLE);
+                FaceManager.getInstance().setIntervelTime(500);
+                FaceManager.getInstance().setActiveVerify(false);
+                FaceManager.getInstance().setVerify(true);
+                break;
+            case CardEvent.READ_CARD:
+                if (cardMode) {
+                    tvHint.setText("读 卡 成 功");
+                    idCardRecord = event.getIdCardRecord();
+                    WhitelistManager.getInstance().checkWhitelist(idCardRecord.getCardNumber(), result -> {
+                        if (result) {
+                            tvHint.setText("白 名 单 校 验 通 过");
+                            RecordManager.getInstance().uploadWhiteCardRecord(idCardRecord);
+                        } else {
+                            tvHint.setText("开 始 人 证 核 验");
+                            FaceManager.getInstance().getFeatureByBitmap(idCardRecord.getCardBitmap());
+                        }
+                    });
+                }
+                break;
+            case CardEvent.NO_CARD:
+                if (cardMode) {
+                    FaceManager.getInstance().setActiveVerify(true);
+                    FaceManager.getInstance().setIntervelTime(FaceManager.DEFAULT_INTERVEL_TIME);
+                    if (TextUtils.equals(tvOpenVerify.getText(), "比对开关：开")) {
+                        FaceManager.getInstance().setVerify(true);
+                    } else {
+                        FaceManager.getInstance().setVerify(false);
+                    }
+                    cardMode = false;
+                    idCardRecord = null;
+                    cameraFeatureData = null;
+                    tvHint.setVisibility(View.INVISIBLE);
+                }
+                break;
+            case CardEvent.OVERDUE:
+                tvHint.setText("证 件 已 过 期");
+                break;
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFeatureEvent(FeatureEvent event) {
+        switch (event.getMode()) {
+            case FeatureEvent.IMAGE_FACE:
+                if (event.getFeature() != null) {
+                    idCardRecord.setCardFeature(event.getFeature());
+                } else {
+                    ToastManager.toast(getContext(), "证件照片提取特征失败：" + event.getMessage(), ToastManager.INFO);
+                    tvHint.setText("请 拿 开 证 件 重 试");
+                }
+                break;
+            case FeatureEvent.CAMERA_FACE:
+                if (event.getFeature() != null && event.getRgbImage() != null) {
+                    FaceManager.getInstance().setVerify(false);
+                    cameraFeatureData = event;
+                }
+                break;
+        }
+        witnessVerification(idCardRecord, cameraFeatureData);
     }
 
     @Override
@@ -147,9 +237,10 @@ public class VerifyFragment extends BaseFragment {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onStop() {
+        super.onStop();
         FaceManager.getInstance().setVerify(false);
+        CardManager.getInstance().closeReadCard();
     }
 
     @Override
@@ -181,6 +272,26 @@ public class VerifyFragment extends BaseFragment {
         layoutParams.width = fixWidth;
         layoutParams.height = fixHeight;
         view.setLayoutParams(layoutParams);
+    }
+
+    private void witnessVerification(IDCardRecord idCardRecord, FeatureEvent cameraEvent) {
+        if (idCardRecord != null && idCardRecord.getCardFeature() != null && cameraEvent != null) {
+            Observable.create((ObservableOnSubscribe<Float>) emitter -> {
+                float score = FaceManager.getInstance().matchFeature(idCardRecord.getCardFeature(), cameraEvent.getFeature());
+                emitter.onNext(score);
+            })
+                    .subscribeOn(Schedulers.io())
+                    .compose(bindToLifecycle())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(score -> {
+                        if (score > ConfigManager.getInstance().getConfig().getVerifyScore()) {
+                            tvHint.setText("核 验 成 功");
+                            RecordManager.getInstance().uploadCardRecord(idCardRecord, cameraEvent.getRgbImage(), score);
+                        } else {
+                            FaceManager.getInstance().setVerify(true);
+                        }
+                    }, throwable -> FaceManager.getInstance().setVerify(true));
+        }
     }
 
 }

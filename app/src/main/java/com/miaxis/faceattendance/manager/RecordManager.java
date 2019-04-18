@@ -1,18 +1,22 @@
 package com.miaxis.faceattendance.manager;
 
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.miaxis.faceattendance.app.FaceAttendanceApp;
 import com.miaxis.faceattendance.event.VerifyPersonEvent;
 import com.miaxis.faceattendance.model.RecordModel;
+import com.miaxis.faceattendance.model.entity.CardRecord;
+import com.miaxis.faceattendance.model.entity.IDCardRecord;
 import com.miaxis.faceattendance.model.entity.Person;
 import com.miaxis.faceattendance.model.entity.RGBImage;
 import com.miaxis.faceattendance.model.entity.Record;
 import com.miaxis.faceattendance.model.net.ResponseEntity;
 import com.miaxis.faceattendance.model.net.UpLoadRecord;
 import com.miaxis.faceattendance.util.FileUtil;
+import com.miaxis.faceattendance.util.ValueUtil;
 
 import java.io.File;
 import java.net.URL;
@@ -79,7 +83,118 @@ public class RecordManager {
                     RecordModel.saveRecord(record);
                     uploadRecord(record);
                     clearRecordByThreshold();
-                }, throwable -> Log.e("asd", "RecordManager::saveRecord" + throwable.getMessage()));
+                }, Throwable::printStackTrace);
+    }
+
+    public void uploadCardRecord(IDCardRecord idCardRecord, RGBImage rgbImage, float score) {
+        String uploadUrl = ConfigManager.getInstance().getConfig().getCardUploadUrl();
+        if (!TextUtils.isEmpty(uploadUrl)) {
+            Observable.create((ObservableOnSubscribe<CardRecord>) emitter -> {
+                String latitude = "";
+                String longitude = "";
+                String location = "";
+                if (AmapManager.getInstance().getaMapLocation() != null) {
+                    latitude = String.valueOf(AmapManager.getInstance().getaMapLocation().getLatitude());
+                    longitude = String.valueOf(AmapManager.getInstance().getaMapLocation().getLongitude());
+                    location = AmapManager.getInstance().getaMapLocation().getAddress();
+                }
+                byte[] cameraImageData = FaceManager.getInstance().imageEncode(rgbImage.getRgbImage(), rgbImage.getWidth(), rgbImage.getHeight());
+                String facePicture = cameraImageData != null ? Base64.encodeToString(cameraImageData, Base64.NO_WRAP) : "";
+                String cardPicture = FileUtil.bitmapToBase64(idCardRecord.getCardBitmap());
+                CardRecord cardRecord = new CardRecord.Builder()
+                        .cardType(idCardRecord.getCardType())
+                        .cardId(idCardRecord.getCardId())
+                        .name(idCardRecord.getName())
+                        .birthday(idCardRecord.getBirthday())
+                        .address(idCardRecord.getAddress())
+                        .cardNumber(idCardRecord.getCardNumber())
+                        .issuingAuthority(idCardRecord.getIssuingAuthority())
+                        .validateStart(idCardRecord.getValidateStart())
+                        .validateEnd(idCardRecord.getValidateEnd())
+                        .sex(idCardRecord.getSex())
+                        .nation(idCardRecord.getNation())
+                        .passNumber(idCardRecord.getPassNumber())
+                        .issueCount(idCardRecord.getIssueCount())
+                        .chineseName(idCardRecord.getChineseName())
+                        .version(idCardRecord.getVersion())
+                        .cardPicture(cardPicture)
+                        .facePicture(facePicture)
+                        .result("比对成功")
+                        .score(String.valueOf(score))
+                        .verifyTime(ValueUtil.simpleDateFormat.format(new Date()))
+                        .location(location)
+                        .longitude(longitude)
+                        .latitude(latitude)
+                        .mode("1")
+                        .build();
+                emitter.onNext(cardRecord);
+            })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
+                    .flatMap((Function<CardRecord, ObservableSource<ResponseEntity>>) cardRecord -> {
+                        URL url = new URL(uploadUrl);
+                        Retrofit retrofit = FaceAttendanceApp.RETROFIT.baseUrl("http://" + url.getHost() + ":" + url.getPort() + "/").build();
+                        UpLoadRecord upLoadRecord = retrofit.create(UpLoadRecord.class);
+                        String json = new Gson().toJson(cardRecord);
+                        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
+                        return upLoadRecord.uploadData(uploadUrl, requestBody);
+                    })
+                    .subscribe(responseEntity -> {
+                        Log.e("asd", "uploadCardRecord上传成功");
+                    }, Throwable::printStackTrace);
+        }
+    }
+
+    public void uploadWhiteCardRecord(IDCardRecord idCardRecord) {
+        String uploadUrl = ConfigManager.getInstance().getConfig().getCardUploadUrl();
+        if (!TextUtils.isEmpty(uploadUrl)) {
+            Observable.create((ObservableOnSubscribe<CardRecord>) emitter -> {
+                String latitude = "";
+                String longitude = "";
+                String location = "";
+                if (AmapManager.getInstance().getaMapLocation() != null) {
+                    latitude = String.valueOf(AmapManager.getInstance().getaMapLocation().getLatitude());
+                    longitude = String.valueOf(AmapManager.getInstance().getaMapLocation().getLongitude());
+                    location = AmapManager.getInstance().getaMapLocation().getAddress();
+                }
+                CardRecord cardRecord = new CardRecord.Builder()
+                        .cardType(idCardRecord.getCardType())
+                        .cardId(idCardRecord.getCardId())
+                        .name(idCardRecord.getName())
+                        .birthday(idCardRecord.getBirthday())
+                        .address(idCardRecord.getAddress())
+                        .cardNumber(idCardRecord.getCardNumber())
+                        .issuingAuthority(idCardRecord.getIssuingAuthority())
+                        .validateStart(idCardRecord.getValidateStart())
+                        .validateEnd(idCardRecord.getValidateEnd())
+                        .sex(idCardRecord.getSex())
+                        .nation(idCardRecord.getNation())
+                        .passNumber(idCardRecord.getPassNumber())
+                        .issueCount(idCardRecord.getIssueCount())
+                        .chineseName(idCardRecord.getChineseName())
+                        .version(idCardRecord.getVersion())
+                        .verifyTime(ValueUtil.simpleDateFormat.format(new Date()))
+                        .location(location)
+                        .longitude(longitude)
+                        .latitude(latitude)
+                        .mode("2")
+                        .build();
+                emitter.onNext(cardRecord);
+            })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
+                    .flatMap((Function<CardRecord, ObservableSource<ResponseEntity>>) cardRecord -> {
+                        URL url = new URL(uploadUrl);
+                        Retrofit retrofit = FaceAttendanceApp.RETROFIT.baseUrl("http://" + url.getHost() + ":" + url.getPort() + "/").build();
+                        UpLoadRecord upLoadRecord = retrofit.create(UpLoadRecord.class);
+                        String json = new Gson().toJson(cardRecord);
+                        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
+                        return upLoadRecord.uploadData(uploadUrl, requestBody);
+                    })
+                    .subscribe(responseEntity -> {
+                        Log.e("asd", "uploadWhiteCardRecord");
+                    }, Throwable::printStackTrace);
+        }
     }
 
     private void uploadRecord(Record record) {
@@ -99,8 +214,10 @@ public class RecordManager {
                         return upLoadRecord.uploadData(uploadUrl, requestBody);
                     })
                     .subscribe(responseEntity -> {
-                        record.setUpload(Boolean.TRUE);
-                        RecordModel.updateRecord(record);
+                        if (TextUtils.equals(responseEntity.getCode(), "200")) {
+                            record.setUpload(Boolean.TRUE);
+                            RecordModel.updateRecord(record);
+                        }
                     }, Throwable::printStackTrace);
         }
     }

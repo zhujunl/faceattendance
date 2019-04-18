@@ -51,8 +51,8 @@ public class BasisServer {
                     return handleSetDevicePassword(session);
                 case GET_SYSTEM_TIME: //获取系统时间
                     return handleGetSystemTime(session);
-//                case SET_SYSTEM_TIME: //设置系统时间
-//                    return handleSetSystemTime(session);
+                case SET_SYSTEM_TIME: //设置系统时间
+                    return handleSetSystemTime(session);
                 case SET_RECORD_UPLOAD_URL: //设置日志上传路径
                     return handleSetRecordUploadUrl(session);
                 case SET_VERIFY_THRESHOLD: //设置比对阈值
@@ -134,21 +134,25 @@ public class BasisServer {
 
     private ResponseEntity handleSetVerifyThreshold(NanoHTTPD.IHTTPSession session) {
         Map<String, List<String>> parameters = session.getParameters();
-        if (parameters.get("verifyScore") != null && parameters.get("qualityScore") != null) {
+        if (parameters.get("verifyScore") != null && parameters.get("cardVerifyScore") != null && parameters.get("qualityScore") != null) {
             String verifyScore = parameters.get("verifyScore").get(0);
+            String cardVerifyScore = parameters.get("cardVerifyScore").get(0);
             String qualityScore = parameters.get("qualityScore").get(0);
             float verify = 0;
+            float cardVerify = 0;
             int quality = 0;
             try {
                 verify = Float.valueOf(verifyScore);
+                cardVerify = Float.valueOf(cardVerifyScore);
                 quality = Integer.valueOf(qualityScore);
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
-            if (verify > 0.6f && verify < 1.0 && quality > 60 && quality < 100) {
+            if (verify > 0.6f && verify < 1.0 && cardVerify > 0.6f && cardVerify < 1.0 && quality > 60 && quality < 100) {
                 Config config = ConfigManager.getInstance().getConfig();
                 config.setQualityScore(quality);
                 config.setVerifyScore(verify);
+                config.setCardVerifyScore(cardVerify);
                 ConfigModel.saveConfig(config);
                 ConfigManager.getInstance().setConfig(config);
                 return new ResponseEntity(AttendanceServer.SUCCESS, "设置比对阈值成功");

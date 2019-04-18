@@ -27,9 +27,11 @@ public class ValueUtil {
     public static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
 
     public static final String DEFAULT_UPLOAD_URL = "";
+    public static final String DEFAULT_CARD_UPLOAD_URL = "";
     public static final String DEFAULT_PASSWORD = "666666";
     public static final float DEFAULT_QUALITY_SCORE = 75f;
     public static final float DEFAULT_VERIFY_SCORE = 0.8f;
+    public static final float DEFAULT_CARD_VERIFY_SCORE = 0.7f;
     public static final int DEFAULT_RECORD_CLEAR_THRESHOLD = 500;
 
     public static final int GET_CARD_ID = 0;

@@ -151,5 +151,5 @@
     <color name="black">#000000</color> <!-- 黑色 -->
     <color name="transparent">#00000000</color> <!-- 透明 -->
     <color name="android_text_color">#8a000000</color>
-    <color name="transparent_grey">#41696969</color>
+    <color name="transparent_grey">#80696969</color>
 </resources>

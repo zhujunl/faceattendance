@@ -41,9 +41,11 @@ public class ConfigManager {
             config = new Config.Builder()
                     .id(1L)
                     .uploadUrl(ValueUtil.DEFAULT_UPLOAD_URL)
+                    .cardUploadUrl(ValueUtil.DEFAULT_CARD_UPLOAD_URL)
                     .password(ValueUtil.DEFAULT_PASSWORD)
                     .qualityScore(ValueUtil.DEFAULT_QUALITY_SCORE)
                     .verifyScore(ValueUtil.DEFAULT_VERIFY_SCORE)
+                    .cardVerifyScore(ValueUtil.DEFAULT_CARD_VERIFY_SCORE)
                     .recordClearThreshold(ValueUtil.DEFAULT_RECORD_CLEAR_THRESHOLD)
                     .build();
             DaoManager.getInstance().getDaoSession().getConfigDao().insert(config);

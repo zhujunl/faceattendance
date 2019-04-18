@@ -29,6 +29,7 @@ import com.miaxis.faceattendance.model.PersonModel;
 import com.miaxis.faceattendance.model.entity.IDCardRecord;
 import com.miaxis.faceattendance.model.entity.MyException;
 import com.miaxis.faceattendance.model.entity.Person;
+import com.miaxis.faceattendance.model.entity.RGBImage;
 import com.miaxis.faceattendance.util.FileUtil;
 import com.miaxis.faceattendance.view.custom.CameraSurfaceView;
 import com.miaxis.faceattendance.view.listener.OnFragmentInteractionListener;
@@ -261,7 +262,8 @@ public class AddPersonFragment extends BaseFragment {
                 .compose(bindToLifecycle())
                 .observeOn(Schedulers.io())
                 .map(featureEvent -> {
-                    byte[] fileImage = FaceManager.getInstance().imageEncode(featureEvent.getImage(), featureEvent.getWidth(), featureEvent.getHeight());
+                    RGBImage rgbImage = event.getRgbImage();
+                    byte[] fileImage = FaceManager.getInstance().imageEncode(rgbImage.getRgbImage(), rgbImage.getWidth(), rgbImage.getHeight());
                     if (fileImage != null) {
                         Bitmap bitmap = BitmapFactory.decodeByteArray(fileImage, 0, fileImage.length);
                         return bitmap;

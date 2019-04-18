@@ -45,13 +45,15 @@ public class FaceManager {
 
     public static final int ZOOM_WIDTH = 320;
     public static final int ZOOM_HEIGHT = 240;
-    private static final int INTERVEL_TIME = 1500;
+    public static final int DEFAULT_INTERVEL_TIME = 1500;
     private static final int MAX_FACE_NUM = 3;
     private static final Byte lock1 = 1;
     private static final Byte lock2 = 2;
     private volatile static boolean detectFlag = false;
-    private volatile static boolean isExtractWorking = false;
+    private volatile static boolean extractWorking = false;
+    private volatile static boolean activeVerify = true;
     private boolean delay = false;
+    private static int intervelTime = 1500;
     private long last = 0;
 
     private MXFaceAPI mxFaceAPI;
@@ -94,6 +96,14 @@ public class FaceManager {
         this.delay = delay;
     }
 
+    public void setIntervelTime(int intervelTime) {
+        FaceManager.intervelTime = intervelTime;
+    }
+
+    public void setActiveVerify(boolean activeVerify) {
+        FaceManager.activeVerify = activeVerify;
+    }
+
     /**
      * 摄像头onPreviewFrame回调，通过EventBus回调事件
      * @param data onPreviewFrame-data
@@ -113,13 +123,17 @@ public class FaceManager {
         if (result) {
             result = faceQuality(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT, pFaceNum[0], pFaceBuffer);
             EventBus.getDefault().post(new DrawRectEvent(pFaceNum[0], pFaceBuffer));
-            if (result && pFaceBuffer[0].quality > ConfigManager.getInstance().getConfig().getQualityScore() && !isExtractWorking) {
-                isExtractWorking = true;
+            if (result && pFaceBuffer[0].quality > ConfigManager.getInstance().getConfig().getQualityScore() && !extractWorking) {
+                extractWorking = true;
                 byte[] feature = extractFeature(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT, pFaceBuffer[0]);
                 if (feature != null && detectFlag) {
-                    verifyPersonFace(new RGBImage(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT), feature);
+                    if (activeVerify) {
+                        verifyPersonFace(new RGBImage(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT), feature);
+                    } else {
+                        EventBus.getDefault().post(new FeatureEvent(FeatureEvent.CAMERA_FACE, new RGBImage(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT), feature, pFaceBuffer[0]));
+                    }
                 }
-                isExtractWorking = false;
+                extractWorking = false;
             } else {
                 EventBus.getDefault().post(new DrawRectEvent(-1, null));
             }
@@ -182,7 +196,7 @@ public class FaceManager {
                 if (result && pFaceBuffer[0].quality > ConfigManager.getInstance().getConfig().getQualityScore()) {
                     byte[] feature = extractFeature(rgbData, width, height, pFaceBuffer[0]);
                     if (feature != null) {
-                        EventBus.getDefault().post(new FeatureEvent(FeatureEvent.IMAGE_FACE, rgbData, width, height, feature, pFaceBuffer[0]));
+                        EventBus.getDefault().post(new FeatureEvent(FeatureEvent.IMAGE_FACE, new RGBImage(rgbData, width, height), feature, pFaceBuffer[0]));
                         return;
                     }
                     message = "提取人脸特征失败";
@@ -298,7 +312,7 @@ public class FaceManager {
     private boolean checkDelay() {
         if (delay) {
             long res = System.currentTimeMillis() - last;
-            if (res > INTERVEL_TIME) {
+            if (res > intervelTime) {
                 last = System.currentTimeMillis();
                 return true;
             }
