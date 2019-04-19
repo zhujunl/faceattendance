@@ -168,10 +168,15 @@ public class AddPersonFragment extends BaseFragment {
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        CardManager.getInstance().closeReadCard();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         EventBus.getDefault().unregister(this);
-        CardManager.getInstance().closeReadCard();
     }
 
     private void initDialog() {
@@ -192,13 +197,13 @@ public class AddPersonFragment extends BaseFragment {
     private void checkPerson() {
         if (checkInput()) {
             if (PersonModel.getPersonByCardNumber(etCardNumber.getText().toString().replaceAll("\\p{P}", "")) == null) {
-                HandlePerson();
+                handlePerson();
             } else {
                 new MaterialDialog.Builder(getContext())
                         .title("重复人员")
                         .content("库中已包含证件号码为\"" + etCardNumber.getText().toString().replaceAll("\\p{P}", "") + "\"的人员，是否覆盖？")
                         .positiveText("覆盖")
-                        .onPositive((dialog, which) -> HandlePerson())
+                        .onPositive((dialog, which) -> handlePerson())
                         .negativeText("放弃")
                         .show();
             }
@@ -240,7 +245,7 @@ public class AddPersonFragment extends BaseFragment {
         }
     }
 
-    private void HandlePerson() {
+    private void handlePerson() {
         waitDialog.getContentView().setText("正在提取特征");
         waitDialog.show();
         buildPerson();

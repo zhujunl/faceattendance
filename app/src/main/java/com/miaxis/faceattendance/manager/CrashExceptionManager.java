@@ -59,7 +59,7 @@ public class CrashExceptionManager implements Thread.UncaughtExceptionHandler {
             Toast.makeText(mContext, "很抱歉，程序出现异常，即将重新启动", Toast.LENGTH_LONG).show();
             Looper.loop();
         }).start();
-        FileUtil.writeStringToFile(ValueUtil.simpleDateFormat.format(new Date()) + "：" + FileUtil.LOG_FILE, ex.getMessage());
+        FileUtil.writeStringToFile(FileUtil.LOG_FILE, ValueUtil.simpleDateFormat.format(new Date()) + "：" + ex.getMessage());
         try {
             thread.sleep(2000);
         } catch (InterruptedException e) {

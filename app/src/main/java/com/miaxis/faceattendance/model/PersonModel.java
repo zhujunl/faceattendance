@@ -31,6 +31,7 @@ public class PersonModel {
 
     public static List<Person> loadPersonList(int pageNum, int pageSize) {
         return DaoManager.getInstance().getDaoSession().getPersonDao().queryBuilder()
+                .orderDesc(PersonDao.Properties.RegisterTime)
                 .offset((pageNum - 1) * pageSize)
                 .limit(pageSize)
                 .list();

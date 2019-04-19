@@ -20,6 +20,18 @@ public class WhiteCardModel {
         DaoManager.getInstance().getDaoSession().getWhiteCardDao().delete(whiteCard);
     }
 
+    public static List<WhiteCard> loadAllWhitelist() {
+        return DaoManager.getInstance().getDaoSession().getWhiteCardDao().loadAll();
+    }
+
+    public static List<WhiteCard> loadWhitelist(int pageNum, int pageSize) {
+        return DaoManager.getInstance().getDaoSession().getWhiteCardDao().queryBuilder()
+                .orderDesc(WhiteCardDao.Properties.RegisterTime)
+                .offset((pageNum - 1) * pageSize)
+                .limit(pageSize)
+                .list();
+    }
+
     public static WhiteCard getWhiteCardByCardNumber(String cardNumber) {
         return DaoManager.getInstance().getDaoSession().getWhiteCardDao().queryBuilder()
                 .where(WhiteCardDao.Properties.CardNumber.eq(cardNumber))

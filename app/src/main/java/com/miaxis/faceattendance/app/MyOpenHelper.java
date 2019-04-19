@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.github.yuweiguocn.library.greendao.MigrationHelper;
 import com.miaxis.faceattendance.model.local.greenDao.gen.ConfigDao;
 import com.miaxis.faceattendance.model.local.greenDao.gen.DaoMaster;
+import com.miaxis.faceattendance.model.local.greenDao.gen.RecordDao;
 
 import org.greenrobot.greendao.database.Database;
 
@@ -43,7 +44,7 @@ public class MyOpenHelper extends DaoMaster.OpenHelper {
                 public void onDropAllTables(Database db, boolean ifExists) {
                     DaoMaster.dropAllTables(db, ifExists);
                 }
-            }, ConfigDao.class);
+            }, RecordDao.class);
         }
     }
 }

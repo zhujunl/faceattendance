@@ -413,35 +413,35 @@ public class CardManager {
 
         @Override
         public void run() {
-            byte[] curCardId;
-            int re;
-            while (run) {
-                curCardId = new byte[64];
-                re = idCardDriver.mxReadCardId(curCardId);
-                switch (re) {
-                    case ValueUtil.GET_CARD_ID:
-                        noCardFlag = false;
-                        if (!Arrays.equals(lastCardId, curCardId)) {
-                            EventBus.getDefault().post(new CardEvent(CardEvent.FIND_CARD));
-                            try {
-                                readCard(getCardIdStr(curCardId));
-                            } catch (Exception e) {
-                                continue;
+            try {
+                byte[] curCardId;
+                int re;
+                while (run) {
+                    curCardId = new byte[64];
+                    re = idCardDriver.mxReadCardId(curCardId);
+                    switch (re) {
+                        case ValueUtil.GET_CARD_ID:
+                            noCardFlag = false;
+                            if (!Arrays.equals(lastCardId, curCardId)) {
+                                EventBus.getDefault().post(new CardEvent(CardEvent.FIND_CARD));
+                                try {
+                                    readCard(getCardIdStr(curCardId));
+                                } catch (Exception e) {
+                                    continue;
+                                }
                             }
-                        }
-                        lastCardId = curCardId;
-                        break;
-                    case ValueUtil.NO_CARD:
-                        noCardFlag = true;
-                        lastCardId = null;
-                        EventBus.getDefault().post(new CardEvent(CardEvent.NO_CARD));
-                        break;
-                }
-                try {
+                            lastCardId = curCardId;
+                            break;
+                        case ValueUtil.NO_CARD:
+                            noCardFlag = true;
+                            lastCardId = null;
+                            EventBus.getDefault().post(new CardEvent(CardEvent.NO_CARD));
+                            break;
+                    }
                     Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

@@ -119,11 +119,13 @@ public class BasisServer {
 
     private ResponseEntity handleSetRecordUploadUrl(NanoHTTPD.IHTTPSession session) {
         Map<String, List<String>> parameters = session.getParameters();
-        if (parameters.get("uploadUrl") != null) {
+        if (parameters.get("uploadUrl") != null && parameters.get("cardUploadUrl") != null) {
             String uploadUrl = parameters.get("uploadUrl").get(0);
+            String cardUploadUrl = parameters.get("cardUploadUrl").get(0);
             Config config = ConfigManager.getInstance().getConfig();
             if (TextUtils.isEmpty(uploadUrl) || ValueUtil.isHttpFormat(uploadUrl)) {
                 config.setUploadUrl(uploadUrl);
+                config.setCardUploadUrl(cardUploadUrl);
                 ConfigModel.saveConfig(config);
                 ConfigManager.getInstance().setConfig(config);
                 return new ResponseEntity(AttendanceServer.SUCCESS, "设置日志上传地址成功");

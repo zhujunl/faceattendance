@@ -281,27 +281,37 @@ public class FileUtil {
 
     public static void writeStringToFile(String path, String content) {
         File file = new File(path);
-        FileOutputStream fos = null;
-        OutputStreamWriter writer = null;
-        try {
-            fos = new FileOutputStream(file);
-            writer = new OutputStreamWriter(fos, Charset.forName("utf-8"));
-            writer.write(content);
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
+        boolean newFile = false;
+        if (!file.exists()) {
             try {
-                if (writer != null) {
-                    writer.close();
-                }
-                if (fos != null) {
-                    fos.close();
-                }
+                newFile = file.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        }
+        if (newFile) {
+            FileOutputStream fos = null;
+            OutputStreamWriter writer = null;
+            try {
+                fos = new FileOutputStream(file);
+                writer = new OutputStreamWriter(fos, Charset.forName("utf-8"));
+                writer.write(content);
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (writer != null) {
+                        writer.close();
+                    }
+                    if (fos != null) {
+                        fos.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

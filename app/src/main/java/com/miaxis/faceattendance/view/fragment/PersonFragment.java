@@ -89,13 +89,16 @@ public class PersonFragment extends BaseFragment implements PersonContract.View 
                 presenter.loadPerson(currentPage, ValueUtil.PAGESIZE);
             }
         };
-        srlPerson.setOnRefreshListener(() -> srlPerson.setRefreshing(false));
+        srlPerson.setOnRefreshListener(this::refreshPerson);
         rvPerson.addOnScrollListener(gridEndLessOnScrollListener);
-        presenter.loadPerson(1, ValueUtil.PAGESIZE);
+        refreshPerson();
     }
 
     @Override
     public void loadPersonCallback(List<Person> personList) {
+        if (srlPerson.isRefreshing()) {
+            srlPerson.setRefreshing(false);
+        }
         if (personList != null) {
             if (resetFlag) {
                 resetFlag = false;

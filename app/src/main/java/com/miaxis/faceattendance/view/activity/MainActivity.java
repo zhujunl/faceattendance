@@ -31,6 +31,7 @@ import com.miaxis.faceattendance.view.fragment.RecordFragment;
 import com.miaxis.faceattendance.view.fragment.SettingFragment;
 import com.miaxis.faceattendance.view.fragment.UpdateFragment;
 import com.miaxis.faceattendance.view.fragment.VerifyFragment;
+import com.miaxis.faceattendance.view.fragment.WhitelistFragment;
 import com.miaxis.faceattendance.view.listener.OnFragmentInteractionListener;
 import com.miaxis.faceattendance.view.listener.OnLimitClickHelper;
 import com.miaxis.faceattendance.view.listener.OnLimitClickListener;
@@ -66,6 +67,8 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     TextView tvPerson;
     @BindView(R.id.tv_add_person)
     TextView tvAddPerson;
+    @BindView(R.id.tv_whitelist)
+    TextView tvWhitelist;
     @BindView(R.id.tv_record)
     TextView tvRecord;
     @BindView(R.id.tv_setting)
@@ -94,6 +97,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     private VerifyFragment verifyFragment;
     private PersonFragment personFragment;
     private AddPersonFragment addPersonFragment;
+    private WhitelistFragment whitelistFragment;
     private RecordFragment recordFragment;
     private SettingFragment settingFragment;
     private UpdateFragment updateFragment;
@@ -155,6 +159,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
         tvVerify.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
         tvPerson.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
         tvAddPerson.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
+        tvWhitelist.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
         tvRecord.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
         tvSetting.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
         tvQuit.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
@@ -199,6 +204,8 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
             fragmentTransaction.detach(personFragment);
         } else if (TextUtils.equals(removeClass.getName(), AddPersonFragment.class.getName())) {
             fragmentTransaction.detach(addPersonFragment);
+        } else if (TextUtils.equals(removeClass.getName(), WhitelistFragment.class.getName())) {
+            fragmentTransaction.detach(whitelistFragment);
         } else if (TextUtils.equals(removeClass.getName(), SettingFragment.class.getName())) {
             fragmentTransaction.detach(settingFragment);
         } else if (TextUtils.equals(removeClass.getName(), RecordFragment.class.getName())) {
@@ -214,6 +221,8 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
             fragmentTransaction.replace(R.id.fl_main, personFragment = PersonFragment.newInstance());
         } else if (TextUtils.equals(addClass.getName(), AddPersonFragment.class.getName())) {
             fragmentTransaction.replace(R.id.fl_main, addPersonFragment = AddPersonFragment.newInstance());
+        }  else if (TextUtils.equals(addClass.getName(), WhitelistFragment.class.getName())) {
+            fragmentTransaction.replace(R.id.fl_main, whitelistFragment = WhitelistFragment.newInstance());
         } else if (TextUtils.equals(addClass.getName(), RecordFragment.class.getName())) {
             fragmentTransaction.replace(R.id.fl_main, recordFragment = RecordFragment.newInstance());
         } else if (TextUtils.equals(addClass.getName(), SettingFragment.class.getName())) {
@@ -274,6 +283,11 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
             case R.id.tv_add_person:
                 if (!(getVisibleFragment() instanceof AddPersonFragment)) {
                     enterAnotherFragment(Fragment.class, AddPersonFragment.class, null);
+                }
+                break;
+            case R.id.tv_whitelist:
+                if (!(getVisibleFragment() instanceof WhitelistFragment)) {
+                    enterAnotherFragment(Fragment.class, WhitelistFragment.class, null);
                 }
                 break;
             case R.id.tv_record:
