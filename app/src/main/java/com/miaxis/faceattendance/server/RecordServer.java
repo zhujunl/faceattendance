@@ -52,7 +52,7 @@ public class RecordServer {
         if (parameters.get("pageNum") != null && parameters.get("pageSize") != null) {
             int pageNum = Integer.valueOf(parameters.get("pageNum").get(0));
             int pageSize = Integer.valueOf(parameters.get("pageSize").get(0));
-            if (pageNum > 0 && pageSize > 0) {
+            if (pageNum > 0 && pageSize > 0 && pageSize <= 10) {
                 String name = parameters.get("name") != null ? parameters.get("name").get(0) : "";
                 String sex = parameters.get("sex") != null ? parameters.get("sex").get(0) : "";
                 String cardNumber = parameters.get("cardNumber") != null ? parameters.get("cardNumber").get(0) : "";
@@ -74,7 +74,7 @@ public class RecordServer {
 
     private ResponseEntity handleClearRecord(NanoHTTPD.IHTTPSession session) {
         RecordModel.clearAllRecord();
-        return new ResponseEntity<>(AttendanceServer.SUCCESS, "删除日志成功");
+        return new ResponseEntity<>(AttendanceServer.SUCCESS, "清除日志成功");
     }
 
 }

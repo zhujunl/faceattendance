@@ -62,7 +62,7 @@ public class PersonServer {
         if (parameters.get("pageNum") != null && parameters.get("pageSize") != null) {
             int pageNum = Integer.valueOf(parameters.get("pageNum").get(0));
             int pageSize = Integer.valueOf(parameters.get("pageSize").get(0));
-            if (pageNum > 0 && pageSize > 0) {
+            if (pageNum > 0 && pageSize > 0 && pageSize <= 10) {
                 List<Person> personList = PersonModel.loadPersonList(pageNum, pageSize);
                 for (Person person : personList) {
                     person.setFacePicture(FileUtil.pathToBase64(person.getFacePicture()));

@@ -25,6 +25,7 @@ public class AttendanceServer extends NanoHTTPD {
     private PersonServer personServer;
     private RecordServer recordServer;
     private EditPersonServer editPersonServer;
+    private WhitelistServer whitelistServer;
 
     public AttendanceServer(int port, HttpCommServerService.OnServerServiceListener listener) {
         super(port);
@@ -32,6 +33,7 @@ public class AttendanceServer extends NanoHTTPD {
         personServer = new PersonServer();
         recordServer = new RecordServer();
         editPersonServer = new EditPersonServer(listener);
+        whitelistServer = new WhitelistServer();
     }
 
     @Override
@@ -50,6 +52,9 @@ public class AttendanceServer extends NanoHTTPD {
                 }
                 if (session.getUri().startsWith("/miaxis/attendance/editPersonServer/")) {
                     responseEntity = editPersonServer.handleRequest(session);
+                }
+                if (session.getUri().startsWith("/miaxis/attendance/whitelistServer/")) {
+                    responseEntity = whitelistServer.handleRequest(session);
                 }
                 return newFixedLengthResponse(Response.Status.OK, NanoHTTPD.MIME_PLAINTEXT, new Gson().toJson(responseEntity));
             }

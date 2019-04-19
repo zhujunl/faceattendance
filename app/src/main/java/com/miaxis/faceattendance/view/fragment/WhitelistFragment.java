@@ -245,7 +245,8 @@ public class WhitelistFragment extends BaseFragment implements WhitelistContract
 
     private boolean checkInput() {
         if (TextUtils.isEmpty(etName.getText().toString())
-                || TextUtils.isEmpty(etCardNumber.getText().toString().replaceAll("\\p{P}", ""))) {
+                || TextUtils.isEmpty(etCardNumber.getText().toString())
+                || ValueUtil.isIDNumber(etCardNumber.getText().toString())) {
             return false;
         }
         return true;

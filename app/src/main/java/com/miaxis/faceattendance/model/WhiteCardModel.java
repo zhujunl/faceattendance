@@ -20,6 +20,10 @@ public class WhiteCardModel {
         DaoManager.getInstance().getDaoSession().getWhiteCardDao().delete(whiteCard);
     }
 
+    public static long getWhiteCardCount() {
+        return DaoManager.getInstance().getDaoSession().getWhiteCardDao().count();
+    }
+
     public static List<WhiteCard> loadAllWhitelist() {
         return DaoManager.getInstance().getDaoSession().getWhiteCardDao().loadAll();
     }
@@ -38,13 +42,17 @@ public class WhiteCardModel {
                 .unique();
     }
 
-    public static void deleteWhileCardList(List<String> cardNumberList) {
+    public synchronized static void deleteWhileCardList(List<String> cardNumberList) {
         for (String cardNumber : cardNumberList) {
             WhiteCard whiteCard = getWhiteCardByCardNumber(cardNumber);
             if (whiteCard != null) {
                 deleteWhileCard(whiteCard);
             }
         }
+    }
+
+    public static void clearWhitelist() {
+        DaoManager.getInstance().getDaoSession().getWhiteCardDao().deleteAll();
     }
 
 }

@@ -33,6 +33,7 @@ public class BasisServer {
     private static final String SET_RECORD_UPLOAD_URL = "/miaxis/attendance/baseServer/setRecordUploadUrl";
     private static final String SET_VERIFY_THRESHOLD = "/miaxis/attendance/baseServer/setVerifyThreshold";
     private static final String SET_RECORD_CLEAR_THRESHOLD = "/miaxis/attendance/baseServer/setRecordClearThreshold";
+    private static final String SET_VOICE_PROMPT = "/miaxis/attendance/baseServer/setVoicePrompt";
     private static final String GET_VERSION_NUMBER = "/miaxis/attendance/baseServer/getVesionNumber";
     private static final String VERSION_UPDATE = "/miaxis/attendance/baseServer/versionUpdate";
 
@@ -59,6 +60,7 @@ public class BasisServer {
                     return handleSetVerifyThreshold(session);
                 case SET_RECORD_CLEAR_THRESHOLD:
                     return handleSetRecordClearThreshold(session);
+                case SET_VOICE_PROMPT: // 设置语音提示
                 case GET_VERSION_NUMBER: //获取版本号
                     return handleGetVersionNumber(session);
                 case VERSION_UPDATE: //版本更新
@@ -180,6 +182,18 @@ public class BasisServer {
                 ConfigManager.getInstance().setConfig(config);
                 return new ResponseEntity(AttendanceServer.SUCCESS, "设置日志清除阈值成功");
             }
+        }
+        return new ResponseEntity(AttendanceServer.FAILED, "参数校验错误");
+    }
+
+    private ResponseEntity handleSetVoicePrompt(NanoHTTPD.IHTTPSession session) {
+        Map<String, List<String>> parameters = session.getParameters();
+        if (parameters.get("attendancePrompt") != null
+                || parameters.get("cardVerifyPrompt") != null
+                || parameters.get("whitelistPrompt") != null) {
+            String attendancePrompt = parameters.get("attendancePrompt").get(0);
+            String cardVerifyPrompt = parameters.get("cardVerifyPrompt").get(0);
+            String whitelistPrompt = parameters.get("whitelistPrompt").get(0);
         }
         return new ResponseEntity(AttendanceServer.FAILED, "参数校验错误");
     }

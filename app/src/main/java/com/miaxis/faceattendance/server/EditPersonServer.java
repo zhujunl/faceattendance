@@ -11,11 +11,13 @@ import com.miaxis.faceattendance.model.entity.Person;
 import com.miaxis.faceattendance.model.net.ResponseEntity;
 import com.miaxis.faceattendance.service.HttpCommServerService;
 import com.miaxis.faceattendance.util.FileUtil;
+import com.miaxis.faceattendance.util.ValueUtil;
 import com.miaxis.faceattendance.view.fragment.PersonFragment;
 import com.miaxis.faceattendance.view.fragment.VerifyFragment;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -124,6 +126,7 @@ public class EditPersonServer {
                         break;
                     } else {
                         person.setId(null);
+                        person.setRegisterTime(ValueUtil.simpleDateFormat.format(new Date()));
                     }
                 }
                 if (check) {
@@ -156,8 +159,7 @@ public class EditPersonServer {
             if (parameters.get("cardNumberList") != null) {
                 String json = parameters.get("cardNumberList").get(0);
                 if (!TextUtils.isEmpty(json)) {
-                    List<String> cardNumberList = new Gson().fromJson(json, new TypeToken<List<String>>() {
-                    }.getType());
+                    List<String> cardNumberList = new Gson().fromJson(json, new TypeToken<List<String>>() {}.getType());
                     listener.onBackstageBusy(true, "正在删除人员");
                     for (String cardNumber : cardNumberList) {
                         PersonModel.deletePersonByCardNumber(cardNumber);
