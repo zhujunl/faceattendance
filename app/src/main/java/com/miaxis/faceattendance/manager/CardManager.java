@@ -33,22 +33,30 @@ public class CardManager {
 
     /** ================================ 静态内部类单例 ================================ **/
 
-    public static boolean run = true;
     public static boolean noCardFlag = true;
-
+    private Application application;
     private IdCardDriver idCardDriver;
-
+    private Thread readIdCardThread;
     private byte[] lastCardId = null;
 
-    public void startReadCard(Application application) {
-        run = true;
+    public void init(Application application) {
+        this.application = application;
         idCardDriver = new IdCardDriver(application);
-        new Thread(new ReadIdCardThread()).start();
+    }
+
+    public void startReadCard() {
+        if (idCardDriver == null) {
+            idCardDriver = new IdCardDriver(application);
+        }
+        readIdCardThread = new Thread(new ReadIdCardThread());
+        readIdCardThread.start();
     }
 
     public void closeReadCard() {
-        run = false;
-        idCardDriver = null;
+        if (readIdCardThread != null && !readIdCardThread.isInterrupted()) {
+            readIdCardThread.interrupt();
+            readIdCardThread = null;
+        }
     }
 
     /* 解析身份证id 字符串 */
@@ -416,7 +424,7 @@ public class CardManager {
             try {
                 byte[] curCardId;
                 int re;
-                while (run) {
+                while (!interrupted()) {
                     curCardId = new byte[64];
                     re = idCardDriver.mxReadCardId(curCardId);
                     switch (re) {
@@ -438,10 +446,14 @@ public class CardManager {
                             EventBus.getDefault().post(new CardEvent(CardEvent.NO_CARD));
                             break;
                     }
-                    Thread.sleep(100);
+                    Thread.sleep(200);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                idCardDriver = null;
+                if (!(e instanceof InterruptedException)) {
+                    startReadCard();
+                }
             }
         }
     }

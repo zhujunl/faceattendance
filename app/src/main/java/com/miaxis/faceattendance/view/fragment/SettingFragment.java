@@ -26,8 +26,12 @@ public class SettingFragment extends BaseFragment {
     ImageView ivSaveConfig;
     @BindView(R.id.tv_version)
     TextView tvVersion;
-    @BindView(R.id.et_url)
-    EditText etUrl;
+    @BindView(R.id.et_attendance_url)
+    EditText etAttendanceUrl;
+    @BindView(R.id.et_card_verify_url)
+    EditText etCardVerifyUrl;
+    @BindView(R.id.et_password)
+    EditText etPassword;
 
     private Config config;
     private OnFragmentInteractionListener mListener;
@@ -53,7 +57,9 @@ public class SettingFragment extends BaseFragment {
     @Override
     protected void initView() {
         tvVersion.setText(ValueUtil.getCurVersion(getContext()));
-        etUrl.setText(config.getUploadUrl());
+        etAttendanceUrl.setText(config.getUploadUrl());
+        etCardVerifyUrl.setText(config.getCardUploadUrl());
+        etPassword.setText(config.getPassword());
         ivSaveConfig.setOnClickListener(v -> saveConfig());
     }
 
@@ -80,13 +86,21 @@ public class SettingFragment extends BaseFragment {
     }
 
     private void saveConfig() {
-        if (!TextUtils.isEmpty(etUrl.getText().toString())) {
-            if (!ValueUtil.isHttpFormat(etUrl.getText().toString())) {
-                ToastManager.toast(getContext(), "上传数据URL校验失败，请输入\"http://host:port/api\"格式", ToastManager.INFO);
+        if (!TextUtils.isEmpty(etAttendanceUrl.getText().toString())) {
+            if (!ValueUtil.isHttpFormat(etAttendanceUrl.getText().toString())) {
+                ToastManager.toast(getContext(), "人脸考勤上传数据URL校验失败，请输入\"http://host:port/api\"格式", ToastManager.INFO);
                 return;
             }
         }
-        config.setUploadUrl(etUrl.getText().toString());
+        if (!TextUtils.isEmpty(etCardVerifyUrl.getText().toString())) {
+            if (!ValueUtil.isHttpFormat(etCardVerifyUrl.getText().toString())) {
+                ToastManager.toast(getContext(), "人证核验上传数据URL校验失败，请输入\"http://host:port/api\"格式", ToastManager.INFO);
+                return;
+            }
+        }
+        config.setUploadUrl(etAttendanceUrl.getText().toString());
+        config.setCardUploadUrl(etCardVerifyUrl.getText().toString());
+        config.setPassword(etPassword.getText().toString());
         ConfigManager.getInstance().saveConfig(config, aBoolean -> {
             if (aBoolean) {
                 ToastManager.toast(getContext(), "设置保存成功", ToastManager.SUCCESS);

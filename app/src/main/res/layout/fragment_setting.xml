@@ -60,12 +60,54 @@
                 <View style="@style/VerticalLine"/>
 
                 <TextView style="@style/SettingName"
-                    android:text="上传地址" />
+                    android:text="人脸考勤上传地址" />
 
                 <View style="@style/VerticalLine"/>
 
                 <EditText style="@style/SettingBody"
-                    android:id="@+id/et_url"
+                    android:id="@+id/et_attendance_url"
+                    android:background="@color/white"
+                    android:textSize="20sp"
+                    android:singleLine="true" />
+
+                <View style="@style/VerticalLine"/>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalLine"/>
+
+            <LinearLayout style="@style/SettingItem">
+
+                <View style="@style/VerticalLine"/>
+
+                <TextView style="@style/SettingName"
+                    android:text="人证核验上传地址" />
+
+                <View style="@style/VerticalLine"/>
+
+                <EditText style="@style/SettingBody"
+                    android:id="@+id/et_card_verify_url"
+                    android:background="@color/white"
+                    android:textSize="20sp"
+                    android:singleLine="true" />
+
+                <View style="@style/VerticalLine"/>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalLine"/>
+
+            <LinearLayout style="@style/SettingItem">
+
+                <View style="@style/VerticalLine"/>
+
+                <TextView style="@style/SettingName"
+                    android:text="设备密码" />
+
+                <View style="@style/VerticalLine"/>
+
+                <EditText style="@style/SettingBody"
+                    android:id="@+id/et_password"
                     android:background="@color/white"
                     android:textSize="20sp"
                     android:singleLine="true" />

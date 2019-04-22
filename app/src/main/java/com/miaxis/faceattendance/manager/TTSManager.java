@@ -43,7 +43,7 @@ public class TTSManager {
      * @param message
      */
     public void playVoiceMessageFlush(String message) {
-        ttsRef.get().speak(message, TextToSpeech.QUEUE_FLUSH, null, "TTSMANAGERFLUSH");
+        ttsRef.get().speak(message, TextToSpeech.QUEUE_FLUSH, null);
     }
 
     /**
@@ -51,7 +51,7 @@ public class TTSManager {
      * @param message
      */
     public void playVoiceMessageAdd(String message) {
-        ttsRef.get().speak(message, TextToSpeech.QUEUE_ADD, null, "TTSMANAGERADD");
+        ttsRef.get().speak(message, TextToSpeech.QUEUE_ADD, null);
     }
 
     /**

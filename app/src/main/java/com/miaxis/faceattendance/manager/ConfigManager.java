@@ -47,6 +47,9 @@ public class ConfigManager {
                     .verifyScore(ValueUtil.DEFAULT_VERIFY_SCORE)
                     .cardVerifyScore(ValueUtil.DEFAULT_CARD_VERIFY_SCORE)
                     .recordClearThreshold(ValueUtil.DEFAULT_RECORD_CLEAR_THRESHOLD)
+                    .attendancePrompt(ValueUtil.DEFAULT_ATTENDANCE_PROMPT)
+                    .cardVerifyPrompt(ValueUtil.DEFAULT_CARD_VERIFY_PROMPT)
+                    .whitelistPrompt(ValueUtil.DEFAULT_WHITELIST_PROMPT)
                     .build();
             DaoManager.getInstance().getDaoSession().getConfigDao().insert(config);
         }

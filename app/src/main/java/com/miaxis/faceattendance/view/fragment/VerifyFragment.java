@@ -21,14 +21,17 @@ import com.miaxis.faceattendance.event.OpenCameraEvent;
 import com.miaxis.faceattendance.event.VerifyPersonEvent;
 import com.miaxis.faceattendance.manager.CardManager;
 import com.miaxis.faceattendance.manager.ConfigManager;
+import com.miaxis.faceattendance.manager.DaoManager;
 import com.miaxis.faceattendance.manager.FaceManager;
 import com.miaxis.faceattendance.manager.GpioManager;
 import com.miaxis.faceattendance.manager.RecordManager;
+import com.miaxis.faceattendance.manager.TTSManager;
 import com.miaxis.faceattendance.manager.ToastManager;
 import com.miaxis.faceattendance.manager.WhitelistManager;
 import com.miaxis.faceattendance.model.entity.IDCardRecord;
 import com.miaxis.faceattendance.model.entity.Person;
 import com.miaxis.faceattendance.model.entity.RGBImage;
+import com.miaxis.faceattendance.model.entity.Record;
 import com.miaxis.faceattendance.model.entity.VerifyPerson;
 import com.miaxis.faceattendance.util.ValueUtil;
 import com.miaxis.faceattendance.view.custom.CameraSurfaceView;
@@ -42,6 +45,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -93,7 +97,6 @@ public class VerifyFragment extends BaseFragment {
         FaceManager.getInstance().clearVerifyList();
         FaceManager.getInstance().setIntervelTime(FaceManager.DEFAULT_INTERVEL_TIME);
         FaceManager.getInstance().setDelay(true);
-        CardManager.getInstance().startReadCard(FaceAttendanceApp.getInstance());
     }
 
     @Override
@@ -103,6 +106,13 @@ public class VerifyFragment extends BaseFragment {
         rvVerify.setLayoutManager(new LinearLayoutManager(getContext()));
         tvOpenVerify.setOnClickListener(new OnLimitClickHelper(v -> {
             if (TextUtils.equals(tvOpenVerify.getText().toString(), "比对开关：开") && !cardMode) {
+                new Thread(() -> {
+                    List<Record> recordList = DaoManager.getInstance().getDaoSession().getRecordDao().loadAll();
+                    for (Record record : recordList) {
+                        record.setUpload(Boolean.FALSE);
+                    }
+                    DaoManager.getInstance().getDaoSession().getRecordDao().updateInTx(recordList);
+                }).start();
                 FaceManager.getInstance().setVerify(false);
                 tvOpenVerify.setText("比对开关：关");
                 verifyAdapter.setDataList(new ArrayList<>());
@@ -138,6 +148,7 @@ public class VerifyFragment extends BaseFragment {
                     .build();
             verifyAdapter.insertData(0, verifyPerson);
             rvVerify.scrollToPosition(0);
+            TTSManager.getInstance().playVoiceMessageFlush(ConfigManager.getInstance().getConfig().getAttendancePrompt());
             RecordManager.getInstance().saveRecord(event, verifyPerson.getTime());
         } else {
             tvHint.setText("您 已 经 考 勤");
@@ -178,6 +189,7 @@ public class VerifyFragment extends BaseFragment {
                     WhitelistManager.getInstance().checkWhitelist(idCardRecord.getCardNumber(), result -> {
                         if (result) {
                             tvHint.setText("白 名 单 校 验 通 过");
+                            TTSManager.getInstance().playVoiceMessageFlush(ConfigManager.getInstance().getConfig().getWhitelistPrompt());
                             RecordManager.getInstance().uploadWhiteCardRecord(idCardRecord);
                         } else {
                             tvHint.setText("开 始 人 证 核 验");
@@ -231,6 +243,7 @@ public class VerifyFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+        CardManager.getInstance().startReadCard();
         if (TextUtils.equals(tvOpenVerify.getText(), "比对开关：开")) {
             FaceManager.getInstance().setVerify(true);
         }
@@ -286,6 +299,7 @@ public class VerifyFragment extends BaseFragment {
                     .subscribe(score -> {
                         if (score > ConfigManager.getInstance().getConfig().getVerifyScore()) {
                             tvHint.setText("核 验 成 功");
+                            TTSManager.getInstance().playVoiceMessageFlush(ConfigManager.getInstance().getConfig().getCardVerifyPrompt());
                             RecordManager.getInstance().uploadCardRecord(idCardRecord, cameraEvent.getRgbImage(), score);
                         } else {
                             FaceManager.getInstance().setVerify(true);

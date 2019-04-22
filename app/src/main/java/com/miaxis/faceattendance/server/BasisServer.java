@@ -61,6 +61,7 @@ public class BasisServer {
                 case SET_RECORD_CLEAR_THRESHOLD:
                     return handleSetRecordClearThreshold(session);
                 case SET_VOICE_PROMPT: // 设置语音提示
+                    return handleSetVoicePrompt(session);
                 case GET_VERSION_NUMBER: //获取版本号
                     return handleGetVersionNumber(session);
                 case VERSION_UPDATE: //版本更新
@@ -194,6 +195,17 @@ public class BasisServer {
             String attendancePrompt = parameters.get("attendancePrompt").get(0);
             String cardVerifyPrompt = parameters.get("cardVerifyPrompt").get(0);
             String whitelistPrompt = parameters.get("whitelistPrompt").get(0);
+            if (!TextUtils.isEmpty(attendancePrompt)
+                    || !TextUtils.isEmpty(cardVerifyPrompt)
+                    || !TextUtils.isEmpty(whitelistPrompt)) {
+                Config config = ConfigManager.getInstance().getConfig();
+                config.setAttendancePrompt(attendancePrompt);
+                config.setCardVerifyPrompt(cardVerifyPrompt);
+                config.setWhitelistPrompt(whitelistPrompt);
+                ConfigModel.saveConfig(config);
+                ConfigManager.getInstance().setConfig(config);
+                return new ResponseEntity(AttendanceServer.SUCCESS, "设置日志清除阈值成功");
+            }
         }
         return new ResponseEntity(AttendanceServer.FAILED, "参数校验错误");
     }

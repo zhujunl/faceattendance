@@ -7,6 +7,7 @@ import com.liulishuo.filedownloader.FileDownloader;
 import com.miaxis.faceattendance.MyEventBusIndex;
 import com.miaxis.faceattendance.event.InitFaceEvent;
 import com.miaxis.faceattendance.manager.AmapManager;
+import com.miaxis.faceattendance.manager.CardManager;
 import com.miaxis.faceattendance.manager.ConfigManager;
 import com.miaxis.faceattendance.manager.CrashExceptionManager;
 import com.miaxis.faceattendance.manager.DaoManager;
@@ -27,15 +28,14 @@ public class FaceAttendanceApp extends Application {
 
     private static FaceAttendanceApp instance;
 
-    private static final OkHttpClient CLIENT = new OkHttpClient.Builder().
-            connectTimeout(5, TimeUnit.SECONDS).
-            readTimeout(5, TimeUnit.SECONDS).
-            writeTimeout(5, TimeUnit.SECONDS).build();
+//    private static final OkHttpClient CLIENT = new OkHttpClient.Builder().
+//            connectTimeout(5, TimeUnit.SECONDS).
+//            readTimeout(5, TimeUnit.SECONDS).
+//            writeTimeout(5, TimeUnit.SECONDS).build();
 
     public static final Retrofit.Builder RETROFIT = new Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .client(CLIENT);
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
 
     @Override
     public void onCreate() {
@@ -57,6 +57,7 @@ public class FaceAttendanceApp extends Application {
         GpioManager.getInstance().init(this);
         ConfigManager.getInstance().checkConfig();
         CrashExceptionManager.getInstance().init(this);
+        CardManager.getInstance().init(this);
         int result = FaceManager.getInstance().initFaceST(getApplicationContext(), FileUtil.MODEL_PATH, FileUtil.LICENCE_PATH);
         EventBus.getDefault().post(new InitFaceEvent(result));
     }

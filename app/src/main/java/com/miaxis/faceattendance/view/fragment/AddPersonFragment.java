@@ -95,7 +95,6 @@ public class AddPersonFragment extends BaseFragment {
     @Override
     protected void initData() {
         EventBus.getDefault().register(this);
-        CardManager.getInstance().startReadCard(FaceAttendanceApp.getInstance());
     }
 
     @Override
@@ -165,6 +164,12 @@ public class AddPersonFragment extends BaseFragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        CardManager.getInstance().startReadCard();
     }
 
     @Override

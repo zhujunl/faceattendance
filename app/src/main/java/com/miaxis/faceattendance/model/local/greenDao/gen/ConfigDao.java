@@ -32,6 +32,9 @@ public class ConfigDao extends AbstractDao<Config, Long> {
         public final static Property VerifyScore = new Property(5, float.class, "verifyScore", false, "VERIFY_SCORE");
         public final static Property CardVerifyScore = new Property(6, float.class, "cardVerifyScore", false, "CARD_VERIFY_SCORE");
         public final static Property RecordClearThreshold = new Property(7, int.class, "recordClearThreshold", false, "RECORD_CLEAR_THRESHOLD");
+        public final static Property AttendancePrompt = new Property(8, String.class, "attendancePrompt", false, "ATTENDANCE_PROMPT");
+        public final static Property CardVerifyPrompt = new Property(9, String.class, "cardVerifyPrompt", false, "CARD_VERIFY_PROMPT");
+        public final static Property WhitelistPrompt = new Property(10, String.class, "whitelistPrompt", false, "WHITELIST_PROMPT");
     }
 
 
@@ -54,7 +57,10 @@ public class ConfigDao extends AbstractDao<Config, Long> {
                 "\"QUALITY_SCORE\" REAL NOT NULL ," + // 4: qualityScore
                 "\"VERIFY_SCORE\" REAL NOT NULL ," + // 5: verifyScore
                 "\"CARD_VERIFY_SCORE\" REAL NOT NULL ," + // 6: cardVerifyScore
-                "\"RECORD_CLEAR_THRESHOLD\" INTEGER NOT NULL );"); // 7: recordClearThreshold
+                "\"RECORD_CLEAR_THRESHOLD\" INTEGER NOT NULL ," + // 7: recordClearThreshold
+                "\"ATTENDANCE_PROMPT\" TEXT," + // 8: attendancePrompt
+                "\"CARD_VERIFY_PROMPT\" TEXT," + // 9: cardVerifyPrompt
+                "\"WHITELIST_PROMPT\" TEXT);"); // 10: whitelistPrompt
     }
 
     /** Drops the underlying database table. */
@@ -90,6 +96,21 @@ public class ConfigDao extends AbstractDao<Config, Long> {
         stmt.bindDouble(6, entity.getVerifyScore());
         stmt.bindDouble(7, entity.getCardVerifyScore());
         stmt.bindLong(8, entity.getRecordClearThreshold());
+ 
+        String attendancePrompt = entity.getAttendancePrompt();
+        if (attendancePrompt != null) {
+            stmt.bindString(9, attendancePrompt);
+        }
+ 
+        String cardVerifyPrompt = entity.getCardVerifyPrompt();
+        if (cardVerifyPrompt != null) {
+            stmt.bindString(10, cardVerifyPrompt);
+        }
+ 
+        String whitelistPrompt = entity.getWhitelistPrompt();
+        if (whitelistPrompt != null) {
+            stmt.bindString(11, whitelistPrompt);
+        }
     }
 
     @Override
@@ -119,6 +140,21 @@ public class ConfigDao extends AbstractDao<Config, Long> {
         stmt.bindDouble(6, entity.getVerifyScore());
         stmt.bindDouble(7, entity.getCardVerifyScore());
         stmt.bindLong(8, entity.getRecordClearThreshold());
+ 
+        String attendancePrompt = entity.getAttendancePrompt();
+        if (attendancePrompt != null) {
+            stmt.bindString(9, attendancePrompt);
+        }
+ 
+        String cardVerifyPrompt = entity.getCardVerifyPrompt();
+        if (cardVerifyPrompt != null) {
+            stmt.bindString(10, cardVerifyPrompt);
+        }
+ 
+        String whitelistPrompt = entity.getWhitelistPrompt();
+        if (whitelistPrompt != null) {
+            stmt.bindString(11, whitelistPrompt);
+        }
     }
 
     @Override
@@ -136,7 +172,10 @@ public class ConfigDao extends AbstractDao<Config, Long> {
             cursor.getFloat(offset + 4), // qualityScore
             cursor.getFloat(offset + 5), // verifyScore
             cursor.getFloat(offset + 6), // cardVerifyScore
-            cursor.getInt(offset + 7) // recordClearThreshold
+            cursor.getInt(offset + 7), // recordClearThreshold
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // attendancePrompt
+            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // cardVerifyPrompt
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10) // whitelistPrompt
         );
         return entity;
     }
@@ -151,6 +190,9 @@ public class ConfigDao extends AbstractDao<Config, Long> {
         entity.setVerifyScore(cursor.getFloat(offset + 5));
         entity.setCardVerifyScore(cursor.getFloat(offset + 6));
         entity.setRecordClearThreshold(cursor.getInt(offset + 7));
+        entity.setAttendancePrompt(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setCardVerifyPrompt(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
+        entity.setWhitelistPrompt(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
      }
     
     @Override

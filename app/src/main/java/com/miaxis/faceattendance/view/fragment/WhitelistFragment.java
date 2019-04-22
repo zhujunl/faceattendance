@@ -83,7 +83,6 @@ public class WhitelistFragment extends BaseFragment implements WhitelistContract
     protected void initData() {
         presenter = new WhitelistPresenter(this, this);
         EventBus.getDefault().register(this);
-        CardManager.getInstance().startReadCard(FaceAttendanceApp.getInstance());
     }
 
     @Override
@@ -204,6 +203,12 @@ public class WhitelistFragment extends BaseFragment implements WhitelistContract
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        CardManager.getInstance().startReadCard();
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         CardManager.getInstance().closeReadCard();
@@ -212,6 +217,7 @@ public class WhitelistFragment extends BaseFragment implements WhitelistContract
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        EventBus.getDefault().unregister(this);
         presenter.doDestroy();
     }
 
@@ -246,7 +252,7 @@ public class WhitelistFragment extends BaseFragment implements WhitelistContract
     private boolean checkInput() {
         if (TextUtils.isEmpty(etName.getText().toString())
                 || TextUtils.isEmpty(etCardNumber.getText().toString())
-                || ValueUtil.isIDNumber(etCardNumber.getText().toString())) {
+                || !ValueUtil.isIDNumber(etCardNumber.getText().toString())) {
             return false;
         }
         return true;

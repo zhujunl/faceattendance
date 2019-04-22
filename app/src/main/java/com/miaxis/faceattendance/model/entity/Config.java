@@ -16,10 +16,14 @@ public class Config {
     private float verifyScore;
     private float cardVerifyScore;
     private int recordClearThreshold;
-    @Generated(hash = 279804431)
+    private String attendancePrompt;
+    private String cardVerifyPrompt;
+    private String whitelistPrompt;
+    @Generated(hash = 545178242)
     public Config(Long id, String uploadUrl, String cardUploadUrl, String password,
             float qualityScore, float verifyScore, float cardVerifyScore,
-            int recordClearThreshold) {
+            int recordClearThreshold, String attendancePrompt,
+            String cardVerifyPrompt, String whitelistPrompt) {
         this.id = id;
         this.uploadUrl = uploadUrl;
         this.cardUploadUrl = cardUploadUrl;
@@ -28,6 +32,9 @@ public class Config {
         this.verifyScore = verifyScore;
         this.cardVerifyScore = cardVerifyScore;
         this.recordClearThreshold = recordClearThreshold;
+        this.attendancePrompt = attendancePrompt;
+        this.cardVerifyPrompt = cardVerifyPrompt;
+        this.whitelistPrompt = whitelistPrompt;
     }
     @Generated(hash = 589037648)
     public Config() {
@@ -42,6 +49,9 @@ public class Config {
         setVerifyScore(builder.verifyScore);
         setCardVerifyScore(builder.cardVerifyScore);
         setRecordClearThreshold(builder.recordClearThreshold);
+        setAttendancePrompt(builder.attendancePrompt);
+        setCardVerifyPrompt(builder.cardVerifyPrompt);
+        setWhitelistPrompt(builder.whitelistPrompt);
     }
 
     public Long getId() {
@@ -92,6 +102,24 @@ public class Config {
     public void setRecordClearThreshold(int recordClearThreshold) {
         this.recordClearThreshold = recordClearThreshold;
     }
+    public String getAttendancePrompt() {
+        return this.attendancePrompt;
+    }
+    public void setAttendancePrompt(String attendancePrompt) {
+        this.attendancePrompt = attendancePrompt;
+    }
+    public String getCardVerifyPrompt() {
+        return this.cardVerifyPrompt;
+    }
+    public void setCardVerifyPrompt(String cardVerifyPrompt) {
+        this.cardVerifyPrompt = cardVerifyPrompt;
+    }
+    public String getWhitelistPrompt() {
+        return this.whitelistPrompt;
+    }
+    public void setWhitelistPrompt(String whitelistPrompt) {
+        this.whitelistPrompt = whitelistPrompt;
+    }
 
     public static final class Builder {
         private Long id;
@@ -102,6 +130,9 @@ public class Config {
         private float verifyScore;
         private float cardVerifyScore;
         private int recordClearThreshold;
+        private String attendancePrompt;
+        private String cardVerifyPrompt;
+        private String whitelistPrompt;
 
         public Builder() {
         }
@@ -143,6 +174,21 @@ public class Config {
 
         public Builder recordClearThreshold(int val) {
             recordClearThreshold = val;
+            return this;
+        }
+
+        public Builder attendancePrompt(String val) {
+            attendancePrompt = val;
+            return this;
+        }
+
+        public Builder cardVerifyPrompt(String val) {
+            cardVerifyPrompt = val;
+            return this;
+        }
+
+        public Builder whitelistPrompt(String val) {
+            whitelistPrompt = val;
             return this;
         }
 

@@ -1,5 +1,8 @@
 package com.miaxis.faceattendance.model.net;
 
+import org.reactivestreams.Publisher;
+
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
 import retrofit2.http.Body;
@@ -12,5 +15,9 @@ public interface UpLoadRecord {
     @Headers("Content-Type:application/json;charset=utf-8")
     @POST
     Observable<ResponseEntity> uploadData(@Url String url, @Body RequestBody requestBody);
+
+    @Headers("Content-Type:application/json;charset=utf-8")
+    @POST
+    Flowable<ResponseEntity> uploadDataFlowable(@Url String url, @Body RequestBody requestBody);
 
 }

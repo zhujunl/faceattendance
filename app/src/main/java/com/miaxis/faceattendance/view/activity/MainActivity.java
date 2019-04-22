@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.text.InputFilter;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -22,6 +24,7 @@ import com.miaxis.faceattendance.R;
 import com.miaxis.faceattendance.app.FaceAttendanceApp;
 import com.miaxis.faceattendance.app.GlideApp;
 import com.miaxis.faceattendance.event.InitFaceEvent;
+import com.miaxis.faceattendance.manager.ConfigManager;
 import com.miaxis.faceattendance.manager.ToastManager;
 import com.miaxis.faceattendance.service.HttpCommServerService;
 import com.miaxis.faceattendance.util.ValueUtil;
@@ -90,6 +93,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     @BindView(R.id.rl_toolbar)
     RelativeLayout rlToolbar;
 
+    private MaterialDialog passwordDialog;
     private MaterialDialog quitDialog;
 
     private HttpCommServerService httpCommServerService;
@@ -143,17 +147,13 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     @Override
     protected void initView() {
         GlideApp.with(this).load(R.raw.loading).into(ivLoading);
-        quitDialog = new MaterialDialog.Builder(this)
-                .title("确认退出？")
-                .positiveText("确认")
-                .onPositive((dialog, which) -> finish())
-                .negativeText("取消")
-                .build();
+        initDialog();
         ivDrawer.setOnClickListener(new OnLimitClickHelper(v -> {
-            if (dlMain.isDrawerOpen(GravityCompat.START)) {
-                dlMain.closeDrawer(GravityCompat.START);
+            if (getVisibleFragment() instanceof VerifyFragment && !dlMain.isDrawerOpen(GravityCompat.START)) {
+                passwordDialog.getInputEditText().setText("");
+                passwordDialog.show();
             } else {
-                dlMain.openDrawer(GravityCompat.START);
+                changeDrawerState();
             }
         }));
         tvVerify.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
@@ -242,11 +242,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
 
     @Override
     public void onBackPressed() {
-        if (dlMain.isDrawerOpen(GravityCompat.START)) {
-            quitDialog.show();
-        } else {
-            ivDrawer.performClick();
-        }
+        ivDrawer.performClick();
     }
 
     @Override
@@ -261,7 +257,6 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     private void onInitFace() {
         Intent intent = new Intent(this, HttpCommServerService.class);
         bindService(intent, serviceConnection, BIND_AUTO_CREATE);
-        dlMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         rlInit.setVisibility(View.GONE);
         rlToolbar.setVisibility(View.VISIBLE);
         getSupportFragmentManager().beginTransaction().replace(R.id.fl_main, verifyFragment = VerifyFragment.newInstance()).commit();
@@ -273,31 +268,37 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
             case R.id.tv_verify:
                 if (!(getVisibleFragment() instanceof VerifyFragment)) {
                     enterAnotherFragment(Fragment.class, VerifyFragment.class, null);
+                    dlMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
                 }
                 break;
             case R.id.tv_person:
                 if (!(getVisibleFragment() instanceof PersonFragment)) {
                     enterAnotherFragment(Fragment.class, PersonFragment.class, null);
+                    dlMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                 }
                 break;
             case R.id.tv_add_person:
                 if (!(getVisibleFragment() instanceof AddPersonFragment)) {
                     enterAnotherFragment(Fragment.class, AddPersonFragment.class, null);
+                    dlMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                 }
                 break;
             case R.id.tv_whitelist:
                 if (!(getVisibleFragment() instanceof WhitelistFragment)) {
                     enterAnotherFragment(Fragment.class, WhitelistFragment.class, null);
+                    dlMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                 }
                 break;
             case R.id.tv_record:
                 if (!(getVisibleFragment() instanceof RecordFragment)) {
                     enterAnotherFragment(Fragment.class, RecordFragment.class, null);
+                    dlMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                 }
                 break;
             case R.id.tv_setting:
                 if (!(getVisibleFragment() instanceof SettingFragment)) {
                     enterAnotherFragment(Fragment.class, SettingFragment.class, null);
+                    dlMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                 }
                 break;
             case R.id.tv_quit:
@@ -364,5 +365,36 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
             });
         }
     };
+
+    private void changeDrawerState() {
+        if (dlMain.isDrawerOpen(GravityCompat.START)) {
+            dlMain.closeDrawer(GravityCompat.START);
+        } else {
+            dlMain.openDrawer(GravityCompat.START);
+        }
+    }
+
+    private void initDialog() {
+        passwordDialog = new MaterialDialog.Builder(this)
+                .title("请输入设备密码")
+                .inputType(InputType.TYPE_CLASS_NUMBER)
+                .input("", "", (dialog, input) -> {})
+                .inputRange(6, 6)
+                .positiveText("确认")
+                .onPositive((dialog, which) -> {
+                    if (TextUtils.equals(dialog.getInputEditText().getText().toString(), ConfigManager.getInstance().getConfig().getPassword())) {
+                        changeDrawerState();
+                    }
+                })
+                .negativeText("取消")
+                .build();
+        passwordDialog.getInputEditText().setFilters(new InputFilter[] {new InputFilter.LengthFilter(6)});
+        quitDialog = new MaterialDialog.Builder(this)
+                .title("确认退出？")
+                .positiveText("确认")
+                .onPositive((dialog, which) -> finish())
+                .negativeText("取消")
+                .build();
+    }
 
 }
