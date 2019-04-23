@@ -13,45 +13,36 @@ import com.miaxis.faceattendance.model.entity.IDCardRecord;
 import com.miaxis.faceattendance.model.entity.Person;
 import com.miaxis.faceattendance.model.entity.RGBImage;
 import com.miaxis.faceattendance.model.entity.Record;
+import com.miaxis.faceattendance.model.entity.UploadRecord;
 import com.miaxis.faceattendance.model.net.ResponseEntity;
-import com.miaxis.faceattendance.model.net.UpLoadRecord;
+import com.miaxis.faceattendance.model.net.UpLoadRecordNet;
 import com.miaxis.faceattendance.util.FileUtil;
 import com.miaxis.faceattendance.util.ValueUtil;
 
 import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.NonNull;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
-import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.FlowableSubscriber;
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.http.Url;
 
 public class RecordManager {
 
@@ -68,7 +59,7 @@ public class RecordManager {
 
     /** ================================ 静态内部类单例 ================================ **/
 
-    private Record recordCache;
+    private Subscription subscription;
     private ConcurrentLinkedQueue<Record> recordQueue = new ConcurrentLinkedQueue<>();
 
     public void saveRecord(VerifyPersonEvent event, String time) {
@@ -103,8 +94,7 @@ public class RecordManager {
                     FaceManager.getInstance().saveRGBImageData(imagePath, rgbImage.getRgbImage(), rgbImage.getWidth(), rgbImage.getHeight());
                     record.setFacePicture(imagePath);
                     RecordModel.saveRecord(record);
-//                    uploadAllNotUploadedRecord(record);
-                    demo18();
+                    uploadAllNotUploadedRecord(record);
                 }, Throwable::printStackTrace);
     }
 
@@ -156,10 +146,10 @@ public class RecordManager {
                     .flatMap((Function<CardRecord, ObservableSource<ResponseEntity>>) cardRecord -> {
                         URL url = new URL(uploadUrl);
                         Retrofit retrofit = FaceAttendanceApp.RETROFIT.baseUrl("http://" + url.getHost() + ":" + url.getPort() + "/").build();
-                        UpLoadRecord upLoadRecord = retrofit.create(UpLoadRecord.class);
+                        UpLoadRecordNet upLoadRecordNet = retrofit.create(UpLoadRecordNet.class);
                         String json = new Gson().toJson(cardRecord);
                         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
-                        return upLoadRecord.uploadData(uploadUrl, requestBody);
+                        return upLoadRecordNet.uploadData(uploadUrl, requestBody);
                     })
                     .subscribe(responseEntity -> {
                         Log.e("asd", "uploadCardRecord上传成功");
@@ -208,69 +198,24 @@ public class RecordManager {
                     .flatMap((Function<CardRecord, ObservableSource<ResponseEntity>>) cardRecord -> {
                         URL url = new URL(uploadUrl);
                         Retrofit retrofit = FaceAttendanceApp.RETROFIT.baseUrl("http://" + url.getHost() + ":" + url.getPort() + "/").build();
-                        UpLoadRecord upLoadRecord = retrofit.create(UpLoadRecord.class);
+                        UpLoadRecordNet upLoadRecordNet = retrofit.create(UpLoadRecordNet.class);
                         String json = new Gson().toJson(cardRecord);
                         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
-                        return upLoadRecord.uploadData(uploadUrl, requestBody);
+                        return upLoadRecordNet.uploadData(uploadUrl, requestBody);
                     })
                     .subscribe(responseEntity -> {
                         Log.e("asd", "uploadWhiteCardRecord");
                     }, Throwable::printStackTrace);
         }
     }
-    private volatile boolean flag = false;
-    public void demo18() {
-        Flowable
-                .create(new FlowableOnSubscribe<Integer>() {
-                    @Override
-                    public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                        int i = 0;
-                        while (true) {
-                            if (flag) continue;//此处添加代码，让flowable按需发送数据
-                            System.out.println("发射---->" + i);
-                            i++;
-                            e.onNext(i);
-                            flag = true;
-                        }
-                    }
-                }, BackpressureStrategy.MISSING)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(Schedulers.newThread())
-                .subscribe(new Subscriber<Integer>() {
-                    private Subscription mSubscription;
 
-                    @Override
-                    public void onSubscribe(Subscription s) {
-                        s.request(1);            //设置初始请求数据量为1
-                        mSubscription = s;
-                    }
-
-                    @Override
-                    public void onNext(Integer integer) {
-                        try {
-                            Thread.sleep(50);
-                            System.out.println("接收------>" + integer);
-//                            mSubscription.request(1);//每接收到一条数据增加一条请求量
-                            flag = false;
-                        } catch (InterruptedException ignore) {
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable t) {
-                    }
-
-                    @Override
-                    public void onComplete() {
-                    }
-                });
-    }
-
-    public void uploadAllNotUploadedRecord(Record mRecord) {
+    public void uploadAllNotUploadedRecord(Record mRecord) throws MalformedURLException {
         if (!recordQueue.isEmpty()) {
             Log.e("asd", "recordQueue:add");
             recordQueue.offer(mRecord);
-            return;
+            if (subscription != null) {
+                subscription.cancel();
+            }
         } else {
             for (Record record : RecordModel.loadAllNotUploadedRecord()) {
                 recordQueue.offer(record);
@@ -279,6 +224,9 @@ public class RecordManager {
         Log.e("asd", recordQueue.size() + "");
         String uploadUrl = ConfigManager.getInstance().getConfig().getUploadUrl();
         if (TextUtils.isEmpty(uploadUrl)) return;
+        URL url = new URL(uploadUrl);
+        Retrofit retrofit = FaceAttendanceApp.RETROFIT.baseUrl("http://" + url.getHost() + ":" + url.getPort() + "/").build();
+        UpLoadRecordNet upLoadRecordNet = retrofit.create(UpLoadRecordNet.class);
         Flowable.create((FlowableOnSubscribe<Record>) emitter -> {
             while (!recordQueue.isEmpty()) {
                 if (emitter.requested() == 0) continue;
@@ -287,46 +235,46 @@ public class RecordManager {
                 emitter.onNext(poll);
             }
             emitter.onComplete();
-        }, BackpressureStrategy.MISSING)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .flatMap((Function<Record, Publisher<ResponseEntity>>) record -> {
-                    Log.e("asd", record.getId() + "开始上传");
-                    this.recordCache = record;
-                    URL url = new URL(uploadUrl);
-                    Retrofit retrofit = FaceAttendanceApp.RETROFIT.baseUrl("http://" + url.getHost() + ":" + url.getPort() + "/").build();
-                    record.setFacePicture(FileUtil.pathToBase64(record.getFacePicture()));
-                    UpLoadRecord upLoadRecord = retrofit.create(UpLoadRecord.class);
-                    String json = new Gson().toJson(record);
+        }, BackpressureStrategy.ERROR)
+                .doOnNext(record -> {
+                    UploadRecord uploadRecord = new UploadRecord.Builder()
+                            .cardNumber(record.getCardNumber())
+                            .facePicture(FileUtil.pathToBase64(record.getFacePicture()))
+                            .latitude(record.getLatitude())
+                            .longitude(record.getLongitude())
+                            .location(record.getLocation())
+                            .sex(record.getSex())
+                            .name(record.getName())
+                            .verifyTime(record.getVerifyTime())
+                            .score(record.getScore())
+                            .mode("0")
+                            .build();
+                    String json = new Gson().toJson(uploadRecord);
                     RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
-                    return upLoadRecord.uploadDataFlowable(uploadUrl, requestBody);
-                }, 1)
-                .doOnNext(responseEntity -> {
-                    if (TextUtils.equals(responseEntity.getCode(), "200")) {
-                        Log.e("asd", recordCache.getId() + "上传成功");
-                        recordCache.setUpload(Boolean.TRUE);
-                        RecordModel.updateRecord(recordCache);
+                    Call<ResponseEntity> responseEntityCall = upLoadRecordNet.uploadDataFlowable(uploadUrl, requestBody);
+                    Response<ResponseEntity> response = responseEntityCall.execute();
+                    ResponseEntity responseEntity = response.body();
+                    if (responseEntity != null && TextUtils.equals(responseEntity.getCode(), "200")) {
+                        Log.e("asd", record.getId() + "上传成功");
+                        record.setUpload(Boolean.TRUE);
+                        RecordModel.updateRecord(record);
                     }
                 })
-                .subscribe(new FlowableSubscriber<ResponseEntity>() {
-
-                    private Subscription mSubscription;
-
+                .subscribe(new FlowableSubscriber<Record>() {
                     @Override
                     public void onSubscribe(Subscription s) {
-                        mSubscription = s;
-                        mSubscription.request(1);
+                        subscription = s;
+                        subscription.request(1);
                     }
 
                     @Override
-                    public void onNext(ResponseEntity responseEntity) {
-                        mSubscription.request(1);
+                    public void onNext(Record record) {
+                        subscription.request(1);
                     }
 
                     @Override
                     public void onError(Throwable t) {
                         t.printStackTrace();
-                        Log.e("asd", recordCache.getId() + "上传失败");
                     }
 
                     @Override
@@ -334,17 +282,6 @@ public class RecordManager {
                         clearRecordByThreshold();
                     }
                 });
-//        Observable.create((ObservableOnSubscribe<Record>) emitter -> {
-//            List<Record> recordList = RecordModel.loadAllNotUploadedRecord();
-//            for (Record record : recordList) {
-//                emitter.onNext(record);
-//            }
-//            emitter.onComplete();
-//        })
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(Schedulers.io())
-//                .delay(1000, TimeUnit.MILLISECONDS)
-//                .subscribe(this::uploadRecord, Throwable::printStackTrace, this::clearRecordByThreshold);
     }
 
     private void uploadRecord(Record record) {
@@ -358,10 +295,10 @@ public class RecordManager {
                     .observeOn(Schedulers.io())
                     .flatMap((Function<Retrofit, ObservableSource<ResponseEntity>>) retrofit -> {
                         record.setFacePicture(FileUtil.pathToBase64(record.getFacePicture()));
-                        UpLoadRecord upLoadRecord = retrofit.create(UpLoadRecord.class);
+                        UpLoadRecordNet upLoadRecordNet = retrofit.create(UpLoadRecordNet.class);
                         String json = new Gson().toJson(record);
                         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
-                        return upLoadRecord.uploadData(uploadUrl, requestBody);
+                        return upLoadRecordNet.uploadData(uploadUrl, requestBody);
                     })
                     .subscribe(responseEntity -> {
                         if (TextUtils.equals(responseEntity.getCode(), "200")) {

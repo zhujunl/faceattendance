@@ -214,7 +214,7 @@ public class VerifyFragment extends BaseFragment {
                 }
                 break;
             case CardEvent.OVERDUE:
-                tvHint.setText("证 件 已 过 期");
+                TTSManager.getInstance().playVoiceMessageFlush("已过期");
                 break;
         }
     }

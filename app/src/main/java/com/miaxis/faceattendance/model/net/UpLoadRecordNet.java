@@ -5,12 +5,13 @@ import org.reactivestreams.Publisher;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
+import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Url;
 
-public interface UpLoadRecord {
+public interface UpLoadRecordNet {
 
     @Headers("Content-Type:application/json;charset=utf-8")
     @POST
@@ -18,6 +19,6 @@ public interface UpLoadRecord {
 
     @Headers("Content-Type:application/json;charset=utf-8")
     @POST
-    Flowable<ResponseEntity> uploadDataFlowable(@Url String url, @Body RequestBody requestBody);
+    Call<ResponseEntity> uploadDataFlowable(@Url String url, @Body RequestBody requestBody);
 
 }

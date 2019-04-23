@@ -24,6 +24,7 @@ import com.miaxis.faceattendance.event.FeatureEvent;
 import com.miaxis.faceattendance.manager.CameraManager;
 import com.miaxis.faceattendance.manager.CardManager;
 import com.miaxis.faceattendance.manager.FaceManager;
+import com.miaxis.faceattendance.manager.TTSManager;
 import com.miaxis.faceattendance.manager.ToastManager;
 import com.miaxis.faceattendance.model.PersonModel;
 import com.miaxis.faceattendance.model.entity.IDCardRecord;
@@ -132,6 +133,8 @@ public class AddPersonFragment extends BaseFragment {
                 }
                 etCardNumber.setText(event.getIdCardRecord().getCardNumber());
                 break;
+            case CardEvent.OVERDUE:
+                TTSManager.getInstance().playVoiceMessageFlush("已过期");
         }
     }
 

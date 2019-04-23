@@ -17,6 +17,7 @@ import com.miaxis.faceattendance.app.FaceAttendanceApp;
 import com.miaxis.faceattendance.contract.WhitelistContract;
 import com.miaxis.faceattendance.event.CardEvent;
 import com.miaxis.faceattendance.manager.CardManager;
+import com.miaxis.faceattendance.manager.TTSManager;
 import com.miaxis.faceattendance.manager.ToastManager;
 import com.miaxis.faceattendance.model.WhiteCardModel;
 import com.miaxis.faceattendance.model.entity.WhiteCard;
@@ -182,6 +183,8 @@ public class WhitelistFragment extends BaseFragment implements WhitelistContract
                 etName.setText(event.getIdCardRecord().getName());
                 etCardNumber.setText(event.getIdCardRecord().getCardNumber());
                 break;
+            case CardEvent.OVERDUE:
+                TTSManager.getInstance().playVoiceMessageFlush("已过期");
         }
     }
 
