@@ -106,13 +106,6 @@ public class VerifyFragment extends BaseFragment {
         rvVerify.setLayoutManager(new LinearLayoutManager(getContext()));
         tvOpenVerify.setOnClickListener(new OnLimitClickHelper(v -> {
             if (TextUtils.equals(tvOpenVerify.getText().toString(), "比对开关：开") && !cardMode) {
-                new Thread(() -> {
-                    List<Record> recordList = DaoManager.getInstance().getDaoSession().getRecordDao().loadAll();
-                    for (Record record : recordList) {
-                        record.setUpload(Boolean.FALSE);
-                    }
-                    DaoManager.getInstance().getDaoSession().getRecordDao().updateInTx(recordList);
-                }).start();
                 FaceManager.getInstance().setVerify(false);
                 tvOpenVerify.setText("比对开关：关");
                 verifyAdapter.setDataList(new ArrayList<>());

@@ -5,12 +5,14 @@ import android.util.Base64;
 
 import com.miaxis.faceattendance.model.RecordModel;
 import com.miaxis.faceattendance.model.entity.Record;
+import com.miaxis.faceattendance.model.entity.UploadRecord;
 import com.miaxis.faceattendance.model.net.ResponseEntity;
 import com.miaxis.faceattendance.util.FileUtil;
 import com.miaxis.faceattendance.util.ValueUtil;
 
 import java.io.File;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -62,10 +64,23 @@ public class RecordServer {
                 if ((TextUtils.isEmpty(startDate) && TextUtils.isEmpty(endDate))
                         || (ValueUtil.isValidDate(startDate) && ValueUtil.isValidDate(endDate))) {
                     List<Record> recordList = RecordModel.queryRecord(pageNum, pageSize, name, sex, cardNumber, startDate, endDate, upload);
+                    List<UploadRecord> uploadRecordList = new ArrayList<>();
                     for (Record record : recordList) {
-                        record.setFacePicture(FileUtil.pathToBase64(record.getFacePicture()));
+                        UploadRecord uploadRecord = new UploadRecord.Builder()
+                                .cardNumber(record.getCardNumber())
+                                .facePicture(FileUtil.pathToBase64(record.getFacePicture()))
+                                .latitude(record.getLatitude())
+                                .longitude(record.getLongitude())
+                                .location(record.getLocation())
+                                .sex(record.getSex())
+                                .name(record.getName())
+                                .verifyTime(record.getVerifyTime())
+                                .score(record.getScore())
+                                .mode("0")
+                                .build();
+                        uploadRecordList.add(uploadRecord);
                     }
-                    return new ResponseEntity<>(AttendanceServer.SUCCESS, "查询日志成功", recordList);
+                    return new ResponseEntity<>(AttendanceServer.SUCCESS, "查询日志成功", uploadRecordList);
                 }
             }
         }

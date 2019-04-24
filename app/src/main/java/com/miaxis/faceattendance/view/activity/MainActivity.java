@@ -341,7 +341,12 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
             if (stop) {
                 return false;
             }
-            runOnUiThread(() -> enterAnotherFragment(Fragment.class, fragmentClass, bundle));
+            runOnUiThread(() -> {
+                if (dlMain.isDrawerOpen(GravityCompat.START)) {
+                    dlMain.closeDrawer(GravityCompat.START);
+                }
+                enterAnotherFragment(Fragment.class, fragmentClass, bundle);
+            });
             return true;
         }
 

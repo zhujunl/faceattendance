@@ -58,6 +58,7 @@ public class ConfigManager {
     public void saveConfig(Config config, Consumer<Boolean> consumer) {
         Observable.create((ObservableOnSubscribe<Boolean>) emitter -> {
             ConfigModel.saveConfig(config);
+            this.config = config;
             emitter.onNext(Boolean.TRUE);
         })
                 .subscribeOn(Schedulers.io())

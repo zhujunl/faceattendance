@@ -169,6 +169,7 @@ public class RecordManager {
                     longitude = String.valueOf(AmapManager.getInstance().getaMapLocation().getLongitude());
                     location = AmapManager.getInstance().getaMapLocation().getAddress();
                 }
+                String cardPicture = FileUtil.bitmapToBase64(idCardRecord.getCardBitmap());
                 CardRecord cardRecord = new CardRecord.Builder()
                         .cardType(idCardRecord.getCardType())
                         .cardId(idCardRecord.getCardId())
@@ -186,6 +187,7 @@ public class RecordManager {
                         .chineseName(idCardRecord.getChineseName())
                         .version(idCardRecord.getVersion())
                         .verifyTime(ValueUtil.simpleDateFormat.format(new Date()))
+                        .cardPicture(cardPicture)
                         .location(location)
                         .longitude(longitude)
                         .latitude(latitude)
@@ -211,7 +213,6 @@ public class RecordManager {
 
     public void uploadAllNotUploadedRecord(Record mRecord) throws MalformedURLException {
         if (!recordQueue.isEmpty()) {
-            Log.e("asd", "recordQueue:add");
             recordQueue.offer(mRecord);
             if (subscription != null) {
                 subscription.cancel();
@@ -221,7 +222,6 @@ public class RecordManager {
                 recordQueue.offer(record);
             }
         }
-        Log.e("asd", recordQueue.size() + "");
         String uploadUrl = ConfigManager.getInstance().getConfig().getUploadUrl();
         if (TextUtils.isEmpty(uploadUrl)) return;
         URL url = new URL(uploadUrl);
@@ -231,7 +231,6 @@ public class RecordManager {
             while (!recordQueue.isEmpty()) {
                 if (emitter.requested() == 0) continue;
                 Record poll = recordQueue.poll();
-                Log.e("asd", poll.getId() + "开始下发");
                 emitter.onNext(poll);
             }
             emitter.onComplete();
@@ -255,7 +254,6 @@ public class RecordManager {
                     Response<ResponseEntity> response = responseEntityCall.execute();
                     ResponseEntity responseEntity = response.body();
                     if (responseEntity != null && TextUtils.equals(responseEntity.getCode(), "200")) {
-                        Log.e("asd", record.getId() + "上传成功");
                         record.setUpload(Boolean.TRUE);
                         RecordModel.updateRecord(record);
                     }

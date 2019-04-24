@@ -204,7 +204,7 @@ public class BasisServer {
                 config.setWhitelistPrompt(whitelistPrompt);
                 ConfigModel.saveConfig(config);
                 ConfigManager.getInstance().setConfig(config);
-                return new ResponseEntity(AttendanceServer.SUCCESS, "设置日志清除阈值成功");
+                return new ResponseEntity(AttendanceServer.SUCCESS, "设置语音提示成功");
             }
         }
         return new ResponseEntity(AttendanceServer.FAILED, "参数校验错误");
