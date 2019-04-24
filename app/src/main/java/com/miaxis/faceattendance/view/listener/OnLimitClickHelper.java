@@ -17,7 +17,7 @@ public class OnLimitClickHelper implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         long curTime = Calendar.getInstance().getTimeInMillis();
-        if (curTime - lastClickTime > LIMIT_TIME) {
+        if (curTime - lastClickTime > LIMIT_TIME || curTime - lastClickTime < 0) {
             lastClickTime = curTime;
             if(onLimitClickListener != null){
                 onLimitClickListener.onClick(v);

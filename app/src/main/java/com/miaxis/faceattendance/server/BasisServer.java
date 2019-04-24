@@ -99,7 +99,7 @@ public class BasisServer {
         return new ResponseEntity<>(AttendanceServer.SUCCESS, "获取系统时间成功", time);
     }
 
-    private ResponseEntity handleSetSystemTime(NanoHTTPD.IHTTPSession session) {
+    private synchronized ResponseEntity handleSetSystemTime(NanoHTTPD.IHTTPSession session) {
         Map<String, List<String>> parameters = session.getParameters();
         if (parameters.get("systemTime") != null) {
             String systemTime = parameters.get("systemTime").get(0);

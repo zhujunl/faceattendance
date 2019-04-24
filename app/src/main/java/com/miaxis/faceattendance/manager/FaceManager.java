@@ -312,7 +312,7 @@ public class FaceManager {
     private boolean checkDelay() {
         if (delay) {
             long res = System.currentTimeMillis() - last;
-            if (res > intervelTime) {
+            if (res > intervelTime || res < 0) {
                 last = System.currentTimeMillis();
                 return true;
             }
