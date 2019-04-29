@@ -389,6 +389,8 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
                 .onPositive((dialog, which) -> {
                     if (TextUtils.equals(dialog.getInputEditText().getText().toString(), ConfigManager.getInstance().getConfig().getPassword())) {
                         changeDrawerState();
+                    } else {
+                        ToastManager.toast(this, "密码错误", ToastManager.ERROR);
                     }
                 })
                 .negativeText("取消")

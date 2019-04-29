@@ -2,6 +2,7 @@ package com.miaxis.faceattendance.manager;
 
 import android.app.Application;
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 import android.util.Base64;
 
 import com.miaxis.faceattendance.event.CardEvent;
@@ -62,13 +63,17 @@ public class CardManager {
     /* 解析身份证id 字符串 */
     private String getCardIdStr(byte[] cardId) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < cardId.length; i = i + 2) {
-            if (cardId[i] == (byte) 0x90 && cardId[i + 1] == (byte) 0x00)
-                break;
+        for (int i = 0; i < cardId.length; i++) {
             sb.append(String.format("%02x", cardId[i]));
-            sb.append(String.format("%02x", cardId[i + 1]));
         }
-        return sb.toString();
+        String data = sb.toString();
+        String cardIdStr = data.substring(0, 16);
+        String errorCode = data.substring(16, 20);
+        if (TextUtils.equals(errorCode, "9000")) {
+            return cardIdStr;
+        } else {
+            return "";
+        }
     }
 
     private void readCard(String curCardId) throws Exception {
@@ -87,10 +92,12 @@ public class CardManager {
         } else {
             throw new Exception("读卡失败");
         }
-        if (idCardRecord != null && checkIsOutValidate(idCardRecord)) {
-            EventBus.getDefault().post(new CardEvent(CardEvent.OVERDUE));
-        } else {
-            EventBus.getDefault().post(new CardEvent(idCardRecord));
+        if (idCardRecord != null) {
+            if (checkIsOutValidate(idCardRecord)) {
+                EventBus.getDefault().post(new CardEvent(CardEvent.OVERDUE));
+            } else {
+                EventBus.getDefault().post(new CardEvent(idCardRecord));
+            }
         }
     }
 
@@ -128,10 +135,12 @@ public class CardManager {
         } else {
             throw new Exception("读卡失败");
         }
-        if (idCardRecord != null && checkIsOutValidate(idCardRecord)) {
-            EventBus.getDefault().post(new CardEvent(CardEvent.OVERDUE));
-        } else {
-            EventBus.getDefault().post(new CardEvent(idCardRecord));
+        if (idCardRecord != null) {
+            if (checkIsOutValidate(idCardRecord)) {
+                EventBus.getDefault().post(new CardEvent(CardEvent.OVERDUE));
+            } else {
+                EventBus.getDefault().post(new CardEvent(idCardRecord));
+            }
         }
     }
 

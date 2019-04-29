@@ -228,12 +228,14 @@ public class RecordManager {
         Retrofit retrofit = FaceAttendanceApp.RETROFIT.baseUrl("http://" + url.getHost() + ":" + url.getPort() + "/").build();
         UpLoadRecordNet upLoadRecordNet = retrofit.create(UpLoadRecordNet.class);
         Flowable.create((FlowableOnSubscribe<Record>) emitter -> {
-            while (!recordQueue.isEmpty()) {
+            while (!recordQueue.isEmpty() && !emitter.isCancelled()) {
                 if (emitter.requested() == 0) continue;
                 Record poll = recordQueue.poll();
                 emitter.onNext(poll);
             }
-            emitter.onComplete();
+            if (!emitter.isCancelled()) {
+                emitter.onComplete();
+            }
         }, BackpressureStrategy.ERROR)
                 .doOnNext(record -> {
                     UploadRecord uploadRecord = new UploadRecord.Builder()

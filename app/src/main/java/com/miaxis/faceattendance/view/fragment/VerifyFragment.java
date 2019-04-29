@@ -193,6 +193,7 @@ public class VerifyFragment extends BaseFragment {
                 break;
             case CardEvent.NO_CARD:
                 if (cardMode) {
+                    cardMode = false;
                     FaceManager.getInstance().setActiveVerify(true);
                     FaceManager.getInstance().setIntervelTime(FaceManager.DEFAULT_INTERVEL_TIME);
                     if (TextUtils.equals(tvOpenVerify.getText(), "比对开关：开")) {
@@ -200,7 +201,6 @@ public class VerifyFragment extends BaseFragment {
                     } else {
                         FaceManager.getInstance().setVerify(false);
                     }
-                    cardMode = false;
                     idCardRecord = null;
                     cameraFeatureData = null;
                     tvHint.setVisibility(View.INVISIBLE);

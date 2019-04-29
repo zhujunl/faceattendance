@@ -25,15 +25,19 @@ public class WhitelistManager {
 
     /** ================================ 静态内部类单例 ================================ **/
 
-    public void checkWhitelist(String cardNumber, Consumer<Boolean> consumer) {
+    public void checkWhitelist(String cardNumber, OnCheckWhitelistCallback callback) {
         Observable.create((ObservableOnSubscribe<Boolean>) emitter -> {
             WhiteCard whiteCard = WhiteCardModel.getWhiteCardByCardNumber(cardNumber);
             emitter.onNext(whiteCard != null);
         })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(consumer::accept,
-                        throwable -> consumer.accept(Boolean.FALSE));
+                .subscribe(callback::onCheckWhitelist,
+                        throwable -> callback.onCheckWhitelist(Boolean.FALSE));
+    }
+
+    public interface OnCheckWhitelistCallback {
+        void onCheckWhitelist(boolean result);
     }
 
 }
