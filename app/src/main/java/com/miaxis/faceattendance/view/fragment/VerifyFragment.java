@@ -149,7 +149,7 @@ public class VerifyFragment extends BaseFragment {
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.POSTING)
     public void onDrawRectEvent(DrawRectEvent event) {
         if (event.getFaceNum() == 0) {
             if (!cardMode) {
@@ -164,29 +164,30 @@ public class VerifyFragment extends BaseFragment {
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.POSTING)
     public void onCardEvent(CardEvent event) {
         switch (event.getMode()) {
             case CardEvent.FIND_CARD:
                 cardMode = true;
-                tvHint.setText("开 始 读 卡");
-                tvHint.setVisibility(View.VISIBLE);
+                setHintMessage("开 始 读 卡");
                 FaceManager.getInstance().setIntervelTime(500);
                 FaceManager.getInstance().setActiveVerify(false);
                 FaceManager.getInstance().setVerify(true);
                 break;
             case CardEvent.READ_CARD:
                 if (cardMode) {
-                    tvHint.setText("读 卡 成 功");
+                    setHintMessage("读 卡 成 功");
                     idCardRecord = event.getIdCardRecord();
                     WhitelistManager.getInstance().checkWhitelist(idCardRecord.getCardNumber(), result -> {
-                        if (result) {
-                            tvHint.setText("白 名 单 校 验 通 过");
-                            TTSManager.getInstance().playVoiceMessageFlush(ConfigManager.getInstance().getConfig().getWhitelistPrompt());
-                            RecordManager.getInstance().uploadWhiteCardRecord(idCardRecord);
-                        } else {
-                            tvHint.setText("开 始 人 证 核 验");
-                            FaceManager.getInstance().getFeatureByBitmap(idCardRecord.getCardBitmap());
+                        if (idCardRecord != null && idCardRecord.getCardBitmap() != null) {
+                            if (result) {
+                                setHintMessage("白 名 单 校 验 通 过");
+                                TTSManager.getInstance().playVoiceMessageFlush(ConfigManager.getInstance().getConfig().getWhitelistPrompt());
+                                RecordManager.getInstance().uploadWhiteCardRecord(idCardRecord);
+                            } else {
+                                setHintMessage("开 始 人 证 核 验");
+                                FaceManager.getInstance().getFeatureByBitmap(idCardRecord.getCardBitmap());
+                            }
                         }
                     });
                 }
@@ -203,7 +204,7 @@ public class VerifyFragment extends BaseFragment {
                     }
                     idCardRecord = null;
                     cameraFeatureData = null;
-                    tvHint.setVisibility(View.INVISIBLE);
+                    getActivity().runOnUiThread(() -> tvHint.setVisibility(View.INVISIBLE));
                 }
                 break;
             case CardEvent.OVERDUE:
@@ -212,15 +213,15 @@ public class VerifyFragment extends BaseFragment {
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.POSTING)
     public void onFeatureEvent(FeatureEvent event) {
         switch (event.getMode()) {
             case FeatureEvent.IMAGE_FACE:
                 if (event.getFeature() != null) {
                     idCardRecord.setCardFeature(event.getFeature());
                 } else {
-                    ToastManager.toast(getContext(), "证件照片提取特征失败：" + event.getMessage(), ToastManager.INFO);
-                    tvHint.setText("请 拿 开 证 件 重 试");
+                    TTSManager.getInstance().playVoiceMessageFlush("请重试");
+                    setHintMessage("请 拿 开 证 件 重 试");
                 }
                 break;
             case FeatureEvent.CAMERA_FACE:
@@ -299,6 +300,13 @@ public class VerifyFragment extends BaseFragment {
                         }
                     }, throwable -> FaceManager.getInstance().setVerify(true));
         }
+    }
+
+    private void setHintMessage(String message) {
+        getActivity().runOnUiThread(() -> {
+            tvHint.setText(message);
+            tvHint.setVisibility(View.VISIBLE);
+        });
     }
 
 }

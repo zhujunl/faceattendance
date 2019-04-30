@@ -30,8 +30,6 @@ public class WhitelistManager {
             WhiteCard whiteCard = WhiteCardModel.getWhiteCardByCardNumber(cardNumber);
             emitter.onNext(whiteCard != null);
         })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(callback::onCheckWhitelist,
                         throwable -> callback.onCheckWhitelist(Boolean.FALSE));
     }
