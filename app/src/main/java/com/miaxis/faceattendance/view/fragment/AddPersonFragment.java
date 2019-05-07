@@ -172,13 +172,13 @@ public class AddPersonFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        CardManager.getInstance().startReadCard();
+        CardManager.getInstance().setNeedReadCard(true);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        CardManager.getInstance().closeReadCard();
+        CardManager.getInstance().setNeedReadCard(false);
     }
 
     @Override

@@ -237,7 +237,7 @@ public class VerifyFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        CardManager.getInstance().startReadCard();
+        CardManager.getInstance().setNeedReadCard(true);
         if (TextUtils.equals(tvOpenVerify.getText(), "比对开关：开")) {
             FaceManager.getInstance().setVerify(true);
         }
@@ -247,7 +247,7 @@ public class VerifyFragment extends BaseFragment {
     public void onStop() {
         super.onStop();
         FaceManager.getInstance().setVerify(false);
-        CardManager.getInstance().closeReadCard();
+        CardManager.getInstance().setNeedReadCard(false);
     }
 
     @Override

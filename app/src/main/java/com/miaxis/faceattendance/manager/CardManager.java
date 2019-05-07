@@ -4,6 +4,7 @@ import android.app.Application;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.Log;
 
 import com.miaxis.faceattendance.event.CardEvent;
 import com.miaxis.faceattendance.model.entity.IDCardRecord;
@@ -37,8 +38,9 @@ public class CardManager {
     public static boolean noCardFlag = true;
     private Application application;
     private IdCardDriver idCardDriver;
-    private Thread readIdCardThread;
     private byte[] lastCardId = null;
+    private volatile boolean running = true;
+    private volatile boolean needReadCard = true;
 
     public void init(Application application) {
         this.application = application;
@@ -46,18 +48,17 @@ public class CardManager {
     }
 
     public void startReadCard() {
-        if (idCardDriver == null) {
-            idCardDriver = new IdCardDriver(application);
-        }
-        readIdCardThread = new Thread(new ReadIdCardThread());
-        readIdCardThread.start();
+        running = true;
+        needReadCard = true;
+        new Thread(new ReadIdCardThread()).start();
     }
 
     public void closeReadCard() {
-        if (readIdCardThread != null && !readIdCardThread.isInterrupted()) {
-            readIdCardThread.interrupt();
-            readIdCardThread = null;
-        }
+        running = false;
+    }
+
+    public synchronized void setNeedReadCard(boolean needReadCard) {
+        this.needReadCard = needReadCard;
     }
 
     /* 解析身份证id 字符串 */
@@ -430,38 +431,41 @@ public class CardManager {
 
         @Override
         public void run() {
-            try {
-                byte[] curCardId;
-                int re;
-                while (!interrupted()) {
-                    curCardId = new byte[64];
-                    re = idCardDriver.mxReadCardId(curCardId);
-                    switch (re) {
-                        case ValueUtil.GET_CARD_ID:
-                            noCardFlag = false;
-                            if (!Arrays.equals(lastCardId, curCardId)) {
-                                EventBus.getDefault().post(new CardEvent(CardEvent.FIND_CARD));
-                                try {
-                                    readCard(getCardIdStr(curCardId));
-                                } catch (Exception e) {
-                                    continue;
+            byte[] curCardId;
+            int re;
+            while (running) {
+                if (needReadCard) {
+                    try {
+                        curCardId = new byte[64];
+                        re = idCardDriver.mxReadCardId(curCardId);
+                        switch (re) {
+                            case ValueUtil.GET_CARD_ID:
+                                noCardFlag = false;
+                                if (!Arrays.equals(lastCardId, curCardId)) {
+                                    EventBus.getDefault().post(new CardEvent(CardEvent.FIND_CARD));
+                                    try {
+                                        readCard(getCardIdStr(curCardId));
+                                    } catch (Exception e) {
+                                        continue;
+                                    }
                                 }
-                            }
-                            lastCardId = curCardId;
-                            break;
-                        case ValueUtil.NO_CARD:
-                            noCardFlag = true;
-                            lastCardId = null;
-                            EventBus.getDefault().post(new CardEvent(CardEvent.NO_CARD));
-                            break;
+                                lastCardId = curCardId;
+                                break;
+                            case ValueUtil.NO_CARD:
+                                noCardFlag = true;
+                                lastCardId = null;
+                                EventBus.getDefault().post(new CardEvent(CardEvent.NO_CARD));
+                                break;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.e("asd", "" + e.getMessage());
                     }
-                    Thread.sleep(200);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                idCardDriver = null;
-                if (!(e instanceof InterruptedException)) {
-                    startReadCard();
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }

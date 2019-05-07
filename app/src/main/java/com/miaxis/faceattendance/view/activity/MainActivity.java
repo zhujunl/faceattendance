@@ -24,6 +24,7 @@ import com.miaxis.faceattendance.R;
 import com.miaxis.faceattendance.app.FaceAttendanceApp;
 import com.miaxis.faceattendance.app.GlideApp;
 import com.miaxis.faceattendance.event.InitFaceEvent;
+import com.miaxis.faceattendance.manager.CardManager;
 import com.miaxis.faceattendance.manager.ConfigManager;
 import com.miaxis.faceattendance.manager.ToastManager;
 import com.miaxis.faceattendance.service.HttpCommServerService;
@@ -251,6 +252,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
         if (normal) {
             EventBus.getDefault().unregister(this);
             unbindService(serviceConnection);
+            CardManager.getInstance().closeReadCard();
         }
     }
 
@@ -259,6 +261,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
         bindService(intent, serviceConnection, BIND_AUTO_CREATE);
         rlInit.setVisibility(View.GONE);
         rlToolbar.setVisibility(View.VISIBLE);
+        CardManager.getInstance().startReadCard();
         getSupportFragmentManager().beginTransaction().replace(R.id.fl_main, verifyFragment = VerifyFragment.newInstance()).commit();
     }
 

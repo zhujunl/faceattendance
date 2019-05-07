@@ -3,6 +3,7 @@
     package="com.miaxis.faceattendance">
     <!--android:sharedUserId="android.uid.system"-->
 
+    <uses-feature android:name="android.hardware.usb.host" />
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
