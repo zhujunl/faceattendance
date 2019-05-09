@@ -1,19 +1,18 @@
 package com.miaxis.faceattendance.view.fragment;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.os.Handler;
 
 import com.miaxis.faceattendance.R;
 import com.miaxis.faceattendance.adapter.VerifyAdapter;
-import com.miaxis.faceattendance.app.FaceAttendanceApp;
 import com.miaxis.faceattendance.event.CardEvent;
 import com.miaxis.faceattendance.event.DrawRectEvent;
 import com.miaxis.faceattendance.event.FeatureEvent;
@@ -21,21 +20,15 @@ import com.miaxis.faceattendance.event.OpenCameraEvent;
 import com.miaxis.faceattendance.event.VerifyPersonEvent;
 import com.miaxis.faceattendance.manager.CardManager;
 import com.miaxis.faceattendance.manager.ConfigManager;
-import com.miaxis.faceattendance.manager.DaoManager;
 import com.miaxis.faceattendance.manager.FaceManager;
-import com.miaxis.faceattendance.manager.GpioManager;
 import com.miaxis.faceattendance.manager.RecordManager;
 import com.miaxis.faceattendance.manager.TTSManager;
-import com.miaxis.faceattendance.manager.ToastManager;
 import com.miaxis.faceattendance.manager.WhitelistManager;
 import com.miaxis.faceattendance.model.entity.IDCardRecord;
 import com.miaxis.faceattendance.model.entity.Person;
-import com.miaxis.faceattendance.model.entity.RGBImage;
-import com.miaxis.faceattendance.model.entity.Record;
 import com.miaxis.faceattendance.model.entity.VerifyPerson;
 import com.miaxis.faceattendance.util.ValueUtil;
 import com.miaxis.faceattendance.view.custom.CameraSurfaceView;
-import com.miaxis.faceattendance.view.custom.RectSurfaceView;
 import com.miaxis.faceattendance.view.listener.OnFragmentInteractionListener;
 import com.miaxis.faceattendance.view.listener.OnLimitClickHelper;
 
@@ -43,21 +36,21 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 
 public class VerifyFragment extends BaseFragment {
+
+    private static final int SET_HINT_MESSAGE = 1;
+    private static final int SET_HINT_INVISIBLE = 2;
+    private static final String MESSAGE_KEY = "message_key";
 
     @BindView(R.id.csv_camera)
     CameraSurfaceView csvCamera;
@@ -77,6 +70,7 @@ public class VerifyFragment extends BaseFragment {
     private boolean cardMode = false;
     private IDCardRecord idCardRecord;
     private FeatureEvent cameraFeatureData;
+    private Handler handler = new MyHandler(this);
 
     public static VerifyFragment newInstance() {
         return new VerifyFragment();
@@ -110,7 +104,7 @@ public class VerifyFragment extends BaseFragment {
                 tvOpenVerify.setText("比对开关：关");
                 verifyAdapter.setDataList(new ArrayList<>());
                 verifyAdapter.notifyDataSetChanged();
-                tvHint.setVisibility(View.INVISIBLE);
+                setSetHintInvisible();
             } else if (TextUtils.equals(tvOpenVerify.getText().toString(), "比对开关：关") && !cardMode) {
                 tvOpenVerify.setText("比对开关：开");
                 FaceManager.getInstance().setVerify(true);
@@ -144,27 +138,24 @@ public class VerifyFragment extends BaseFragment {
             TTSManager.getInstance().playVoiceMessageFlush(ConfigManager.getInstance().getConfig().getAttendancePrompt());
             RecordManager.getInstance().saveRecord(event, verifyPerson.getTime());
         } else {
-            tvHint.setText("您 已 经 考 勤");
-            tvHint.setVisibility(View.VISIBLE);
+            setHintMessage("您 已 经 考 勤");
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.POSTING)
+    @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onDrawRectEvent(DrawRectEvent event) {
         if (event.getFaceNum() == 0) {
             if (!cardMode) {
-                tvHint.setVisibility(View.INVISIBLE);
+                setSetHintInvisible();
             }
         } else if (event.getFaceNum() == -1) {
-            tvHint.setText("请 正 对 屏 幕");
-            tvHint.setVisibility(View.VISIBLE);
+            setHintMessage("请 正 对 屏 幕");
         } else {
-            tvHint.setText("检 测 到 人 脸");
-            tvHint.setVisibility(View.VISIBLE);
+            setHintMessage("检 测 到 人 脸");
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.POSTING)
+    @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onCardEvent(CardEvent event) {
         switch (event.getMode()) {
             case CardEvent.FIND_CARD:
@@ -204,7 +195,7 @@ public class VerifyFragment extends BaseFragment {
                     }
                     idCardRecord = null;
                     cameraFeatureData = null;
-                    getActivity().runOnUiThread(() -> tvHint.setVisibility(View.INVISIBLE));
+                    setSetHintInvisible();
                 }
                 break;
             case CardEvent.OVERDUE:
@@ -213,7 +204,7 @@ public class VerifyFragment extends BaseFragment {
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.POSTING)
+    @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onFeatureEvent(FeatureEvent event) {
         switch (event.getMode()) {
             case FeatureEvent.IMAGE_FACE:
@@ -274,6 +265,34 @@ public class VerifyFragment extends BaseFragment {
         FaceManager.getInstance().setVerify(false);
     }
 
+    static class MyHandler extends Handler {
+
+        private WeakReference<VerifyFragment> fragmentWeakReference;
+
+        MyHandler(VerifyFragment verifyFragment) {
+            this.fragmentWeakReference = new WeakReference<>(verifyFragment);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            VerifyFragment verifyFragment = fragmentWeakReference.get();
+            if (verifyFragment != null) {
+                try {
+                    if (msg.what == SET_HINT_MESSAGE) {
+                        String message = msg.getData().getString(MESSAGE_KEY);
+                        verifyFragment.tvHint.setText(message);
+                        verifyFragment.tvHint.setVisibility(View.VISIBLE);
+                    } else if (msg.what == SET_HINT_INVISIBLE) {
+                        verifyFragment.tvHint.setVisibility(View.INVISIBLE);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     private void resetLayoutParams(View view, int fixWidth, int fixHeight) {
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         layoutParams.width = fixWidth;
@@ -287,12 +306,9 @@ public class VerifyFragment extends BaseFragment {
                 float score = FaceManager.getInstance().matchFeature(idCardRecord.getCardFeature(), cameraEvent.getFeature());
                 emitter.onNext(score);
             })
-                    .subscribeOn(Schedulers.io())
-                    .compose(bindToLifecycle())
-                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(score -> {
                         if (score > ConfigManager.getInstance().getConfig().getVerifyScore()) {
-                            tvHint.setText("核 验 成 功");
+                            setHintMessage("核 验 成 功");
                             TTSManager.getInstance().playVoiceMessageFlush(ConfigManager.getInstance().getConfig().getCardVerifyPrompt());
                             RecordManager.getInstance().uploadCardRecord(idCardRecord, cameraEvent.getRgbImage(), score);
                         } else {
@@ -302,11 +318,17 @@ public class VerifyFragment extends BaseFragment {
         }
     }
 
-    private void setHintMessage(String message) {
-        getActivity().runOnUiThread(() -> {
-            tvHint.setText(message);
-            tvHint.setVisibility(View.VISIBLE);
-        });
+    private void setHintMessage(final String message) {
+        Message msg = handler.obtainMessage(SET_HINT_MESSAGE);
+        Bundle bundle = new Bundle();
+        bundle.putString(MESSAGE_KEY, message);
+        msg.setData(bundle);
+        handler.sendMessage(msg);
+    }
+
+    private void setSetHintInvisible() {
+        Message msg = handler.obtainMessage(SET_HINT_INVISIBLE);
+        handler.sendMessage(msg);
     }
 
 }

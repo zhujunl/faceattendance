@@ -26,12 +26,13 @@ public class WhitelistManager {
     /** ================================ 静态内部类单例 ================================ **/
 
     public void checkWhitelist(String cardNumber, OnCheckWhitelistCallback callback) {
-        Observable.create((ObservableOnSubscribe<Boolean>) emitter -> {
+        try {
             WhiteCard whiteCard = WhiteCardModel.getWhiteCardByCardNumber(cardNumber);
-            emitter.onNext(whiteCard != null);
-        })
-                .subscribe(callback::onCheckWhitelist,
-                        throwable -> callback.onCheckWhitelist(Boolean.FALSE));
+            callback.onCheckWhitelist(whiteCard != null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            callback.onCheckWhitelist(Boolean.FALSE);
+        }
     }
 
     public interface OnCheckWhitelistCallback {
