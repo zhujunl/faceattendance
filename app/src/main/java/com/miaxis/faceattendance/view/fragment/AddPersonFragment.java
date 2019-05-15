@@ -272,7 +272,6 @@ public class AddPersonFragment extends BaseFragment {
             emitter.onNext(event);
         })
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .compose(bindToLifecycle())
                 .observeOn(Schedulers.io())
                 .map(featureEvent -> {
                     RGBImage rgbImage = event.getRgbImage();

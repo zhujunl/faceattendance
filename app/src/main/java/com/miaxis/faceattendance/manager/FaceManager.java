@@ -43,8 +43,10 @@ public class FaceManager {
 
     /** ================================ 静态内部类单例 ================================ **/
 
-    public static final int ZOOM_WIDTH = 320;
-    public static final int ZOOM_HEIGHT = 240;
+//    public static final int ZOOM_WIDTH = 320;
+//    public static final int ZOOM_HEIGHT = 240;
+    public static final int ZOOM_WIDTH = 640;
+    public static final int ZOOM_HEIGHT = 480;
     public static final int DEFAULT_INTERVEL_TIME = 1500;
     private static final int MAX_FACE_NUM = 3;
     private static final Byte lock1 = 1;
@@ -123,7 +125,10 @@ public class FaceManager {
         if (result) {
             result = faceQuality(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT, pFaceNum[0], pFaceBuffer);
             EventBus.getDefault().post(new DrawRectEvent(pFaceNum[0], pFaceBuffer));
-            if (result && pFaceBuffer[0].quality > ConfigManager.getInstance().getConfig().getQualityScore() && !extractWorking) {
+            if (result
+                    && pFaceBuffer[0].quality > ConfigManager.getInstance().getConfig().getVerifyQualityScore()
+                    && !extractWorking
+                    && pFaceBuffer[0].eyeDistance > 25) {
                 extractWorking = true;
                 byte[] feature = extractFeature(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT, pFaceBuffer[0]);
                 if (feature != null && detectFlag) {
@@ -193,7 +198,9 @@ public class FaceManager {
         if (result) {
             if (pFaceNum[0] == 1) {
                 result = faceQuality(rgbData, width, height, pFaceNum[0], pFaceBuffer);
-                if (result && pFaceBuffer[0].quality > ConfigManager.getInstance().getConfig().getQualityScore()) {
+                if (result
+                        && pFaceBuffer[0].quality > ConfigManager.getInstance().getConfig().getRegisterQualityScore()
+                        && pFaceBuffer[0].eyeDistance > 25) {
                     byte[] feature = extractFeature(rgbData, width, height, pFaceBuffer[0]);
                     if (feature != null) {
                         EventBus.getDefault().post(new FeatureEvent(FeatureEvent.IMAGE_FACE, new RGBImage(rgbData, width, height), feature, pFaceBuffer[0]));
@@ -215,33 +222,47 @@ public class FaceManager {
      * @param fileData
      * @return
      */
-    public byte[] getFeatureByFileImage(byte[] fileData) {
+    public byte[] getFeatureByFileImage(byte[] fileData, StringBuilder stringBuilder) {
         Bitmap bitmap = BitmapFactory.decodeByteArray(fileData, 0, fileData.length);
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        if ((float) width / height != 0.75f) {
+        if (bitmap == null) {
+            stringBuilder.append("图像转码失败，请确保传入的是完整的图像文件");
             return null;
         }
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+//        if ((float) width / height != 0.75f) {
+//            return null;
+//        }
         bitmap.recycle();
         byte[] rgbData = imageFileDecode(fileData, width, height);
         if (rgbData == null) {
+            stringBuilder.append("图像提取RGB失败");
             return null;
         }
         int[] pFaceNum = new int[] {1};
         MXFaceInfoEx[] pFaceBuffer = makeFaceContainer(MAX_FACE_NUM);
         boolean result = faceDetect(rgbData, width, height, pFaceNum, pFaceBuffer);
         if (result) {
-            if (pFaceNum[0] == 1) {
-                result = faceQuality(rgbData, width, height, pFaceNum[0], pFaceBuffer);
-                if (result && pFaceBuffer[0].quality > ConfigManager.getInstance().getConfig().getQualityScore()) {
-                    byte[] feature = extractFeature(rgbData, width, height, pFaceBuffer[0]);
-                    if (feature != null) {
-                        return feature;
-                    }
+            result = faceQuality(rgbData, width, height, pFaceNum[0], pFaceBuffer);
+            if (result
+                    && pFaceBuffer[0].quality > ConfigManager.getInstance().getConfig().getRegisterQualityScore()
+                    && pFaceBuffer[0].eyeDistance > 25) {
+                byte[] feature = extractFeature(rgbData, width, height, pFaceBuffer[0]);
+                if (feature != null) {
+                    stringBuilder.append("图像提取特征成功");
+                    return feature;
+                } else {
+                    stringBuilder.append("图像提取特征失败");
+                    return null;
                 }
+            } else {
+                stringBuilder.append("图像质量评分过低");
+                return null;
             }
+        } else {
+            stringBuilder.append("未检测到人脸");
+            return null;
         }
-        return null;
     }
 
     /**

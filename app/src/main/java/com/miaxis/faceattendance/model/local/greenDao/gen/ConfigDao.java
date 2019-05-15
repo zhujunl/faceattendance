@@ -28,13 +28,14 @@ public class ConfigDao extends AbstractDao<Config, Long> {
         public final static Property UploadUrl = new Property(1, String.class, "uploadUrl", false, "UPLOAD_URL");
         public final static Property CardUploadUrl = new Property(2, String.class, "cardUploadUrl", false, "CARD_UPLOAD_URL");
         public final static Property Password = new Property(3, String.class, "password", false, "PASSWORD");
-        public final static Property QualityScore = new Property(4, float.class, "qualityScore", false, "QUALITY_SCORE");
-        public final static Property VerifyScore = new Property(5, float.class, "verifyScore", false, "VERIFY_SCORE");
-        public final static Property CardVerifyScore = new Property(6, float.class, "cardVerifyScore", false, "CARD_VERIFY_SCORE");
-        public final static Property RecordClearThreshold = new Property(7, int.class, "recordClearThreshold", false, "RECORD_CLEAR_THRESHOLD");
-        public final static Property AttendancePrompt = new Property(8, String.class, "attendancePrompt", false, "ATTENDANCE_PROMPT");
-        public final static Property CardVerifyPrompt = new Property(9, String.class, "cardVerifyPrompt", false, "CARD_VERIFY_PROMPT");
-        public final static Property WhitelistPrompt = new Property(10, String.class, "whitelistPrompt", false, "WHITELIST_PROMPT");
+        public final static Property VerifyQualityScore = new Property(4, float.class, "verifyQualityScore", false, "VERIFY_QUALITY_SCORE");
+        public final static Property RegisterQualityScore = new Property(5, float.class, "registerQualityScore", false, "REGISTER_QUALITY_SCORE");
+        public final static Property VerifyScore = new Property(6, float.class, "verifyScore", false, "VERIFY_SCORE");
+        public final static Property CardVerifyScore = new Property(7, float.class, "cardVerifyScore", false, "CARD_VERIFY_SCORE");
+        public final static Property RecordClearThreshold = new Property(8, int.class, "recordClearThreshold", false, "RECORD_CLEAR_THRESHOLD");
+        public final static Property AttendancePrompt = new Property(9, String.class, "attendancePrompt", false, "ATTENDANCE_PROMPT");
+        public final static Property CardVerifyPrompt = new Property(10, String.class, "cardVerifyPrompt", false, "CARD_VERIFY_PROMPT");
+        public final static Property WhitelistPrompt = new Property(11, String.class, "whitelistPrompt", false, "WHITELIST_PROMPT");
     }
 
 
@@ -54,13 +55,14 @@ public class ConfigDao extends AbstractDao<Config, Long> {
                 "\"UPLOAD_URL\" TEXT," + // 1: uploadUrl
                 "\"CARD_UPLOAD_URL\" TEXT," + // 2: cardUploadUrl
                 "\"PASSWORD\" TEXT," + // 3: password
-                "\"QUALITY_SCORE\" REAL NOT NULL ," + // 4: qualityScore
-                "\"VERIFY_SCORE\" REAL NOT NULL ," + // 5: verifyScore
-                "\"CARD_VERIFY_SCORE\" REAL NOT NULL ," + // 6: cardVerifyScore
-                "\"RECORD_CLEAR_THRESHOLD\" INTEGER NOT NULL ," + // 7: recordClearThreshold
-                "\"ATTENDANCE_PROMPT\" TEXT," + // 8: attendancePrompt
-                "\"CARD_VERIFY_PROMPT\" TEXT," + // 9: cardVerifyPrompt
-                "\"WHITELIST_PROMPT\" TEXT);"); // 10: whitelistPrompt
+                "\"VERIFY_QUALITY_SCORE\" REAL NOT NULL ," + // 4: verifyQualityScore
+                "\"REGISTER_QUALITY_SCORE\" REAL NOT NULL ," + // 5: registerQualityScore
+                "\"VERIFY_SCORE\" REAL NOT NULL ," + // 6: verifyScore
+                "\"CARD_VERIFY_SCORE\" REAL NOT NULL ," + // 7: cardVerifyScore
+                "\"RECORD_CLEAR_THRESHOLD\" INTEGER NOT NULL ," + // 8: recordClearThreshold
+                "\"ATTENDANCE_PROMPT\" TEXT," + // 9: attendancePrompt
+                "\"CARD_VERIFY_PROMPT\" TEXT," + // 10: cardVerifyPrompt
+                "\"WHITELIST_PROMPT\" TEXT);"); // 11: whitelistPrompt
     }
 
     /** Drops the underlying database table. */
@@ -92,24 +94,25 @@ public class ConfigDao extends AbstractDao<Config, Long> {
         if (password != null) {
             stmt.bindString(4, password);
         }
-        stmt.bindDouble(5, entity.getQualityScore());
-        stmt.bindDouble(6, entity.getVerifyScore());
-        stmt.bindDouble(7, entity.getCardVerifyScore());
-        stmt.bindLong(8, entity.getRecordClearThreshold());
+        stmt.bindDouble(5, entity.getVerifyQualityScore());
+        stmt.bindDouble(6, entity.getRegisterQualityScore());
+        stmt.bindDouble(7, entity.getVerifyScore());
+        stmt.bindDouble(8, entity.getCardVerifyScore());
+        stmt.bindLong(9, entity.getRecordClearThreshold());
  
         String attendancePrompt = entity.getAttendancePrompt();
         if (attendancePrompt != null) {
-            stmt.bindString(9, attendancePrompt);
+            stmt.bindString(10, attendancePrompt);
         }
  
         String cardVerifyPrompt = entity.getCardVerifyPrompt();
         if (cardVerifyPrompt != null) {
-            stmt.bindString(10, cardVerifyPrompt);
+            stmt.bindString(11, cardVerifyPrompt);
         }
  
         String whitelistPrompt = entity.getWhitelistPrompt();
         if (whitelistPrompt != null) {
-            stmt.bindString(11, whitelistPrompt);
+            stmt.bindString(12, whitelistPrompt);
         }
     }
 
@@ -136,24 +139,25 @@ public class ConfigDao extends AbstractDao<Config, Long> {
         if (password != null) {
             stmt.bindString(4, password);
         }
-        stmt.bindDouble(5, entity.getQualityScore());
-        stmt.bindDouble(6, entity.getVerifyScore());
-        stmt.bindDouble(7, entity.getCardVerifyScore());
-        stmt.bindLong(8, entity.getRecordClearThreshold());
+        stmt.bindDouble(5, entity.getVerifyQualityScore());
+        stmt.bindDouble(6, entity.getRegisterQualityScore());
+        stmt.bindDouble(7, entity.getVerifyScore());
+        stmt.bindDouble(8, entity.getCardVerifyScore());
+        stmt.bindLong(9, entity.getRecordClearThreshold());
  
         String attendancePrompt = entity.getAttendancePrompt();
         if (attendancePrompt != null) {
-            stmt.bindString(9, attendancePrompt);
+            stmt.bindString(10, attendancePrompt);
         }
  
         String cardVerifyPrompt = entity.getCardVerifyPrompt();
         if (cardVerifyPrompt != null) {
-            stmt.bindString(10, cardVerifyPrompt);
+            stmt.bindString(11, cardVerifyPrompt);
         }
  
         String whitelistPrompt = entity.getWhitelistPrompt();
         if (whitelistPrompt != null) {
-            stmt.bindString(11, whitelistPrompt);
+            stmt.bindString(12, whitelistPrompt);
         }
     }
 
@@ -169,13 +173,14 @@ public class ConfigDao extends AbstractDao<Config, Long> {
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // uploadUrl
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // cardUploadUrl
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // password
-            cursor.getFloat(offset + 4), // qualityScore
-            cursor.getFloat(offset + 5), // verifyScore
-            cursor.getFloat(offset + 6), // cardVerifyScore
-            cursor.getInt(offset + 7), // recordClearThreshold
-            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // attendancePrompt
-            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // cardVerifyPrompt
-            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10) // whitelistPrompt
+            cursor.getFloat(offset + 4), // verifyQualityScore
+            cursor.getFloat(offset + 5), // registerQualityScore
+            cursor.getFloat(offset + 6), // verifyScore
+            cursor.getFloat(offset + 7), // cardVerifyScore
+            cursor.getInt(offset + 8), // recordClearThreshold
+            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // attendancePrompt
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // cardVerifyPrompt
+            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11) // whitelistPrompt
         );
         return entity;
     }
@@ -186,13 +191,14 @@ public class ConfigDao extends AbstractDao<Config, Long> {
         entity.setUploadUrl(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setCardUploadUrl(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setPassword(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setQualityScore(cursor.getFloat(offset + 4));
-        entity.setVerifyScore(cursor.getFloat(offset + 5));
-        entity.setCardVerifyScore(cursor.getFloat(offset + 6));
-        entity.setRecordClearThreshold(cursor.getInt(offset + 7));
-        entity.setAttendancePrompt(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
-        entity.setCardVerifyPrompt(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
-        entity.setWhitelistPrompt(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setVerifyQualityScore(cursor.getFloat(offset + 4));
+        entity.setRegisterQualityScore(cursor.getFloat(offset + 5));
+        entity.setVerifyScore(cursor.getFloat(offset + 6));
+        entity.setCardVerifyScore(cursor.getFloat(offset + 7));
+        entity.setRecordClearThreshold(cursor.getInt(offset + 8));
+        entity.setAttendancePrompt(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
+        entity.setCardVerifyPrompt(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setWhitelistPrompt(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
      }
     
     @Override

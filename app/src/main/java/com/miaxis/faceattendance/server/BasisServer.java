@@ -139,23 +139,33 @@ public class BasisServer {
 
     private ResponseEntity handleSetVerifyThreshold(NanoHTTPD.IHTTPSession session) {
         Map<String, List<String>> parameters = session.getParameters();
-        if (parameters.get("verifyScore") != null && parameters.get("cardVerifyScore") != null && parameters.get("qualityScore") != null) {
+        if (parameters.get("verifyScore") != null
+                && parameters.get("cardVerifyScore") != null
+                && parameters.get("verifyQualityScore") != null
+                && parameters.get("registerQualityScore") != null) {
             String verifyScore = parameters.get("verifyScore").get(0);
             String cardVerifyScore = parameters.get("cardVerifyScore").get(0);
-            String qualityScore = parameters.get("qualityScore").get(0);
+            String verifyQualityScore = parameters.get("verifyQualityScore").get(0);
+            String registerQualityScore = parameters.get("registerQualityScore").get(0);
             float verify = 0;
             float cardVerify = 0;
-            int quality = 0;
+            int verifyQuality = 0;
+            int registerQuality = 0;
             try {
                 verify = Float.valueOf(verifyScore);
                 cardVerify = Float.valueOf(cardVerifyScore);
-                quality = Integer.valueOf(qualityScore);
+                verifyQuality = Integer.valueOf(verifyQualityScore);
+                registerQuality = Integer.valueOf(registerQualityScore);
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
-            if (verify > 0.6f && verify < 1.0 && cardVerify > 0.6f && cardVerify < 1.0 && quality > 60 && quality < 100) {
+            if (verify >= 0.6f && verify < 1.0
+                    && cardVerify >= 0.6f && cardVerify < 1.0
+                    && verifyQuality >= 60 && verifyQuality < 100
+                    && registerQuality >= 80 && registerQuality < 100) {
                 Config config = ConfigManager.getInstance().getConfig();
-                config.setQualityScore(quality);
+                config.setVerifyQualityScore(verifyQuality);
+                config.setRegisterQualityScore(registerQuality);
                 config.setVerifyScore(verify);
                 config.setCardVerifyScore(cardVerify);
                 ConfigModel.saveConfig(config);

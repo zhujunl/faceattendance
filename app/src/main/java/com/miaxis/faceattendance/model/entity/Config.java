@@ -12,23 +12,26 @@ public class Config {
     private String uploadUrl;
     private String cardUploadUrl;
     private String password;
-    private float qualityScore;
+    private float verifyQualityScore;
+    private float registerQualityScore;
     private float verifyScore;
     private float cardVerifyScore;
     private int recordClearThreshold;
     private String attendancePrompt;
     private String cardVerifyPrompt;
     private String whitelistPrompt;
-    @Generated(hash = 545178242)
+    @Generated(hash = 28662680)
     public Config(Long id, String uploadUrl, String cardUploadUrl, String password,
-            float qualityScore, float verifyScore, float cardVerifyScore,
-            int recordClearThreshold, String attendancePrompt,
-            String cardVerifyPrompt, String whitelistPrompt) {
+            float verifyQualityScore, float registerQualityScore, float verifyScore,
+            float cardVerifyScore, int recordClearThreshold,
+            String attendancePrompt, String cardVerifyPrompt,
+            String whitelistPrompt) {
         this.id = id;
         this.uploadUrl = uploadUrl;
         this.cardUploadUrl = cardUploadUrl;
         this.password = password;
-        this.qualityScore = qualityScore;
+        this.verifyQualityScore = verifyQualityScore;
+        this.registerQualityScore = registerQualityScore;
         this.verifyScore = verifyScore;
         this.cardVerifyScore = cardVerifyScore;
         this.recordClearThreshold = recordClearThreshold;
@@ -45,7 +48,8 @@ public class Config {
         setUploadUrl(builder.uploadUrl);
         setCardUploadUrl(builder.cardUploadUrl);
         setPassword(builder.password);
-        setQualityScore(builder.qualityScore);
+        setVerifyQualityScore(builder.verifyQualityScore);
+        setRegisterQualityScore(builder.registerQualityScore);
         setVerifyScore(builder.verifyScore);
         setCardVerifyScore(builder.cardVerifyScore);
         setRecordClearThreshold(builder.recordClearThreshold);
@@ -78,11 +82,17 @@ public class Config {
     public void setPassword(String password) {
         this.password = password;
     }
-    public float getQualityScore() {
-        return this.qualityScore;
+    public float getVerifyQualityScore() {
+        return this.verifyQualityScore;
     }
-    public void setQualityScore(float qualityScore) {
-        this.qualityScore = qualityScore;
+    public void setVerifyQualityScore(float verifyQualityScore) {
+        this.verifyQualityScore = verifyQualityScore;
+    }
+    public float getRegisterQualityScore() {
+        return this.registerQualityScore;
+    }
+    public void setRegisterQualityScore(float registerQualityScore) {
+        this.registerQualityScore = registerQualityScore;
     }
     public float getVerifyScore() {
         return this.verifyScore;
@@ -126,7 +136,8 @@ public class Config {
         private String uploadUrl;
         private String cardUploadUrl;
         private String password;
-        private float qualityScore;
+        private float verifyQualityScore;
+        private float registerQualityScore;
         private float verifyScore;
         private float cardVerifyScore;
         private int recordClearThreshold;
@@ -157,8 +168,13 @@ public class Config {
             return this;
         }
 
-        public Builder qualityScore(float val) {
-            qualityScore = val;
+        public Builder verifyQualityScore(float val) {
+            verifyQualityScore = val;
+            return this;
+        }
+
+        public Builder registerQualityScore(float val) {
+            registerQualityScore = val;
             return this;
         }
 

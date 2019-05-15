@@ -29,7 +29,8 @@ public class ValueUtil {
     public static final String DEFAULT_UPLOAD_URL = "";
     public static final String DEFAULT_CARD_UPLOAD_URL = "";
     public static final String DEFAULT_PASSWORD = "666666";
-    public static final float DEFAULT_QUALITY_SCORE = 75f;
+    public static final float DEFAULT_VERIFY_QUALITY_SCORE = 80f;
+    public static final float DEFAULT_REGISTER_QUALITY_SCORE = 80f;
     public static final float DEFAULT_VERIFY_SCORE = 0.8f;
     public static final float DEFAULT_CARD_VERIFY_SCORE = 0.7f;
     public static final int DEFAULT_RECORD_CLEAR_THRESHOLD = 500;
@@ -115,7 +116,7 @@ public class ValueUtil {
     }
 
     public static boolean isHttpFormat(String str) {
-        Pattern pattern = Pattern.compile("^(http://)([1-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])(\\.(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])){3}(:)(\\d{4})(/)[^\\s]{1,}");
+        Pattern pattern = Pattern.compile("^(http://)([1-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])(\\.(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])){3}(:)(\\d{1,5})(/)[^\\s]{1,}");
         Matcher match = pattern.matcher(str);
         return match.matches();
     }

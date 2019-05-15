@@ -82,7 +82,8 @@ public class EditPersonServer {
                         && !TextUtils.isEmpty(person.getFacePicture())) {
                     listener.onBackstageBusy(true, "正在提取特征");
                     byte[] imageData = Base64.decode(person.getFacePicture(), Base64.NO_WRAP);
-                    byte[] feature = FaceManager.getInstance().getFeatureByFileImage(imageData);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    byte[] feature = FaceManager.getInstance().getFeatureByFileImage(imageData, stringBuilder);
                     if (feature != null) {
                         person.setCardNumber(person.getCardNumber().replaceAll("\\p{P}", ""));
                         person.setFaceFeature(Base64.encodeToString(feature, Base64.NO_WRAP));
@@ -100,7 +101,7 @@ public class EditPersonServer {
                         }
                     } else {
                         listener.onBackstageBusy(false, "添加人员失败");
-                        return new ResponseEntity(AttendanceServer.FAILED, "提取特征失败");
+                        return new ResponseEntity(AttendanceServer.FAILED, stringBuilder.toString());
                     }
                 }
             }

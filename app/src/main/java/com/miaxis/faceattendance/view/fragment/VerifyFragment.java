@@ -2,17 +2,19 @@ package com.miaxis.faceattendance.view.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.os.Handler;
 
 import com.miaxis.faceattendance.R;
-import com.miaxis.faceattendance.adapter.VerifyAdapter;
+import com.miaxis.faceattendance.app.FaceAttendanceApp;
+import com.miaxis.faceattendance.app.GlideApp;
 import com.miaxis.faceattendance.event.CardEvent;
 import com.miaxis.faceattendance.event.DrawRectEvent;
 import com.miaxis.faceattendance.event.FeatureEvent;
@@ -37,11 +39,8 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Date;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
@@ -50,27 +49,43 @@ public class VerifyFragment extends BaseFragment {
 
     private static final int SET_HINT_MESSAGE = 1;
     private static final int SET_HINT_INVISIBLE = 2;
+    private static final int DISMISS_VERIFY_PERSON = 3;
     private static final String MESSAGE_KEY = "message_key";
 
     @BindView(R.id.csv_camera)
     CameraSurfaceView csvCamera;
     @BindView(R.id.rl_root)
     RelativeLayout rlRoot;
-    @BindView(R.id.rv_verify)
-    RecyclerView rvVerify;
+    //    @BindView(R.id.rv_verify)
+//    RecyclerView rvVerify;
     @BindView(R.id.tv_open_verify)
     TextView tvOpenVerify;
     @BindView(R.id.iv_verify_frame)
     ImageView ivVerifyFrame;
     @BindView(R.id.tv_hint)
     TextView tvHint;
+    @BindView(R.id.iv_header)
+    ImageView ivHeader;
+    @BindView(R.id.tv_name)
+    TextView tvName;
+    @BindView(R.id.tv_time)
+    TextView tvTime;
+    @BindView(R.id.tv_server_ip)
+    TextView tvServerIp;
+    @BindView(R.id.tv_version)
+    TextView tvVersion;
+    @BindView(R.id.ll_name)
+    LinearLayout llName;
+    @BindView(R.id.ll_time)
+    LinearLayout llTime;
 
-    private VerifyAdapter<VerifyPerson> verifyAdapter;
+    //    private VerifyAdapter<VerifyPerson> verifyAdapter;
     private OnFragmentInteractionListener mListener;
     private boolean cardMode = false;
     private IDCardRecord idCardRecord;
     private FeatureEvent cameraFeatureData;
     private Handler handler = new MyHandler(this);
+    private Person personCache;
 
     public static VerifyFragment newInstance() {
         return new VerifyFragment();
@@ -95,15 +110,17 @@ public class VerifyFragment extends BaseFragment {
 
     @Override
     protected void initView() {
-        verifyAdapter = new VerifyAdapter<>(getContext(), new ArrayList<>());
-        rvVerify.setAdapter(verifyAdapter);
-        rvVerify.setLayoutManager(new LinearLayoutManager(getContext()));
+//        verifyAdapter = new VerifyAdapter<>(getContext(), new ArrayList<>());
+//        rvVerify.setAdapter(verifyAdapter);
+//        rvVerify.setLayoutManager(new LinearLayoutManager(getContext()));
+        tvServerIp.setText(ValueUtil.getIP(FaceAttendanceApp.getInstance()));
+        tvVersion.setText(ValueUtil.getCurVersion(getContext()));
         tvOpenVerify.setOnClickListener(new OnLimitClickHelper(v -> {
             if (TextUtils.equals(tvOpenVerify.getText().toString(), "比对开关：开") && !cardMode) {
                 FaceManager.getInstance().setVerify(false);
                 tvOpenVerify.setText("比对开关：关");
-                verifyAdapter.setDataList(new ArrayList<>());
-                verifyAdapter.notifyDataSetChanged();
+//                verifyAdapter.setDataList(new ArrayList<>());
+//                verifyAdapter.notifyDataSetChanged();
                 setSetHintInvisible();
             } else if (TextUtils.equals(tvOpenVerify.getText().toString(), "比对开关：关") && !cardMode) {
                 tvOpenVerify.setText("比对开关：开");
@@ -126,20 +143,39 @@ public class VerifyFragment extends BaseFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onVerifyPersonEvent(VerifyPersonEvent event) {
         Person person = event.getPerson();
-        if (!verifyAdapter.containsName(person.getCardNumber())) {
+        if (personCache == null || !TextUtils.equals(person.getCardNumber(), personCache.getCardNumber())) {
+            personCache = person;
             VerifyPerson verifyPerson = new VerifyPerson.Builder()
                     .cardNumber(person.getCardNumber())
                     .name(person.getName())
                     .facePicturePath(person.getFacePicture())
                     .time(ValueUtil.simpleDateFormat.format(new Date()))
                     .build();
-            verifyAdapter.insertData(0, verifyPerson);
-            rvVerify.scrollToPosition(0);
+            tvName.setText(verifyPerson.getName());
+            tvTime.setText(verifyPerson.getTime());
+            llName.setVisibility(View.VISIBLE);
+            llTime.setVisibility(View.VISIBLE);
+            GlideApp.with(getContext()).load(verifyPerson.getFacePicturePath()).into(ivHeader);
             TTSManager.getInstance().playVoiceMessageFlush(ConfigManager.getInstance().getConfig().getAttendancePrompt());
             RecordManager.getInstance().saveRecord(event, verifyPerson.getTime());
+            sendClearMessage();
         } else {
             setHintMessage("您 已 经 考 勤");
         }
+//        if (!verifyAdapter.containsName(person.getCardNumber())) {
+//            VerifyPerson verifyPerson = new VerifyPerson.Builder()
+//                    .cardNumber(person.getCardNumber())
+//                    .name(person.getName())
+//                    .facePicturePath(person.getFacePicture())
+//                    .time(ValueUtil.simpleDateFormat.format(new Date()))
+//                    .build();
+//            verifyAdapter.insertData(0, verifyPerson);
+//            rvVerify.scrollToPosition(0);
+//            TTSManager.getInstance().playVoiceMessageFlush(ConfigManager.getInstance().getConfig().getAttendancePrompt());
+//            RecordManager.getInstance().saveRecord(event, verifyPerson.getTime());
+//        } else {
+//            setHintMessage("您 已 经 考 勤");
+//        }
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -274,7 +310,7 @@ public class VerifyFragment extends BaseFragment {
         }
 
         @Override
-        public void handleMessage(Message msg) {
+        public synchronized void handleMessage(Message msg) {
             super.handleMessage(msg);
             VerifyFragment verifyFragment = fragmentWeakReference.get();
             if (verifyFragment != null) {
@@ -285,12 +321,21 @@ public class VerifyFragment extends BaseFragment {
                         verifyFragment.tvHint.setVisibility(View.VISIBLE);
                     } else if (msg.what == SET_HINT_INVISIBLE) {
                         verifyFragment.tvHint.setVisibility(View.INVISIBLE);
+                    } else if (msg.what == DISMISS_VERIFY_PERSON) {
+                        verifyFragment.personCache = null;
+                        verifyFragment.dismissVerifyPerson();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
+    }
+
+    private void dismissVerifyPerson() {
+        GlideApp.with(getContext()).clear(ivHeader);
+        llName.setVisibility(View.INVISIBLE);
+        llTime.setVisibility(View.INVISIBLE);
     }
 
     private void resetLayoutParams(View view, int fixWidth, int fixHeight) {
@@ -329,6 +374,12 @@ public class VerifyFragment extends BaseFragment {
     private void setSetHintInvisible() {
         Message msg = handler.obtainMessage(SET_HINT_INVISIBLE);
         handler.sendMessage(msg);
+    }
+
+    private void sendClearMessage() {
+        handler.removeMessages(DISMISS_VERIFY_PERSON);
+        Message msg = handler.obtainMessage(DISMISS_VERIFY_PERSON);
+        handler.sendMessageDelayed(msg, 10 * 1000);
     }
 
 }
