@@ -103,6 +103,7 @@
 
                 <LinearLayout
                     android:id="@+id/ll_name"
+                    android:visibility="invisible"
                     android:padding="10dp"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
@@ -128,6 +129,7 @@
 
                 <LinearLayout
                     android:id="@+id/ll_time"
+                    android:visibility="invisible"
                     android:padding="10dp"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"

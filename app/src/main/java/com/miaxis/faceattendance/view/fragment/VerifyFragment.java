@@ -213,7 +213,7 @@ public class VerifyFragment extends BaseFragment {
                                 RecordManager.getInstance().uploadWhiteCardRecord(idCardRecord);
                             } else {
                                 setHintMessage("开 始 人 证 核 验");
-                                FaceManager.getInstance().getFeatureByBitmap(idCardRecord.getCardBitmap());
+                                FaceManager.getInstance().getFeatureByBitmap(idCardRecord.getCardBitmap(), false);
                             }
                         }
                     });

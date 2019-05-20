@@ -246,7 +246,6 @@ public class FileUtil {
             e.printStackTrace();
             return "";
         }
-
     }
 
     public static byte[] toByteArray(String filename) throws Exception {
