@@ -67,6 +67,10 @@
             android:text="@string/whitelist_fragment"/>
 
         <TextView style="@style/draw_item_style"
+            android:id="@+id/tv_category"
+            android:text="@string/category_fragment"/>
+
+        <TextView style="@style/draw_item_style"
             android:id="@+id/tv_record"
             android:text="@string/record_fragment"/>
 

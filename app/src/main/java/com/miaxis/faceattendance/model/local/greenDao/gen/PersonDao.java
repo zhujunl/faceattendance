@@ -40,6 +40,7 @@ public class PersonDao extends AbstractDao<Person, Long> {
         public final static Property FaceFeature = new Property(11, String.class, "faceFeature", false, "FACE_FEATURE");
         public final static Property FacePicture = new Property(12, String.class, "facePicture", false, "FACE_PICTURE");
         public final static Property RegisterTime = new Property(13, Long.class, "registerTime", false, "REGISTER_TIME");
+        public final static Property CategoryId = new Property(14, long.class, "categoryId", false, "CATEGORY_ID");
     }
 
     private final DateConverter registerTimeConverter = new DateConverter();
@@ -69,7 +70,8 @@ public class PersonDao extends AbstractDao<Person, Long> {
                 "\"CARD_ID\" TEXT," + // 10: cardId
                 "\"FACE_FEATURE\" TEXT," + // 11: faceFeature
                 "\"FACE_PICTURE\" TEXT," + // 12: facePicture
-                "\"REGISTER_TIME\" INTEGER);"); // 13: registerTime
+                "\"REGISTER_TIME\" INTEGER," + // 13: registerTime
+                "\"CATEGORY_ID\" INTEGER NOT NULL );"); // 14: categoryId
     }
 
     /** Drops the underlying database table. */
@@ -151,6 +153,7 @@ public class PersonDao extends AbstractDao<Person, Long> {
         if (registerTime != null) {
             stmt.bindLong(14, registerTimeConverter.convertToDatabaseValue(registerTime));
         }
+        stmt.bindLong(15, entity.getCategoryId());
     }
 
     @Override
@@ -226,6 +229,7 @@ public class PersonDao extends AbstractDao<Person, Long> {
         if (registerTime != null) {
             stmt.bindLong(14, registerTimeConverter.convertToDatabaseValue(registerTime));
         }
+        stmt.bindLong(15, entity.getCategoryId());
     }
 
     @Override
@@ -249,7 +253,8 @@ public class PersonDao extends AbstractDao<Person, Long> {
             cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // cardId
             cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // faceFeature
             cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12), // facePicture
-            cursor.isNull(offset + 13) ? null : registerTimeConverter.convertToEntityProperty(cursor.getLong(offset + 13)) // registerTime
+            cursor.isNull(offset + 13) ? null : registerTimeConverter.convertToEntityProperty(cursor.getLong(offset + 13)), // registerTime
+            cursor.getLong(offset + 14) // categoryId
         );
         return entity;
     }
@@ -270,6 +275,7 @@ public class PersonDao extends AbstractDao<Person, Long> {
         entity.setFaceFeature(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
         entity.setFacePicture(cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12));
         entity.setRegisterTime(cursor.isNull(offset + 13) ? null : registerTimeConverter.convertToEntityProperty(cursor.getLong(offset + 13)));
+        entity.setCategoryId(cursor.getLong(offset + 14));
      }
     
     @Override

@@ -13,11 +13,13 @@ public class UploadRecord {
     private String score;
     private Boolean upload;
     private String mode;
+    private String deviceId;
+    private long categoryId;
 
     public UploadRecord() {
     }
 
-    public UploadRecord(String cardNumber, String facePicture, String latitude, String longitude, String location, String sex, String name, String verifyTime, String score, Boolean upload, String mode) {
+    public UploadRecord(String cardNumber, String facePicture, String latitude, String longitude, String location, String sex, String name, String verifyTime, String score, Boolean upload, String mode, String deviceId, long categoryId) {
         this.cardNumber = cardNumber;
         this.facePicture = facePicture;
         this.latitude = latitude;
@@ -29,6 +31,8 @@ public class UploadRecord {
         this.score = score;
         this.upload = upload;
         this.mode = mode;
+        this.deviceId = deviceId;
+        this.categoryId = categoryId;
     }
 
     private UploadRecord(Builder builder) {
@@ -43,6 +47,8 @@ public class UploadRecord {
         setScore(builder.score);
         setUpload(builder.upload);
         setMode(builder.mode);
+        setDeviceId(builder.deviceId);
+        setCategoryId(builder.categoryId);
     }
 
     public String getCardNumber() {
@@ -133,6 +139,22 @@ public class UploadRecord {
         this.mode = mode;
     }
 
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(long categoryId) {
+        this.categoryId = categoryId;
+    }
+
     public static final class Builder {
         private String cardNumber;
         private String facePicture;
@@ -145,6 +167,8 @@ public class UploadRecord {
         private String score;
         private Boolean upload;
         private String mode;
+        private String deviceId;
+        private long categoryId;
 
         public Builder() {
         }
@@ -201,6 +225,16 @@ public class UploadRecord {
 
         public Builder mode(String val) {
             mode = val;
+            return this;
+        }
+
+        public Builder deviceId(String val) {
+            deviceId = val;
+            return this;
+        }
+
+        public Builder categoryId(long val) {
+            categoryId = val;
             return this;
         }
 

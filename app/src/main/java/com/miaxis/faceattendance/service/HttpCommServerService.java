@@ -44,6 +44,7 @@ public class HttpCommServerService extends Service {
         void onServerStart(boolean result);
         boolean onEnterFragment(Class<? extends Fragment> fragmentClass, Bundle bundle);
         boolean isPersonFragmentVisible();
+        boolean isAddPersonFragmentVisible();
         void onBackstageBusy(boolean start, String message);
     }
 

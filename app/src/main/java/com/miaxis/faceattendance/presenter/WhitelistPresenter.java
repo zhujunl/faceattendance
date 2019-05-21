@@ -67,9 +67,8 @@ public class WhitelistPresenter extends BasePresenter<FragmentEvent> implements 
 
     @Override
     public void getWhiteCardByCardNumber(String cardNumber) {
-        Observable.create((ObservableOnSubscribe<WhiteCard>) emitter -> {
-            emitter.onNext(WhiteCardModel.getWhiteCardByCardNumber(cardNumber));
-        })
+        Observable.create((ObservableOnSubscribe<WhiteCard>) emitter ->
+                emitter.onNext(WhiteCardModel.getWhiteCardByCardNumber(cardNumber)))
                 .subscribeOn(Schedulers.io())
                 .compose(getProvider().bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())

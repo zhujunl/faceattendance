@@ -12,6 +12,7 @@ import com.miaxis.faceattendance.model.net.ResponseEntity;
 import com.miaxis.faceattendance.service.HttpCommServerService;
 import com.miaxis.faceattendance.util.FileUtil;
 import com.miaxis.faceattendance.util.ValueUtil;
+import com.miaxis.faceattendance.view.fragment.AddPersonFragment;
 import com.miaxis.faceattendance.view.fragment.PersonFragment;
 import com.miaxis.faceattendance.view.fragment.VerifyFragment;
 
@@ -31,6 +32,8 @@ public class EditPersonServer {
     private static final String DELETE_PERSON_LIST = "/miaxis/attendance/editPersonServer/deletePersonList";
     private static final String CLEAR_PERSON = "/miaxis/attendance/editPersonServer/clearPerson";
     private static final String STOP_EDIT_PERSON = "/miaxis/attendance/editPersonServer/stopEditPerson";
+    private static final String OPEN_ADD_PERSON_PAGE = "/miaxis/attendance/editPersonServer/openAddPersonPage";
+    private static final String CLOSE_ADD_PERSON_PAGE = "/miaxis/attendance/editPersonServer/closeAddPersonPage";
 
     private HttpCommServerService.OnServerServiceListener listener;
 
@@ -53,6 +56,10 @@ public class EditPersonServer {
                     return handleClearPerson(session);
                 case STOP_EDIT_PERSON: //结束编辑人员
                     return handleStopEditPerson(session);
+                case OPEN_ADD_PERSON_PAGE: //进入添加人员页面
+                    return handleOpenAddPersonPage(session);
+                case CLOSE_ADD_PERSON_PAGE: //关闭添加人员页面
+                    return handleCloseAddPersonPage(session);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -194,6 +201,27 @@ public class EditPersonServer {
             }
         }
         return new ResponseEntity(AttendanceServer.FAILED, "请在人员管理页面进行操作");
+    }
+
+    private ResponseEntity handleOpenAddPersonPage(NanoHTTPD.IHTTPSession session) {
+        boolean result = listener.onEnterFragment(AddPersonFragment.class, null);
+        if (result) {
+            return new ResponseEntity(AttendanceServer.SUCCESS, "进入添加人员页面成功，请查看设备是否进入人员管理页面");
+        } else {
+            return new ResponseEntity(AttendanceServer.FAILED, "请确保应用界面可见");
+        }
+    }
+
+    private ResponseEntity handleCloseAddPersonPage(NanoHTTPD.IHTTPSession session) {
+        if (listener.isAddPersonFragmentVisible()) {
+            boolean result = listener.onEnterFragment(VerifyFragment.class, null);
+            if (result) {
+                return new ResponseEntity(AttendanceServer.SUCCESS, "关闭添加人员页面成功，请查看设备是否返回人脸考勤页面");
+            } else {
+                return new ResponseEntity(AttendanceServer.FAILED, "请确保应用界面可见");
+            }
+        }
+        return new ResponseEntity(AttendanceServer.FAILED, "请在添加人员页面进行操作");
     }
 
 }

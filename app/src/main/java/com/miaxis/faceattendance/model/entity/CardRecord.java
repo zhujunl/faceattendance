@@ -56,10 +56,12 @@ public class CardRecord {
 
     private String mode;
 
+    private String deviceId;
+
     public CardRecord() {
     }
 
-    public CardRecord(String cardType, String cardId, String name, String birthday, String address, String cardNumber, String issuingAuthority, String validateStart, String validateEnd, String sex, String nation, String passNumber, String issueCount, String chineseName, String version, String cardPicture, String facePicture, String result, String score, String verifyTime, String location, String longitude, String latitude, String mode) {
+    public CardRecord(String cardType, String cardId, String name, String birthday, String address, String cardNumber, String issuingAuthority, String validateStart, String validateEnd, String sex, String nation, String passNumber, String issueCount, String chineseName, String version, String cardPicture, String facePicture, String result, String score, String verifyTime, String location, String longitude, String latitude, String mode, String deviceId) {
         this.cardType = cardType;
         this.cardId = cardId;
         this.name = name;
@@ -84,6 +86,7 @@ public class CardRecord {
         this.longitude = longitude;
         this.latitude = latitude;
         this.mode = mode;
+        this.deviceId = deviceId;
     }
 
     private CardRecord(Builder builder) {
@@ -111,6 +114,7 @@ public class CardRecord {
         setLongitude(builder.longitude);
         setLatitude(builder.latitude);
         setMode(builder.mode);
+        setDeviceId(builder.deviceId);
     }
 
     public String getCardType() {
@@ -305,6 +309,14 @@ public class CardRecord {
         this.mode = mode;
     }
 
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
     public static final class Builder {
         private String cardType;
         private String cardId;
@@ -330,6 +342,7 @@ public class CardRecord {
         private String longitude;
         private String latitude;
         private String mode;
+        private String deviceId;
 
         public Builder() {
         }
@@ -451,6 +464,11 @@ public class CardRecord {
 
         public Builder mode(String val) {
             mode = val;
+            return this;
+        }
+
+        public Builder deviceId(String val) {
+            deviceId = val;
             return this;
         }
 

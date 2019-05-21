@@ -77,7 +77,7 @@ public class FaceManager {
         }
         int re = initFaceModel(context, szModelPath);
         if (re == 0) {
-            re = mxFaceAPI.mxInitAlg(context, szModelPath, sLicence);
+            re = mxFaceAPI.mxInitAlgN(context, szModelPath, sLicence);
         }
         return re;
     }

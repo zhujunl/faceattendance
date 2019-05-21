@@ -42,6 +42,7 @@ public class ConfigManager {
                     .id(1L)
                     .uploadUrl(ValueUtil.DEFAULT_UPLOAD_URL)
                     .cardUploadUrl(ValueUtil.DEFAULT_CARD_UPLOAD_URL)
+                    .personUploadUrl(ValueUtil.DEFAULT_PERSON_UPLOAD_URL)
                     .password(ValueUtil.DEFAULT_PASSWORD)
                     .verifyQualityScore(ValueUtil.DEFAULT_VERIFY_QUALITY_SCORE)
                     .registerQualityScore(ValueUtil.DEFAULT_REGISTER_QUALITY_SCORE)
@@ -51,6 +52,7 @@ public class ConfigManager {
                     .attendancePrompt(ValueUtil.DEFAULT_ATTENDANCE_PROMPT)
                     .cardVerifyPrompt(ValueUtil.DEFAULT_CARD_VERIFY_PROMPT)
                     .whitelistPrompt(ValueUtil.DEFAULT_WHITELIST_PROMPT)
+                    .deviceId(ValueUtil.DEFAULT_DEVICE_ID)
                     .build();
             DaoManager.getInstance().getDaoSession().getConfigDao().insert(config);
         }

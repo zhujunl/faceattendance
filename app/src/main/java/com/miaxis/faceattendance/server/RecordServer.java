@@ -3,6 +3,7 @@ package com.miaxis.faceattendance.server;
 import android.text.TextUtils;
 import android.util.Base64;
 
+import com.miaxis.faceattendance.manager.ConfigManager;
 import com.miaxis.faceattendance.model.RecordModel;
 import com.miaxis.faceattendance.model.entity.Record;
 import com.miaxis.faceattendance.model.entity.UploadRecord;
@@ -77,6 +78,8 @@ public class RecordServer {
                                 .verifyTime(record.getVerifyTime())
                                 .score(record.getScore())
                                 .mode("0")
+                                .categoryId(record.getCategoryId())
+                                .deviceId(ConfigManager.getInstance().getConfig().getDeviceId())
                                 .build();
                         uploadRecordList.add(uploadRecord);
                     }

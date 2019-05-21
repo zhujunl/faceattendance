@@ -26,7 +26,7 @@ public class FileUtil {
 
     public static final String PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "miaxis";
     public static final String MAIN_PATH = PATH + File.separator + "faceattendance";
-    public static final String LICENCE_PATH = PATH + File.separator + "FaceId_ST" + File.separator + "st_lic.txt";
+    public static final String LICENCE_PATH = PATH + File.separator + "NFaceId_ST" + File.separator + "st_lic.txt";
     public static final String IMG_PATH = MAIN_PATH + File.separator + "zzFaces";
     public static final String FACE_IMG_PATH = MAIN_PATH + File.separator + "faceImg";
     public static final String MODEL_PATH = MAIN_PATH + File.separator + "zzFaceModel";

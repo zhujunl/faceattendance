@@ -153,6 +153,32 @@
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/ll_category"
+                    android:visibility="invisible"
+                    android:padding="10dp"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:text="类    别："
+                        android:textSize="20sp"
+                        android:gravity="center"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent" />
+
+                    <TextView
+                        android:id="@+id/tv_category"
+                        android:textSize="20sp"
+                        android:paddingStart="16dp"
+                        android:gravity="start|center"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
             </LinearLayout>
 
             <LinearLayout

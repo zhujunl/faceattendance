@@ -8,6 +8,7 @@ import com.miaxis.faceattendance.MyEventBusIndex;
 import com.miaxis.faceattendance.event.InitFaceEvent;
 import com.miaxis.faceattendance.manager.AmapManager;
 import com.miaxis.faceattendance.manager.CardManager;
+import com.miaxis.faceattendance.manager.CategoryManager;
 import com.miaxis.faceattendance.manager.ConfigManager;
 import com.miaxis.faceattendance.manager.CrashExceptionManager;
 import com.miaxis.faceattendance.manager.DaoManager;
@@ -56,6 +57,7 @@ public class FaceAttendanceApp extends Application {
         AmapManager.getInstance().startLocation(this);
         GpioManager.getInstance().init(this);
         ConfigManager.getInstance().checkConfig();
+        CategoryManager.getInstance().checkCategory();
         CrashExceptionManager.getInstance().init(this);
         CardManager.getInstance().init(this);
         int faceResult = FaceManager.getInstance().initFaceST(getApplicationContext(), FileUtil.MODEL_PATH, FileUtil.LICENCE_PATH);

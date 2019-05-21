@@ -11,13 +11,17 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.miaxis.faceattendance.R;
@@ -30,6 +34,7 @@ import com.miaxis.faceattendance.manager.ToastManager;
 import com.miaxis.faceattendance.service.HttpCommServerService;
 import com.miaxis.faceattendance.util.ValueUtil;
 import com.miaxis.faceattendance.view.fragment.AddPersonFragment;
+import com.miaxis.faceattendance.view.fragment.CategoryFragment;
 import com.miaxis.faceattendance.view.fragment.PersonFragment;
 import com.miaxis.faceattendance.view.fragment.RecordFragment;
 import com.miaxis.faceattendance.view.fragment.SettingFragment;
@@ -47,10 +52,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.net.URL;
 
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -93,6 +94,8 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     RelativeLayout rlInit;
     @BindView(R.id.rl_toolbar)
     RelativeLayout rlToolbar;
+    @BindView(R.id.tv_category)
+    TextView tvCategory;
 
     private MaterialDialog passwordDialog;
     private MaterialDialog quitDialog;
@@ -106,6 +109,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     private RecordFragment recordFragment;
     private SettingFragment settingFragment;
     private UpdateFragment updateFragment;
+    private CategoryFragment categoryFragment;
 
     private boolean stop = false;
 
@@ -161,6 +165,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
         tvPerson.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
         tvAddPerson.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
         tvWhitelist.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
+        tvCategory.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
         tvRecord.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
         tvSetting.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
         tvQuit.setOnClickListener(new OnLimitClickHelper(drawerClickListener));
@@ -213,6 +218,8 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
             fragmentTransaction.detach(recordFragment);
         } else if (TextUtils.equals(removeClass.getName(), UpdateFragment.class.getName())) {
             fragmentTransaction.detach(updateFragment);
+        } else if (TextUtils.equals(removeClass.getName(), CategoryFragment.class.getName())) {
+            fragmentTransaction.detach(categoryFragment);
         } else if (TextUtils.equals(removeClass.getName(), Fragment.class.getName())) {
             getSupportFragmentManager().popBackStackImmediate(null, 1);
         }
@@ -222,12 +229,14 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
             fragmentTransaction.replace(R.id.fl_main, personFragment = PersonFragment.newInstance());
         } else if (TextUtils.equals(addClass.getName(), AddPersonFragment.class.getName())) {
             fragmentTransaction.replace(R.id.fl_main, addPersonFragment = AddPersonFragment.newInstance());
-        }  else if (TextUtils.equals(addClass.getName(), WhitelistFragment.class.getName())) {
+        } else if (TextUtils.equals(addClass.getName(), WhitelistFragment.class.getName())) {
             fragmentTransaction.replace(R.id.fl_main, whitelistFragment = WhitelistFragment.newInstance());
         } else if (TextUtils.equals(addClass.getName(), RecordFragment.class.getName())) {
             fragmentTransaction.replace(R.id.fl_main, recordFragment = RecordFragment.newInstance());
         } else if (TextUtils.equals(addClass.getName(), SettingFragment.class.getName())) {
             fragmentTransaction.replace(R.id.fl_main, settingFragment = SettingFragment.newInstance());
+        } else if (TextUtils.equals(addClass.getName(), CategoryFragment.class.getName())) {
+            fragmentTransaction.replace(R.id.fl_main, categoryFragment = CategoryFragment.newInstance());
         } else if (TextUtils.equals(addClass.getName(), UpdateFragment.class.getName())) {
             if (bundle != null) {
                 URL url = (URL) bundle.getSerializable("url");
@@ -289,6 +298,12 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
             case R.id.tv_whitelist:
                 if (!(getVisibleFragment() instanceof WhitelistFragment)) {
                     enterAnotherFragment(Fragment.class, WhitelistFragment.class, null);
+                    dlMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                }
+                break;
+            case R.id.tv_category:
+                if (!(getVisibleFragment() instanceof CategoryFragment)) {
+                    enterAnotherFragment(Fragment.class, CategoryFragment.class, null);
                     dlMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                 }
                 break;
@@ -359,6 +374,11 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
         }
 
         @Override
+        public boolean isAddPersonFragmentVisible() {
+            return getVisibleFragment() instanceof AddPersonFragment;
+        }
+
+        @Override
         public void onBackstageBusy(boolean start, String message) {
             runOnUiThread(() -> {
                 if (getVisibleFragment() instanceof PersonFragment) {
@@ -398,7 +418,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
                 })
                 .negativeText("取消")
                 .build();
-        passwordDialog.getInputEditText().setFilters(new InputFilter[] {new InputFilter.LengthFilter(6)});
+        passwordDialog.getInputEditText().setFilters(new InputFilter[]{new InputFilter.LengthFilter(6)});
         quitDialog = new MaterialDialog.Builder(this)
                 .title("确认退出？")
                 .positiveText("确认")

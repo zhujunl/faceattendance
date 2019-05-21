@@ -102,12 +102,54 @@
                 <View style="@style/VerticalLine"/>
 
                 <TextView style="@style/SettingName"
+                    android:text="添加人员上传地址" />
+
+                <View style="@style/VerticalLine"/>
+
+                <EditText style="@style/SettingBody"
+                    android:id="@+id/et_person_upload_url"
+                    android:background="@color/white"
+                    android:textSize="20sp"
+                    android:singleLine="true" />
+
+                <View style="@style/VerticalLine"/>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalLine"/>
+
+            <LinearLayout style="@style/SettingItem">
+
+                <View style="@style/VerticalLine"/>
+
+                <TextView style="@style/SettingName"
                     android:text="设备密码" />
 
                 <View style="@style/VerticalLine"/>
 
                 <EditText style="@style/SettingBody"
                     android:id="@+id/et_password"
+                    android:background="@color/white"
+                    android:textSize="20sp"
+                    android:singleLine="true" />
+
+                <View style="@style/VerticalLine"/>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalLine"/>
+
+            <LinearLayout style="@style/SettingItem">
+
+                <View style="@style/VerticalLine"/>
+
+                <TextView style="@style/SettingName"
+                    android:text="设备标识" />
+
+                <View style="@style/VerticalLine"/>
+
+                <EditText style="@style/SettingBody"
+                    android:id="@+id/et_device_id"
                     android:background="@color/white"
                     android:textSize="20sp"
                     android:singleLine="true" />

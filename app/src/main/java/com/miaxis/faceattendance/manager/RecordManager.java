@@ -13,6 +13,7 @@ import com.miaxis.faceattendance.model.entity.IDCardRecord;
 import com.miaxis.faceattendance.model.entity.Person;
 import com.miaxis.faceattendance.model.entity.RGBImage;
 import com.miaxis.faceattendance.model.entity.Record;
+import com.miaxis.faceattendance.model.entity.UploadPerson;
 import com.miaxis.faceattendance.model.entity.UploadRecord;
 import com.miaxis.faceattendance.model.net.ResponseEntity;
 import com.miaxis.faceattendance.model.net.UpLoadRecordNet;
@@ -35,6 +36,7 @@ import io.reactivex.FlowableSubscriber;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
@@ -83,6 +85,7 @@ public class RecordManager {
                     .verifyTime(time)
                     .score(String.valueOf(event.getScore()))
                     .upload(Boolean.FALSE)
+                    .categoryId(person.getCategoryId())
                     .build();
             emitter.onNext(record);
         })
@@ -138,6 +141,7 @@ public class RecordManager {
                         .longitude(longitude)
                         .latitude(latitude)
                         .mode("1")
+                        .deviceId(ConfigManager.getInstance().getConfig().getDeviceId())
                         .build();
                 emitter.onNext(cardRecord);
             })
@@ -192,6 +196,7 @@ public class RecordManager {
                         .longitude(longitude)
                         .latitude(latitude)
                         .mode("2")
+                        .deviceId(ConfigManager.getInstance().getConfig().getDeviceId())
                         .build();
                 emitter.onNext(cardRecord);
             })
@@ -249,6 +254,8 @@ public class RecordManager {
                             .verifyTime(record.getVerifyTime())
                             .score(record.getScore())
                             .mode("0")
+                            .categoryId(record.getCategoryId())
+                            .deviceId(ConfigManager.getInstance().getConfig().getDeviceId())
                             .build();
                     String json = new Gson().toJson(uploadRecord);
                     RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
@@ -282,6 +289,52 @@ public class RecordManager {
                         clearRecordByThreshold();
                     }
                 });
+    }
+
+    public void uploadPerson(Person person) {
+        String uploadUrl = ConfigManager.getInstance().getConfig().getPersonUploadUrl();
+        if (!TextUtils.isEmpty(uploadUrl)) {
+            Observable.create((ObservableOnSubscribe<UploadPerson>) emitter -> {
+                String facePicture = FileUtil.pathToBase64(person.getFacePicture());
+                UploadPerson uploadPerson = new UploadPerson.Builder()
+                        .name(person.getName())
+                        .sex(person.getSex())
+                        .cardNumber(person.getCardNumber())
+                        .nation(person.getNation())
+                        .address(person.getAddress())
+                        .validateStart(person.getValidateStart())
+                        .validateEnd(person.getValidateEnd())
+                        .issuingAuthority(person.getIssuingAuthority())
+                        .birthday(person.getBirthday())
+                        .cardId(person.getCardId())
+                        .faceFeature(person.getFaceFeature())
+                        .facePicture(facePicture)
+                        .registerTime(person.getRegisterTime())
+                        .categoryId(person.getCategoryId())
+                        .mode("3")
+                        .deviceId(ConfigManager.getInstance().getConfig().getDeviceId())
+                        .build();
+                emitter.onNext(uploadPerson);
+            })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
+                    .flatMap((Function<UploadPerson, ObservableSource<ResponseEntity>>) uploadPerson -> {
+                        URL url = new URL(uploadUrl);
+                        Retrofit retrofit = FaceAttendanceApp.RETROFIT.baseUrl("http://" + url.getHost() + ":" + url.getPort() + "/").build();
+                        UpLoadRecordNet upLoadRecordNet = retrofit.create(UpLoadRecordNet.class);
+                        String json = new Gson().toJson(uploadPerson);
+                        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
+                        return upLoadRecordNet.uploadData(uploadUrl, requestBody);
+                    })
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(responseEntity -> {
+                        ToastManager.toast(FaceAttendanceApp.getInstance().getApplicationContext(), "人员信息上传成功", ToastManager.SUCCESS);
+                        Log.e("asd", "uploadPerson上传成功");
+                    }, throwable -> {
+                        throwable.printStackTrace();
+                        ToastManager.toast(FaceAttendanceApp.getInstance().getApplicationContext(), "人员信息上传失败", ToastManager.INFO);
+                    });
+        }
     }
 
     private void uploadRecord(Record record) {

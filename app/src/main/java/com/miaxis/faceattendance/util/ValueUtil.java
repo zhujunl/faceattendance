@@ -28,6 +28,7 @@ public class ValueUtil {
 
     public static final String DEFAULT_UPLOAD_URL = "";
     public static final String DEFAULT_CARD_UPLOAD_URL = "";
+    public static final String DEFAULT_PERSON_UPLOAD_URL = "";
     public static final String DEFAULT_PASSWORD = "666666";
     public static final float DEFAULT_VERIFY_QUALITY_SCORE = 80f;
     public static final float DEFAULT_REGISTER_QUALITY_SCORE = 80f;
@@ -37,6 +38,7 @@ public class ValueUtil {
     public static final String DEFAULT_ATTENDANCE_PROMPT = "考勤成功";
     public static final String DEFAULT_CARD_VERIFY_PROMPT = "人证核验通过";
     public static final String DEFAULT_WHITELIST_PROMPT = "白名单已校验";
+    public static final String DEFAULT_DEVICE_ID = "MR860";
 
     public static final int GET_CARD_ID = 0;
     public static final int NO_CARD     = 134;

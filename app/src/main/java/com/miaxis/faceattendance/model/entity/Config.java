@@ -11,6 +11,7 @@ public class Config {
     private Long id;
     private String uploadUrl;
     private String cardUploadUrl;
+    private String personUploadUrl;
     private String password;
     private float verifyQualityScore;
     private float registerQualityScore;
@@ -20,15 +21,17 @@ public class Config {
     private String attendancePrompt;
     private String cardVerifyPrompt;
     private String whitelistPrompt;
-    @Generated(hash = 28662680)
-    public Config(Long id, String uploadUrl, String cardUploadUrl, String password,
-            float verifyQualityScore, float registerQualityScore, float verifyScore,
-            float cardVerifyScore, int recordClearThreshold,
-            String attendancePrompt, String cardVerifyPrompt,
-            String whitelistPrompt) {
+    private String deviceId;
+    @Generated(hash = 857205384)
+    public Config(Long id, String uploadUrl, String cardUploadUrl,
+            String personUploadUrl, String password, float verifyQualityScore,
+            float registerQualityScore, float verifyScore, float cardVerifyScore,
+            int recordClearThreshold, String attendancePrompt,
+            String cardVerifyPrompt, String whitelistPrompt, String deviceId) {
         this.id = id;
         this.uploadUrl = uploadUrl;
         this.cardUploadUrl = cardUploadUrl;
+        this.personUploadUrl = personUploadUrl;
         this.password = password;
         this.verifyQualityScore = verifyQualityScore;
         this.registerQualityScore = registerQualityScore;
@@ -38,6 +41,7 @@ public class Config {
         this.attendancePrompt = attendancePrompt;
         this.cardVerifyPrompt = cardVerifyPrompt;
         this.whitelistPrompt = whitelistPrompt;
+        this.deviceId = deviceId;
     }
     @Generated(hash = 589037648)
     public Config() {
@@ -47,6 +51,7 @@ public class Config {
         setId(builder.id);
         setUploadUrl(builder.uploadUrl);
         setCardUploadUrl(builder.cardUploadUrl);
+        setPersonUploadUrl(builder.personUploadUrl);
         setPassword(builder.password);
         setVerifyQualityScore(builder.verifyQualityScore);
         setRegisterQualityScore(builder.registerQualityScore);
@@ -56,6 +61,7 @@ public class Config {
         setAttendancePrompt(builder.attendancePrompt);
         setCardVerifyPrompt(builder.cardVerifyPrompt);
         setWhitelistPrompt(builder.whitelistPrompt);
+        setDeviceId(builder.deviceId);
     }
 
     public Long getId() {
@@ -75,6 +81,12 @@ public class Config {
     }
     public void setCardUploadUrl(String cardUploadUrl) {
         this.cardUploadUrl = cardUploadUrl;
+    }
+    public String getPersonUploadUrl() {
+        return this.personUploadUrl;
+    }
+    public void setPersonUploadUrl(String personUploadUrl) {
+        this.personUploadUrl = personUploadUrl;
     }
     public String getPassword() {
         return this.password;
@@ -130,11 +142,18 @@ public class Config {
     public void setWhitelistPrompt(String whitelistPrompt) {
         this.whitelistPrompt = whitelistPrompt;
     }
+    public String getDeviceId() {
+        return this.deviceId;
+    }
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
 
     public static final class Builder {
         private Long id;
         private String uploadUrl;
         private String cardUploadUrl;
+        private String personUploadUrl;
         private String password;
         private float verifyQualityScore;
         private float registerQualityScore;
@@ -144,6 +163,7 @@ public class Config {
         private String attendancePrompt;
         private String cardVerifyPrompt;
         private String whitelistPrompt;
+        private String deviceId;
 
         public Builder() {
         }
@@ -160,6 +180,11 @@ public class Config {
 
         public Builder cardUploadUrl(String val) {
             cardUploadUrl = val;
+            return this;
+        }
+
+        public Builder personUploadUrl(String val) {
+            personUploadUrl = val;
             return this;
         }
 
@@ -205,6 +230,11 @@ public class Config {
 
         public Builder whitelistPrompt(String val) {
             whitelistPrompt = val;
+            return this;
+        }
+
+        public Builder deviceId(String val) {
+            deviceId = val;
             return this;
         }
 

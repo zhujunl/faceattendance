@@ -21,11 +21,13 @@ import com.miaxis.faceattendance.event.FeatureEvent;
 import com.miaxis.faceattendance.event.OpenCameraEvent;
 import com.miaxis.faceattendance.event.VerifyPersonEvent;
 import com.miaxis.faceattendance.manager.CardManager;
+import com.miaxis.faceattendance.manager.CategoryManager;
 import com.miaxis.faceattendance.manager.ConfigManager;
 import com.miaxis.faceattendance.manager.FaceManager;
 import com.miaxis.faceattendance.manager.RecordManager;
 import com.miaxis.faceattendance.manager.TTSManager;
 import com.miaxis.faceattendance.manager.WhitelistManager;
+import com.miaxis.faceattendance.model.entity.Category;
 import com.miaxis.faceattendance.model.entity.IDCardRecord;
 import com.miaxis.faceattendance.model.entity.Person;
 import com.miaxis.faceattendance.model.entity.VerifyPerson;
@@ -78,6 +80,10 @@ public class VerifyFragment extends BaseFragment {
     LinearLayout llName;
     @BindView(R.id.ll_time)
     LinearLayout llTime;
+    @BindView(R.id.tv_category)
+    TextView tvCategory;
+    @BindView(R.id.ll_category)
+    LinearLayout llCategory;
 
     //    private VerifyAdapter<VerifyPerson> verifyAdapter;
     private OnFragmentInteractionListener mListener;
@@ -155,8 +161,20 @@ public class VerifyFragment extends BaseFragment {
             tvTime.setText(verifyPerson.getTime());
             llName.setVisibility(View.VISIBLE);
             llTime.setVisibility(View.VISIBLE);
+            if (personCache.getCategoryId() != 0L) {
+                llCategory.setVisibility(View.VISIBLE);
+                tvCategory.setText(CategoryManager.getInstance().getCateforyNameById(personCache.getCategoryId()));
+            } else {
+                llCategory.setVisibility(View.INVISIBLE);
+            }
             GlideApp.with(getContext()).load(verifyPerson.getFacePicturePath()).into(ivHeader);
-            TTSManager.getInstance().playVoiceMessageFlush(ConfigManager.getInstance().getConfig().getAttendancePrompt());
+            Category category;
+            if (person.getCategoryId() != 0
+                    && (category = CategoryManager.getInstance().getCategoryById(person.getCategoryId())) != null) {
+                TTSManager.getInstance().playVoiceMessageFlush(category.getCategoryPrompt());
+            } else {
+                TTSManager.getInstance().playVoiceMessageFlush(ConfigManager.getInstance().getConfig().getAttendancePrompt());
+            }
             RecordManager.getInstance().saveRecord(event, verifyPerson.getTime());
             sendClearMessage();
         } else {
@@ -336,6 +354,7 @@ public class VerifyFragment extends BaseFragment {
         GlideApp.with(getContext()).clear(ivHeader);
         llName.setVisibility(View.INVISIBLE);
         llTime.setVisibility(View.INVISIBLE);
+        llCategory.setVisibility(View.INVISIBLE);
     }
 
     private void resetLayoutParams(View view, int fixWidth, int fixHeight) {

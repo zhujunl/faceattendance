@@ -7,26 +7,31 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.text.TextUtils;
 import android.util.Base64;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.fragment.app.Fragment;
+
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.miaxis.faceattendance.R;
-import com.miaxis.faceattendance.app.FaceAttendanceApp;
 import com.miaxis.faceattendance.event.CardEvent;
 import com.miaxis.faceattendance.event.FeatureEvent;
 import com.miaxis.faceattendance.manager.CameraManager;
 import com.miaxis.faceattendance.manager.CardManager;
+import com.miaxis.faceattendance.manager.CategoryManager;
 import com.miaxis.faceattendance.manager.FaceManager;
+import com.miaxis.faceattendance.manager.RecordManager;
 import com.miaxis.faceattendance.manager.TTSManager;
 import com.miaxis.faceattendance.manager.ToastManager;
 import com.miaxis.faceattendance.model.PersonModel;
+import com.miaxis.faceattendance.model.entity.Category;
 import com.miaxis.faceattendance.model.entity.IDCardRecord;
 import com.miaxis.faceattendance.model.entity.MyException;
 import com.miaxis.faceattendance.model.entity.Person;
@@ -41,17 +46,14 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
-import androidx.fragment.app.Fragment;
 import butterknife.BindView;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -71,6 +73,10 @@ public class AddPersonFragment extends BaseFragment {
     Spinner spinnerSex;
     @BindView(R.id.et_card_number)
     EditText etCardNumber;
+    @BindView(R.id.spinner_category)
+    Spinner spinnerCategory;
+    @BindView(R.id.ll_category)
+    LinearLayout llCategory;
 
     private MaterialDialog waitDialog;
     private MaterialDialog checkDialog;
@@ -79,6 +85,7 @@ public class AddPersonFragment extends BaseFragment {
     private IDCardRecord idCardRecord;
     private Person person;
     private OnFragmentInteractionListener mListener;
+    private List<Category> categoryList;
 
     public static AddPersonFragment newInstance() {
         return new AddPersonFragment();
@@ -104,6 +111,15 @@ public class AddPersonFragment extends BaseFragment {
         String[] arr = getResources().getStringArray(R.array.sex);
         ArrayAdapter<String> sexAdapter = new ArrayAdapter<>(getContext(), R.layout.item_spinner_start, R.id.tv_spinner, arr);
         spinnerSex.setAdapter(sexAdapter);
+        categoryList = CategoryManager.getInstance().getCategoryList();
+        if (!categoryList.isEmpty()) {
+            List<String> categoryNameList = Stream.of(categoryList).map(Category::getCategoryName).collect(Collectors.toList());
+            categoryNameList.add(0, "请选择类别");
+            ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(getContext(), R.layout.item_spinner_start, R.id.tv_spinner, categoryNameList);
+            spinnerCategory.setAdapter(categoryAdapter);
+        } else {
+            llCategory.setVisibility(View.INVISIBLE);
+        }
         tvTakePicture.setOnClickListener(new OnLimitClickHelper(v -> {
             if (TextUtils.equals(tvTakePicture.getText().toString(), "点  击  拍  照")) {
                 tvTakePicture.setText("重  新  拍  摄");
@@ -204,6 +220,10 @@ public class AddPersonFragment extends BaseFragment {
 
     private void checkPerson() {
         if (checkInput()) {
+            if (PersonModel.getPersonCount() > 500) {
+                ToastManager.toast(getContext(), "考勤人员库数量已达500上限", ToastManager.INFO);
+                return;
+            }
             if (PersonModel.getPersonByCardNumber(etCardNumber.getText().toString().replaceAll("\\p{P}", "")) == null) {
                 handlePerson();
             } else {
@@ -224,7 +244,8 @@ public class AddPersonFragment extends BaseFragment {
         if (facePicture == null
                 || TextUtils.isEmpty(etName.getText().toString())
                 || spinnerSex.getSelectedItemPosition() == 0
-                || TextUtils.isEmpty(etCardNumber.getText().toString().replaceAll("\\p{P}", ""))) {
+                || TextUtils.isEmpty(etCardNumber.getText().toString().replaceAll("\\p{P}", ""))
+                || (!categoryList.isEmpty() && spinnerCategory.getSelectedItemPosition() == 0)) {
             return false;
         }
         return true;
@@ -243,6 +264,7 @@ public class AddPersonFragment extends BaseFragment {
                     .validateEnd(idCardRecord.getValidateEnd())
                     .cardId(idCardRecord.getCardId())
                     .issuingAuthority(idCardRecord.getIssuingAuthority())
+                    .categoryId(categoryList.isEmpty() ? 0L : categoryList.get(spinnerCategory.getSelectedItemPosition() - 1).getId())
                     .build();
         } else {
             person = new Person.Builder()
@@ -296,31 +318,33 @@ public class AddPersonFragment extends BaseFragment {
                     if (new File(s).exists()) {
                         person.setFacePicture(s);
                         PersonModel.savePerson(person);
+                        RecordManager.getInstance().uploadPerson(person);
                     } else {
                         throw new MyException("头像落地文件未找到");
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
-                            tvTakePicture.performClick();
-                            waitDialog.dismiss();
-                            clear();
-                            ToastManager.toast(getContext(), "添加人员成功", ToastManager.SUCCESS);
-                        }, throwable -> {
-                            tvTakePicture.performClick();
-                            waitDialog.dismiss();
-                            String errorMessage = "保存过程中出错，请对准摄像头画面中心后重新添加";
-                            if (throwable instanceof MyException) {
-                                errorMessage = throwable.getMessage();
-                            }
-                            ToastManager.toast(getContext(), errorMessage, ToastManager.ERROR);
-                        });
+                    tvTakePicture.performClick();
+                    waitDialog.dismiss();
+                    clear();
+                    ToastManager.toast(getContext(), "添加人员成功", ToastManager.SUCCESS);
+                }, throwable -> {
+                    tvTakePicture.performClick();
+                    waitDialog.dismiss();
+                    String errorMessage = "保存过程中出错，请对准摄像头画面中心后重新添加";
+                    if (throwable instanceof MyException) {
+                        errorMessage = throwable.getMessage();
+                    }
+                    ToastManager.toast(getContext(), errorMessage, ToastManager.ERROR);
+                });
     }
 
     private void clear() {
         etCardNumber.setText("");
         etName.setText("");
         spinnerSex.setSelection(0);
+        spinnerCategory.setSelection(0);
         person = null;
     }
 

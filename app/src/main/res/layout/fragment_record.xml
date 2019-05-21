@@ -189,10 +189,24 @@
 
             <TextView
                 android:textStyle="bold"
+                android:text="人员类别"
+                style="@style/record_item"
+                android:textColor="@color/white"
+                android:layout_weight="0.5"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+            <View
+                android:background="@color/white"
+                android:layout_width="1px"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:textStyle="bold"
                 android:text="比对时间"
                 style="@style/record_item"
                 android:textColor="@color/white"
-                android:layout_weight="1.5"
+                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent" />
 

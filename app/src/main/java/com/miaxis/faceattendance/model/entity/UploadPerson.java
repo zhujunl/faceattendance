@@ -1,19 +1,7 @@
 package com.miaxis.faceattendance.model.entity;
 
-import com.miaxis.faceattendance.model.entity.converter.DateConverter;
+public class UploadPerson {
 
-import org.greenrobot.greendao.annotation.Convert;
-import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.Generated;
-
-import java.util.Date;
-
-@Entity
-public class Person {
-
-    @Id(autoincrement = true)
-    private Long id;
     private String name;
     private String sex;
     private String cardNumber;
@@ -26,16 +14,15 @@ public class Person {
     private String cardId;
     private String faceFeature;
     private String facePicture;
-    @Convert(converter = DateConverter.class, columnType = Long.class)
     private String registerTime;
     private long categoryId;
-    @Generated(hash = 346030712)
-    public Person(Long id, String name, String sex, String cardNumber,
-            String nation, String address, String validateStart, String validateEnd,
-            String issuingAuthority, String birthday, String cardId,
-            String faceFeature, String facePicture, String registerTime,
-            long categoryId) {
-        this.id = id;
+    private String mode;
+    private String deviceId;
+
+    public UploadPerson() {
+    }
+
+    public UploadPerson(String name, String sex, String cardNumber, String nation, String address, String validateStart, String validateEnd, String issuingAuthority, String birthday, String cardId, String faceFeature, String facePicture, String registerTime, long categoryId, String mode, String deviceId) {
         this.name = name;
         this.sex = sex;
         this.cardNumber = cardNumber;
@@ -50,13 +37,11 @@ public class Person {
         this.facePicture = facePicture;
         this.registerTime = registerTime;
         this.categoryId = categoryId;
-    }
-    @Generated(hash = 1024547259)
-    public Person() {
+        this.mode = mode;
+        this.deviceId = deviceId;
     }
 
-    private Person(Builder builder) {
-        setId(builder.id);
+    private UploadPerson(Builder builder) {
         setName(builder.name);
         setSex(builder.sex);
         setCardNumber(builder.cardNumber);
@@ -71,101 +56,139 @@ public class Person {
         setFacePicture(builder.facePicture);
         setRegisterTime(builder.registerTime);
         setCategoryId(builder.categoryId);
+        setMode(builder.mode);
+        setDeviceId(builder.deviceId);
     }
 
-    public Long getId() {
-        return this.id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
     public String getName() {
-        return this.name;
+        return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
     public String getSex() {
-        return this.sex;
+        return sex;
     }
+
     public void setSex(String sex) {
         this.sex = sex;
     }
+
     public String getCardNumber() {
-        return this.cardNumber;
+        return cardNumber;
     }
+
     public void setCardNumber(String cardNumber) {
         this.cardNumber = cardNumber;
     }
+
     public String getNation() {
-        return this.nation;
+        return nation;
     }
+
     public void setNation(String nation) {
         this.nation = nation;
     }
+
     public String getAddress() {
-        return this.address;
+        return address;
     }
+
     public void setAddress(String address) {
         this.address = address;
     }
+
     public String getValidateStart() {
-        return this.validateStart;
+        return validateStart;
     }
+
     public void setValidateStart(String validateStart) {
         this.validateStart = validateStart;
     }
+
     public String getValidateEnd() {
-        return this.validateEnd;
+        return validateEnd;
     }
+
     public void setValidateEnd(String validateEnd) {
         this.validateEnd = validateEnd;
     }
+
     public String getIssuingAuthority() {
-        return this.issuingAuthority;
+        return issuingAuthority;
     }
+
     public void setIssuingAuthority(String issuingAuthority) {
         this.issuingAuthority = issuingAuthority;
     }
+
     public String getBirthday() {
-        return this.birthday;
+        return birthday;
     }
+
     public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
+
     public String getCardId() {
-        return this.cardId;
+        return cardId;
     }
+
     public void setCardId(String cardId) {
         this.cardId = cardId;
     }
+
     public String getFaceFeature() {
-        return this.faceFeature;
+        return faceFeature;
     }
+
     public void setFaceFeature(String faceFeature) {
         this.faceFeature = faceFeature;
     }
+
     public String getFacePicture() {
-        return this.facePicture;
+        return facePicture;
     }
+
     public void setFacePicture(String facePicture) {
         this.facePicture = facePicture;
     }
+
     public String getRegisterTime() {
-        return this.registerTime;
+        return registerTime;
     }
+
     public void setRegisterTime(String registerTime) {
         this.registerTime = registerTime;
     }
+
     public long getCategoryId() {
-        return this.categoryId;
+        return categoryId;
     }
+
     public void setCategoryId(long categoryId) {
         this.categoryId = categoryId;
     }
 
+    public String getMode() {
+        return mode;
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
     public static final class Builder {
-        private Long id;
         private String name;
         private String sex;
         private String cardNumber;
@@ -180,13 +203,10 @@ public class Person {
         private String facePicture;
         private String registerTime;
         private long categoryId;
+        private String mode;
+        private String deviceId;
 
         public Builder() {
-        }
-
-        public Builder id(Long val) {
-            id = val;
-            return this;
         }
 
         public Builder name(String val) {
@@ -259,8 +279,18 @@ public class Person {
             return this;
         }
 
-        public Person build() {
-            return new Person(this);
+        public Builder mode(String val) {
+            mode = val;
+            return this;
+        }
+
+        public Builder deviceId(String val) {
+            deviceId = val;
+            return this;
+        }
+
+        public UploadPerson build() {
+            return new UploadPerson(this);
         }
     }
 }

@@ -25,10 +25,11 @@ public class Record {
     private String verifyTime;
     private String score;
     private Boolean upload;
-    @Generated(hash = 1747385493)
+    private long categoryId;
+    @Generated(hash = 1000360449)
     public Record(Long id, String cardNumber, String facePicture, String latitude,
             String longitude, String location, String sex, String name,
-            String verifyTime, String score, Boolean upload) {
+            String verifyTime, String score, Boolean upload, long categoryId) {
         this.id = id;
         this.cardNumber = cardNumber;
         this.facePicture = facePicture;
@@ -40,6 +41,7 @@ public class Record {
         this.verifyTime = verifyTime;
         this.score = score;
         this.upload = upload;
+        this.categoryId = categoryId;
     }
     @Generated(hash = 477726293)
     public Record() {
@@ -57,6 +59,7 @@ public class Record {
         setVerifyTime(builder.verifyTime);
         setScore(builder.score);
         setUpload(builder.upload);
+        setCategoryId(builder.categoryId);
     }
 
     public Long getId() {
@@ -125,6 +128,12 @@ public class Record {
     public void setUpload(Boolean upload) {
         this.upload = upload;
     }
+    public long getCategoryId() {
+        return this.categoryId;
+    }
+    public void setCategoryId(long categoryId) {
+        this.categoryId = categoryId;
+    }
 
     public static final class Builder {
         private Long id;
@@ -138,6 +147,7 @@ public class Record {
         private String verifyTime;
         private String score;
         private Boolean upload;
+        private long categoryId;
 
         public Builder() {
         }
@@ -194,6 +204,11 @@ public class Record {
 
         public Builder upload(Boolean val) {
             upload = val;
+            return this;
+        }
+
+        public Builder categoryId(long val) {
+            categoryId = val;
             return this;
         }
 

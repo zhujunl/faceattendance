@@ -15,7 +15,7 @@
         <item name="android:gravity">start|center</item>
         <item name="android:paddingStart">50dp</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">65dp</item>
+        <item name="android:layout_height">60dp</item>
     </style>
 
     <style name="SettingItem">

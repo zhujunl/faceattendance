@@ -5,9 +5,14 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.miaxis.faceattendance.app.FaceAttendanceApp;
+import com.miaxis.faceattendance.manager.CategoryManager;
 import com.miaxis.faceattendance.manager.ConfigManager;
+import com.miaxis.faceattendance.model.CategoryModel;
 import com.miaxis.faceattendance.model.ConfigModel;
+import com.miaxis.faceattendance.model.entity.Category;
 import com.miaxis.faceattendance.model.entity.Config;
 import com.miaxis.faceattendance.model.net.ResponseEntity;
 import com.miaxis.faceattendance.service.HttpCommServerService;
@@ -34,8 +39,11 @@ public class BasisServer {
     private static final String SET_VERIFY_THRESHOLD = "/miaxis/attendance/baseServer/setVerifyThreshold";
     private static final String SET_RECORD_CLEAR_THRESHOLD = "/miaxis/attendance/baseServer/setRecordClearThreshold";
     private static final String SET_VOICE_PROMPT = "/miaxis/attendance/baseServer/setVoicePrompt";
-    private static final String GET_VERSION_NUMBER = "/miaxis/attendance/baseServer/getVesionNumber";
+    private static final String GET_VERSION_NUMBER = "/miaxis/attendance/baseServer/getVersionNumber";
     private static final String VERSION_UPDATE = "/miaxis/attendance/baseServer/versionUpdate";
+    private static final String SET_DEVICE_ID = "/miaxis/attendance/baseServer/setDeviceId";
+    private static final String GET_DEVICE_ID = "/miaxis/attendance/baseServer/getDeviceId";
+    private static final String SET_CATEGORY = "/miaxis/attendance/baseServer/setCategory";
 
     private HttpCommServerService.OnServerServiceListener listener;
 
@@ -66,6 +74,12 @@ public class BasisServer {
                     return handleGetVersionNumber(session);
                 case VERSION_UPDATE: //版本更新
                     return handleVersionUpdate(session);
+                case SET_DEVICE_ID: //设置设备标识
+                    return handleSetDeviceId(session);
+                case GET_DEVICE_ID: //获取设备标识
+                    return handleGetDeviceId(session);
+                case SET_CATEGORY: //设置人员类别
+                    return handleSetCategory(session);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -122,16 +136,22 @@ public class BasisServer {
 
     private ResponseEntity handleSetRecordUploadUrl(NanoHTTPD.IHTTPSession session) {
         Map<String, List<String>> parameters = session.getParameters();
-        if (parameters.get("uploadUrl") != null && parameters.get("cardUploadUrl") != null) {
+        if (parameters.get("uploadUrl") != null
+                && parameters.get("cardUploadUrl") != null
+                && parameters.get("personUploadUrl") != null) {
             String uploadUrl = parameters.get("uploadUrl").get(0);
             String cardUploadUrl = parameters.get("cardUploadUrl").get(0);
+            String personUploadUrl = parameters.get("personUploadUrl").get(0);
             Config config = ConfigManager.getInstance().getConfig();
-            if (TextUtils.isEmpty(uploadUrl) || ValueUtil.isHttpFormat(uploadUrl)) {
+            if (TextUtils.isEmpty(uploadUrl)
+                    || ValueUtil.isHttpFormat(cardUploadUrl)
+                    || ValueUtil.isHttpFormat(personUploadUrl)) {
                 config.setUploadUrl(uploadUrl);
                 config.setCardUploadUrl(cardUploadUrl);
+                config.setPersonUploadUrl(personUploadUrl);
                 ConfigModel.saveConfig(config);
                 ConfigManager.getInstance().setConfig(config);
-                return new ResponseEntity(AttendanceServer.SUCCESS, "设置日志上传地址成功");
+                return new ResponseEntity(AttendanceServer.SUCCESS, "设置数据上传地址成功");
             }
         }
         return new ResponseEntity(AttendanceServer.FAILED, "参数校验错误");
@@ -244,6 +264,50 @@ public class BasisServer {
                 } else {
                     return new ResponseEntity(AttendanceServer.FAILED, "请确保应用界面可见");
                 }
+            }
+        }
+        return new ResponseEntity(AttendanceServer.FAILED, "参数校验错误");
+    }
+
+    private ResponseEntity handleSetDeviceId(NanoHTTPD.IHTTPSession session) {
+        Map<String, List<String>> parameters = session.getParameters();
+        if (parameters.get("deviceId") != null) {
+            String deviceId = parameters.get("deviceId").get(0);
+            if (!TextUtils.isEmpty(deviceId)) {
+                Config config = ConfigManager.getInstance().getConfig();
+                config.setDeviceId(deviceId);
+                ConfigModel.saveConfig(config);
+                ConfigManager.getInstance().setConfig(config);
+                return new ResponseEntity(AttendanceServer.SUCCESS, "设置设备标识成功");
+            }
+        }
+        return new ResponseEntity(AttendanceServer.FAILED, "参数校验错误");
+    }
+
+    private ResponseEntity handleGetDeviceId(NanoHTTPD.IHTTPSession session) {
+        String deviceId = ConfigManager.getInstance().getConfig().getDeviceId();
+        return new ResponseEntity<>(AttendanceServer.SUCCESS, "获取设备标识成功", deviceId);
+    }
+
+    private ResponseEntity handleSetCategory(NanoHTTPD.IHTTPSession session) {
+        Map<String, List<String>> parameters = session.getParameters();
+        if (parameters.get("category") != null) {
+            String json = parameters.get("category").get(0);
+            List<Category> categoryList = new Gson().fromJson(json, new TypeToken<List<Category>>() {}.getType());
+            boolean check = true;
+            for (Category category : categoryList) {
+                if (category.getId() == 0
+                        || TextUtils.isEmpty(category.getCategoryName())
+                        || TextUtils.isEmpty(category.getCategoryPrompt())) {
+                    check = false;
+                    break;
+                }
+            }
+            if (check) {
+                CategoryModel.clearCategory();
+                CategoryModel.saveCategoryList(categoryList);
+                CategoryManager.getInstance().setCategoryList(categoryList);
+                return new ResponseEntity(AttendanceServer.SUCCESS, "设置人员类别成功");
             }
         }
         return new ResponseEntity(AttendanceServer.FAILED, "参数校验错误");

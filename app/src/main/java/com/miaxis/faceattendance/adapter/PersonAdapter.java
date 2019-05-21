@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.miaxis.faceattendance.R;
 import com.miaxis.faceattendance.app.GlideApp;
+import com.miaxis.faceattendance.manager.CategoryManager;
 import com.miaxis.faceattendance.model.entity.Person;
 
 import java.util.List;
@@ -46,6 +47,7 @@ public class PersonAdapter<T> extends RecyclerView.Adapter<PersonAdapter.MyViewH
         holder.tvPersonNation.setText(TextUtils.isEmpty(person.getNation()) ? "" : person.getNation());
         holder.tvCardNumber.setText(person.getCardNumber());
         holder.tvWarehousingTime.setText("入库时间：" + person.getRegisterTime());
+        holder.tvPersonCategory.setText(CategoryManager.getInstance().getCateforyNameById(person.getCategoryId()));
         holder.tvDeletePerson.setOnClickListener(v ->
                 onItemClickListener.onItemClick(holder.tvDeletePerson, holder.getLayoutPosition()));
     }
@@ -97,6 +99,8 @@ public class PersonAdapter<T> extends RecyclerView.Adapter<PersonAdapter.MyViewH
         TextView tvCardNumber;
         @BindView(R.id.tv_warehousing_time)
         TextView tvWarehousingTime;
+        @BindView(R.id.tv_person_category)
+        TextView tvPersonCategory;
 
         MyViewHolder(View itemView) {
             super(itemView);

@@ -111,6 +111,30 @@
                 android:layout_height="wrap_content">
 
                 <TextView
+                    android:text="证件号码："
+                    android:textSize="20sp"
+                    android:gravity="center"
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent" />
+
+                <EditText
+                    android:id="@+id/et_card_number"
+                    android:textSize="20sp"
+                    android:singleLine="true"
+                    android:paddingStart="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:padding="20dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
                     android:text="性        别："
                     android:textSize="20sp"
                     android:gravity="center"
@@ -129,26 +153,26 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/ll_category"
                 android:padding="20dp"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:text="证件号码："
+                    android:text="类        别："
                     android:textSize="20sp"
                     android:gravity="center"
                     android:layout_width="100dp"
                     android:layout_height="match_parent" />
 
-                <EditText
-                    android:id="@+id/et_card_number"
-                    android:textSize="20sp"
-                    android:singleLine="true"
-                    android:paddingStart="20dp"
+                <Spinner
+                    android:id="@+id/spinner_category"
+                    android:gravity="center"
+                    android:layout_gravity="center"
                     android:layout_weight="1"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"/>
 
             </LinearLayout>
 

@@ -37,6 +37,7 @@ public class RecordDao extends AbstractDao<Record, Long> {
         public final static Property VerifyTime = new Property(8, Long.class, "verifyTime", false, "VERIFY_TIME");
         public final static Property Score = new Property(9, String.class, "score", false, "SCORE");
         public final static Property Upload = new Property(10, Boolean.class, "upload", false, "UPLOAD");
+        public final static Property CategoryId = new Property(11, long.class, "categoryId", false, "CATEGORY_ID");
     }
 
     private final DateConverter verifyTimeConverter = new DateConverter();
@@ -63,7 +64,8 @@ public class RecordDao extends AbstractDao<Record, Long> {
                 "\"NAME\" TEXT," + // 7: name
                 "\"VERIFY_TIME\" INTEGER," + // 8: verifyTime
                 "\"SCORE\" TEXT," + // 9: score
-                "\"UPLOAD\" INTEGER);"); // 10: upload
+                "\"UPLOAD\" INTEGER," + // 10: upload
+                "\"CATEGORY_ID\" INTEGER NOT NULL );"); // 11: categoryId
     }
 
     /** Drops the underlying database table. */
@@ -130,6 +132,7 @@ public class RecordDao extends AbstractDao<Record, Long> {
         if (upload != null) {
             stmt.bindLong(11, upload ? 1L: 0L);
         }
+        stmt.bindLong(12, entity.getCategoryId());
     }
 
     @Override
@@ -190,6 +193,7 @@ public class RecordDao extends AbstractDao<Record, Long> {
         if (upload != null) {
             stmt.bindLong(11, upload ? 1L: 0L);
         }
+        stmt.bindLong(12, entity.getCategoryId());
     }
 
     @Override
@@ -210,7 +214,8 @@ public class RecordDao extends AbstractDao<Record, Long> {
             cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // name
             cursor.isNull(offset + 8) ? null : verifyTimeConverter.convertToEntityProperty(cursor.getLong(offset + 8)), // verifyTime
             cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // score
-            cursor.isNull(offset + 10) ? null : cursor.getShort(offset + 10) != 0 // upload
+            cursor.isNull(offset + 10) ? null : cursor.getShort(offset + 10) != 0, // upload
+            cursor.getLong(offset + 11) // categoryId
         );
         return entity;
     }
@@ -228,6 +233,7 @@ public class RecordDao extends AbstractDao<Record, Long> {
         entity.setVerifyTime(cursor.isNull(offset + 8) ? null : verifyTimeConverter.convertToEntityProperty(cursor.getLong(offset + 8)));
         entity.setScore(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
         entity.setUpload(cursor.isNull(offset + 10) ? null : cursor.getShort(offset + 10) != 0);
+        entity.setCategoryId(cursor.getLong(offset + 11));
      }
     
     @Override
