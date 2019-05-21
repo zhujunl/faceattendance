@@ -328,12 +328,8 @@ public class RecordManager {
                     })
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(responseEntity -> {
-                        ToastManager.toast(FaceAttendanceApp.getInstance().getApplicationContext(), "人员信息上传成功", ToastManager.SUCCESS);
                         Log.e("asd", "uploadPerson上传成功");
-                    }, throwable -> {
-                        throwable.printStackTrace();
-                        ToastManager.toast(FaceAttendanceApp.getInstance().getApplicationContext(), "人员信息上传失败", ToastManager.INFO);
-                    });
+                    }, Throwable::printStackTrace);
         }
     }
 

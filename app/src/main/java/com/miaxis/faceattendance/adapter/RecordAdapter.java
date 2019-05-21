@@ -45,7 +45,7 @@ public class RecordAdapter<T> extends RecyclerView.Adapter<RecordAdapter.MyViewH
         holder.tvRecordCardNumber.setText(record.getCardNumber());
         holder.tvRecordStatus.setText(record.getUpload() ? "已上传" : "未上传");
         holder.tvRecordOpdate.setText(record.getVerifyTime());
-        holder.tvRecordCategory.setText(CategoryManager.getInstance().getCateforyNameById(record.getCategoryId()));
+        holder.tvRecordCategory.setText(CategoryManager.getInstance().getCategoryNameById(record.getCategoryId()));
         holder.llItem.setOnClickListener(v -> onItemClickListener.onItemClick(holder.llItem, holder.getLayoutPosition()));
     }
 

@@ -171,15 +171,18 @@ public class BasisServer {
             float cardVerify = 0;
             int verifyQuality = 0;
             int registerQuality = 0;
+            boolean check;
             try {
                 verify = Float.valueOf(verifyScore);
                 cardVerify = Float.valueOf(cardVerifyScore);
                 verifyQuality = Integer.valueOf(verifyQualityScore);
                 registerQuality = Integer.valueOf(registerQualityScore);
+                check = true;
             } catch (NumberFormatException e) {
                 e.printStackTrace();
+                check = false;
             }
-            if (verify >= 0.6f && verify < 1.0
+            if (check && verify >= 0.6f && verify < 1.0
                     && cardVerify >= 0.6f && cardVerify < 1.0
                     && verifyQuality >= 60 && verifyQuality < 100
                     && registerQuality >= 80 && registerQuality < 100) {

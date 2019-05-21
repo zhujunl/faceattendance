@@ -163,7 +163,7 @@ public class VerifyFragment extends BaseFragment {
             llTime.setVisibility(View.VISIBLE);
             if (personCache.getCategoryId() != 0L) {
                 llCategory.setVisibility(View.VISIBLE);
-                tvCategory.setText(CategoryManager.getInstance().getCateforyNameById(personCache.getCategoryId()));
+                tvCategory.setText(CategoryManager.getInstance().getCategoryNameById(personCache.getCategoryId()));
             } else {
                 llCategory.setVisibility(View.INVISIBLE);
             }

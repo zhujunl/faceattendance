@@ -40,7 +40,7 @@ public class CategoryManager {
         }
     }
 
-    public String getCateforyNameById(long id) {
+    public String getCategoryNameById(long id) {
         for (Category category : categoryList) {
             if (category.getId() == id) {
                 return category.getCategoryName();

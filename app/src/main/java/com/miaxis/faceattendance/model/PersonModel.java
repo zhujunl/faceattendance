@@ -62,4 +62,9 @@ public class PersonModel {
         FileUtil.deleteDirectoryFile(new File(FileUtil.FACE_IMG_PATH));
     }
 
+    public static void setPersonCategory(Person person, long categoryId) {
+        person.setCategoryId(categoryId);
+        savePerson(person);
+    }
+
 }

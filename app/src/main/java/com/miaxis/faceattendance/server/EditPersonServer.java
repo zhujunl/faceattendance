@@ -5,6 +5,7 @@ import android.util.Base64;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.miaxis.faceattendance.manager.CategoryManager;
 import com.miaxis.faceattendance.manager.FaceManager;
 import com.miaxis.faceattendance.model.PersonModel;
 import com.miaxis.faceattendance.model.entity.Person;
@@ -34,6 +35,7 @@ public class EditPersonServer {
     private static final String STOP_EDIT_PERSON = "/miaxis/attendance/editPersonServer/stopEditPerson";
     private static final String OPEN_ADD_PERSON_PAGE = "/miaxis/attendance/editPersonServer/openAddPersonPage";
     private static final String CLOSE_ADD_PERSON_PAGE = "/miaxis/attendance/editPersonServer/closeAddPersonPage";
+    private static final String SET_PERSON_CATEGORY = "/miaxis/attendance/editPersonServer/setPersonCategory";
 
     private HttpCommServerService.OnServerServiceListener listener;
 
@@ -60,6 +62,8 @@ public class EditPersonServer {
                     return handleOpenAddPersonPage(session);
                 case CLOSE_ADD_PERSON_PAGE: //关闭添加人员页面
                     return handleCloseAddPersonPage(session);
+                case SET_PERSON_CATEGORY: //设置人员的人员类别
+                    return handleSetPersonCategory(session);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -222,6 +226,44 @@ public class EditPersonServer {
             }
         }
         return new ResponseEntity(AttendanceServer.FAILED, "请在添加人员页面进行操作");
+    }
+
+    private ResponseEntity handleSetPersonCategory(NanoHTTPD.IHTTPSession session) {
+        if (listener.isPersonFragmentVisible()) {
+            Map<String, List<String>> parameters = session.getParameters();
+            if (parameters.get("cardNumber") != null
+                    || parameters.get("id") != null) {
+                String cardNumber = parameters.get("cardNumber").get(0);
+                String id = parameters.get("id").get(0);
+                boolean check;
+                long categoryId = 0;
+                try {
+                    categoryId = Long.valueOf(id);
+                    check = categoryId >= 0;
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                    check = false;
+                }
+                if (check && !TextUtils.isEmpty(cardNumber)) {
+                    listener.onBackstageBusy(true, "正在设置人员类别");
+                    Person person = PersonModel.getPersonByCardNumber(cardNumber);
+                    if (person == null) {
+                        listener.onBackstageBusy(false, "未找到该人员");
+                        return new ResponseEntity(AttendanceServer.FAILED, "未找到该人员");
+                    }
+                    String categoryName = CategoryManager.getInstance().getCategoryNameById(categoryId);
+                    if (categoryId != 0L && TextUtils.isEmpty(categoryName)) {
+                        listener.onBackstageBusy(false, "未找到该类别");
+                        return new ResponseEntity(AttendanceServer.FAILED, "未找到该类别");
+                    }
+                    PersonModel.setPersonCategory(person, categoryId);
+                    listener.onBackstageBusy(false, "设置类别成功");
+                    return new ResponseEntity(AttendanceServer.SUCCESS, "设置类别成功");
+                }
+            }
+            return new ResponseEntity(AttendanceServer.FAILED, "参数校验失败");
+        }
+        return new ResponseEntity(AttendanceServer.FAILED, "请在人员管理页面进行操作");
     }
 
 }
