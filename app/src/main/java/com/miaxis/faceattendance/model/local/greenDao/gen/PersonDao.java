@@ -27,20 +27,27 @@ public class PersonDao extends AbstractDao<Person, Long> {
      */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
-        public final static Property Name = new Property(1, String.class, "name", false, "NAME");
-        public final static Property Sex = new Property(2, String.class, "sex", false, "SEX");
-        public final static Property CardNumber = new Property(3, String.class, "cardNumber", false, "CARD_NUMBER");
-        public final static Property Nation = new Property(4, String.class, "nation", false, "NATION");
+        public final static Property CardType = new Property(1, String.class, "cardType", false, "CARD_TYPE");
+        public final static Property CardId = new Property(2, String.class, "cardId", false, "CARD_ID");
+        public final static Property Name = new Property(3, String.class, "name", false, "NAME");
+        public final static Property Birthday = new Property(4, String.class, "birthday", false, "BIRTHDAY");
         public final static Property Address = new Property(5, String.class, "address", false, "ADDRESS");
-        public final static Property ValidateStart = new Property(6, String.class, "validateStart", false, "VALIDATE_START");
-        public final static Property ValidateEnd = new Property(7, String.class, "validateEnd", false, "VALIDATE_END");
-        public final static Property IssuingAuthority = new Property(8, String.class, "issuingAuthority", false, "ISSUING_AUTHORITY");
-        public final static Property Birthday = new Property(9, String.class, "birthday", false, "BIRTHDAY");
-        public final static Property CardId = new Property(10, String.class, "cardId", false, "CARD_ID");
-        public final static Property FaceFeature = new Property(11, String.class, "faceFeature", false, "FACE_FEATURE");
-        public final static Property FacePicture = new Property(12, String.class, "facePicture", false, "FACE_PICTURE");
-        public final static Property RegisterTime = new Property(13, Long.class, "registerTime", false, "REGISTER_TIME");
-        public final static Property CategoryId = new Property(14, long.class, "categoryId", false, "CATEGORY_ID");
+        public final static Property CardNumber = new Property(6, String.class, "cardNumber", false, "CARD_NUMBER");
+        public final static Property IssuingAuthority = new Property(7, String.class, "issuingAuthority", false, "ISSUING_AUTHORITY");
+        public final static Property ValidateStart = new Property(8, String.class, "validateStart", false, "VALIDATE_START");
+        public final static Property ValidateEnd = new Property(9, String.class, "validateEnd", false, "VALIDATE_END");
+        public final static Property Sex = new Property(10, String.class, "sex", false, "SEX");
+        public final static Property Nation = new Property(11, String.class, "nation", false, "NATION");
+        public final static Property FaceFeature = new Property(12, String.class, "faceFeature", false, "FACE_FEATURE");
+        public final static Property FacePicture = new Property(13, String.class, "facePicture", false, "FACE_PICTURE");
+        public final static Property CardPicture = new Property(14, String.class, "cardPicture", false, "CARD_PICTURE");
+        public final static Property PassNumber = new Property(15, String.class, "passNumber", false, "PASS_NUMBER");
+        public final static Property IssueCount = new Property(16, String.class, "issueCount", false, "ISSUE_COUNT");
+        public final static Property ChineseName = new Property(17, String.class, "chineseName", false, "CHINESE_NAME");
+        public final static Property Version = new Property(18, String.class, "version", false, "VERSION");
+        public final static Property Score = new Property(19, String.class, "score", false, "SCORE");
+        public final static Property RegisterTime = new Property(20, Long.class, "registerTime", false, "REGISTER_TIME");
+        public final static Property CategoryId = new Property(21, long.class, "categoryId", false, "CATEGORY_ID");
     }
 
     private final DateConverter registerTimeConverter = new DateConverter();
@@ -58,20 +65,27 @@ public class PersonDao extends AbstractDao<Person, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"PERSON\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
-                "\"NAME\" TEXT," + // 1: name
-                "\"SEX\" TEXT," + // 2: sex
-                "\"CARD_NUMBER\" TEXT," + // 3: cardNumber
-                "\"NATION\" TEXT," + // 4: nation
+                "\"CARD_TYPE\" TEXT," + // 1: cardType
+                "\"CARD_ID\" TEXT," + // 2: cardId
+                "\"NAME\" TEXT," + // 3: name
+                "\"BIRTHDAY\" TEXT," + // 4: birthday
                 "\"ADDRESS\" TEXT," + // 5: address
-                "\"VALIDATE_START\" TEXT," + // 6: validateStart
-                "\"VALIDATE_END\" TEXT," + // 7: validateEnd
-                "\"ISSUING_AUTHORITY\" TEXT," + // 8: issuingAuthority
-                "\"BIRTHDAY\" TEXT," + // 9: birthday
-                "\"CARD_ID\" TEXT," + // 10: cardId
-                "\"FACE_FEATURE\" TEXT," + // 11: faceFeature
-                "\"FACE_PICTURE\" TEXT," + // 12: facePicture
-                "\"REGISTER_TIME\" INTEGER," + // 13: registerTime
-                "\"CATEGORY_ID\" INTEGER NOT NULL );"); // 14: categoryId
+                "\"CARD_NUMBER\" TEXT," + // 6: cardNumber
+                "\"ISSUING_AUTHORITY\" TEXT," + // 7: issuingAuthority
+                "\"VALIDATE_START\" TEXT," + // 8: validateStart
+                "\"VALIDATE_END\" TEXT," + // 9: validateEnd
+                "\"SEX\" TEXT," + // 10: sex
+                "\"NATION\" TEXT," + // 11: nation
+                "\"FACE_FEATURE\" TEXT," + // 12: faceFeature
+                "\"FACE_PICTURE\" TEXT," + // 13: facePicture
+                "\"CARD_PICTURE\" TEXT," + // 14: cardPicture
+                "\"PASS_NUMBER\" TEXT," + // 15: passNumber
+                "\"ISSUE_COUNT\" TEXT," + // 16: issueCount
+                "\"CHINESE_NAME\" TEXT," + // 17: chineseName
+                "\"VERSION\" TEXT," + // 18: version
+                "\"SCORE\" TEXT," + // 19: score
+                "\"REGISTER_TIME\" INTEGER," + // 20: registerTime
+                "\"CATEGORY_ID\" INTEGER NOT NULL );"); // 21: categoryId
     }
 
     /** Drops the underlying database table. */
@@ -89,24 +103,24 @@ public class PersonDao extends AbstractDao<Person, Long> {
             stmt.bindLong(1, id);
         }
  
+        String cardType = entity.getCardType();
+        if (cardType != null) {
+            stmt.bindString(2, cardType);
+        }
+ 
+        String cardId = entity.getCardId();
+        if (cardId != null) {
+            stmt.bindString(3, cardId);
+        }
+ 
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(2, name);
+            stmt.bindString(4, name);
         }
  
-        String sex = entity.getSex();
-        if (sex != null) {
-            stmt.bindString(3, sex);
-        }
- 
-        String cardNumber = entity.getCardNumber();
-        if (cardNumber != null) {
-            stmt.bindString(4, cardNumber);
-        }
- 
-        String nation = entity.getNation();
-        if (nation != null) {
-            stmt.bindString(5, nation);
+        String birthday = entity.getBirthday();
+        if (birthday != null) {
+            stmt.bindString(5, birthday);
         }
  
         String address = entity.getAddress();
@@ -114,46 +128,81 @@ public class PersonDao extends AbstractDao<Person, Long> {
             stmt.bindString(6, address);
         }
  
-        String validateStart = entity.getValidateStart();
-        if (validateStart != null) {
-            stmt.bindString(7, validateStart);
-        }
- 
-        String validateEnd = entity.getValidateEnd();
-        if (validateEnd != null) {
-            stmt.bindString(8, validateEnd);
+        String cardNumber = entity.getCardNumber();
+        if (cardNumber != null) {
+            stmt.bindString(7, cardNumber);
         }
  
         String issuingAuthority = entity.getIssuingAuthority();
         if (issuingAuthority != null) {
-            stmt.bindString(9, issuingAuthority);
+            stmt.bindString(8, issuingAuthority);
         }
  
-        String birthday = entity.getBirthday();
-        if (birthday != null) {
-            stmt.bindString(10, birthday);
+        String validateStart = entity.getValidateStart();
+        if (validateStart != null) {
+            stmt.bindString(9, validateStart);
         }
  
-        String cardId = entity.getCardId();
-        if (cardId != null) {
-            stmt.bindString(11, cardId);
+        String validateEnd = entity.getValidateEnd();
+        if (validateEnd != null) {
+            stmt.bindString(10, validateEnd);
+        }
+ 
+        String sex = entity.getSex();
+        if (sex != null) {
+            stmt.bindString(11, sex);
+        }
+ 
+        String nation = entity.getNation();
+        if (nation != null) {
+            stmt.bindString(12, nation);
         }
  
         String faceFeature = entity.getFaceFeature();
         if (faceFeature != null) {
-            stmt.bindString(12, faceFeature);
+            stmt.bindString(13, faceFeature);
         }
  
         String facePicture = entity.getFacePicture();
         if (facePicture != null) {
-            stmt.bindString(13, facePicture);
+            stmt.bindString(14, facePicture);
+        }
+ 
+        String cardPicture = entity.getCardPicture();
+        if (cardPicture != null) {
+            stmt.bindString(15, cardPicture);
+        }
+ 
+        String passNumber = entity.getPassNumber();
+        if (passNumber != null) {
+            stmt.bindString(16, passNumber);
+        }
+ 
+        String issueCount = entity.getIssueCount();
+        if (issueCount != null) {
+            stmt.bindString(17, issueCount);
+        }
+ 
+        String chineseName = entity.getChineseName();
+        if (chineseName != null) {
+            stmt.bindString(18, chineseName);
+        }
+ 
+        String version = entity.getVersion();
+        if (version != null) {
+            stmt.bindString(19, version);
+        }
+ 
+        String score = entity.getScore();
+        if (score != null) {
+            stmt.bindString(20, score);
         }
  
         String registerTime = entity.getRegisterTime();
         if (registerTime != null) {
-            stmt.bindLong(14, registerTimeConverter.convertToDatabaseValue(registerTime));
+            stmt.bindLong(21, registerTimeConverter.convertToDatabaseValue(registerTime));
         }
-        stmt.bindLong(15, entity.getCategoryId());
+        stmt.bindLong(22, entity.getCategoryId());
     }
 
     @Override
@@ -165,24 +214,24 @@ public class PersonDao extends AbstractDao<Person, Long> {
             stmt.bindLong(1, id);
         }
  
+        String cardType = entity.getCardType();
+        if (cardType != null) {
+            stmt.bindString(2, cardType);
+        }
+ 
+        String cardId = entity.getCardId();
+        if (cardId != null) {
+            stmt.bindString(3, cardId);
+        }
+ 
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(2, name);
+            stmt.bindString(4, name);
         }
  
-        String sex = entity.getSex();
-        if (sex != null) {
-            stmt.bindString(3, sex);
-        }
- 
-        String cardNumber = entity.getCardNumber();
-        if (cardNumber != null) {
-            stmt.bindString(4, cardNumber);
-        }
- 
-        String nation = entity.getNation();
-        if (nation != null) {
-            stmt.bindString(5, nation);
+        String birthday = entity.getBirthday();
+        if (birthday != null) {
+            stmt.bindString(5, birthday);
         }
  
         String address = entity.getAddress();
@@ -190,46 +239,81 @@ public class PersonDao extends AbstractDao<Person, Long> {
             stmt.bindString(6, address);
         }
  
-        String validateStart = entity.getValidateStart();
-        if (validateStart != null) {
-            stmt.bindString(7, validateStart);
-        }
- 
-        String validateEnd = entity.getValidateEnd();
-        if (validateEnd != null) {
-            stmt.bindString(8, validateEnd);
+        String cardNumber = entity.getCardNumber();
+        if (cardNumber != null) {
+            stmt.bindString(7, cardNumber);
         }
  
         String issuingAuthority = entity.getIssuingAuthority();
         if (issuingAuthority != null) {
-            stmt.bindString(9, issuingAuthority);
+            stmt.bindString(8, issuingAuthority);
         }
  
-        String birthday = entity.getBirthday();
-        if (birthday != null) {
-            stmt.bindString(10, birthday);
+        String validateStart = entity.getValidateStart();
+        if (validateStart != null) {
+            stmt.bindString(9, validateStart);
         }
  
-        String cardId = entity.getCardId();
-        if (cardId != null) {
-            stmt.bindString(11, cardId);
+        String validateEnd = entity.getValidateEnd();
+        if (validateEnd != null) {
+            stmt.bindString(10, validateEnd);
+        }
+ 
+        String sex = entity.getSex();
+        if (sex != null) {
+            stmt.bindString(11, sex);
+        }
+ 
+        String nation = entity.getNation();
+        if (nation != null) {
+            stmt.bindString(12, nation);
         }
  
         String faceFeature = entity.getFaceFeature();
         if (faceFeature != null) {
-            stmt.bindString(12, faceFeature);
+            stmt.bindString(13, faceFeature);
         }
  
         String facePicture = entity.getFacePicture();
         if (facePicture != null) {
-            stmt.bindString(13, facePicture);
+            stmt.bindString(14, facePicture);
+        }
+ 
+        String cardPicture = entity.getCardPicture();
+        if (cardPicture != null) {
+            stmt.bindString(15, cardPicture);
+        }
+ 
+        String passNumber = entity.getPassNumber();
+        if (passNumber != null) {
+            stmt.bindString(16, passNumber);
+        }
+ 
+        String issueCount = entity.getIssueCount();
+        if (issueCount != null) {
+            stmt.bindString(17, issueCount);
+        }
+ 
+        String chineseName = entity.getChineseName();
+        if (chineseName != null) {
+            stmt.bindString(18, chineseName);
+        }
+ 
+        String version = entity.getVersion();
+        if (version != null) {
+            stmt.bindString(19, version);
+        }
+ 
+        String score = entity.getScore();
+        if (score != null) {
+            stmt.bindString(20, score);
         }
  
         String registerTime = entity.getRegisterTime();
         if (registerTime != null) {
-            stmt.bindLong(14, registerTimeConverter.convertToDatabaseValue(registerTime));
+            stmt.bindLong(21, registerTimeConverter.convertToDatabaseValue(registerTime));
         }
-        stmt.bindLong(15, entity.getCategoryId());
+        stmt.bindLong(22, entity.getCategoryId());
     }
 
     @Override
@@ -241,20 +325,27 @@ public class PersonDao extends AbstractDao<Person, Long> {
     public Person readEntity(Cursor cursor, int offset) {
         Person entity = new Person( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // name
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // sex
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // cardNumber
-            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // nation
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // cardType
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // cardId
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // name
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // birthday
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // address
-            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // validateStart
-            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // validateEnd
-            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // issuingAuthority
-            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // birthday
-            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // cardId
-            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // faceFeature
-            cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12), // facePicture
-            cursor.isNull(offset + 13) ? null : registerTimeConverter.convertToEntityProperty(cursor.getLong(offset + 13)), // registerTime
-            cursor.getLong(offset + 14) // categoryId
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // cardNumber
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // issuingAuthority
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // validateStart
+            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // validateEnd
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // sex
+            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // nation
+            cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12), // faceFeature
+            cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13), // facePicture
+            cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14), // cardPicture
+            cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15), // passNumber
+            cursor.isNull(offset + 16) ? null : cursor.getString(offset + 16), // issueCount
+            cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17), // chineseName
+            cursor.isNull(offset + 18) ? null : cursor.getString(offset + 18), // version
+            cursor.isNull(offset + 19) ? null : cursor.getString(offset + 19), // score
+            cursor.isNull(offset + 20) ? null : registerTimeConverter.convertToEntityProperty(cursor.getLong(offset + 20)), // registerTime
+            cursor.getLong(offset + 21) // categoryId
         );
         return entity;
     }
@@ -262,20 +353,27 @@ public class PersonDao extends AbstractDao<Person, Long> {
     @Override
     public void readEntity(Cursor cursor, Person entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setSex(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setCardNumber(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setNation(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setCardType(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setCardId(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setName(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setBirthday(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
         entity.setAddress(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
-        entity.setValidateStart(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
-        entity.setValidateEnd(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
-        entity.setIssuingAuthority(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
-        entity.setBirthday(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
-        entity.setCardId(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
-        entity.setFaceFeature(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
-        entity.setFacePicture(cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12));
-        entity.setRegisterTime(cursor.isNull(offset + 13) ? null : registerTimeConverter.convertToEntityProperty(cursor.getLong(offset + 13)));
-        entity.setCategoryId(cursor.getLong(offset + 14));
+        entity.setCardNumber(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
+        entity.setIssuingAuthority(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
+        entity.setValidateStart(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setValidateEnd(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
+        entity.setSex(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setNation(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
+        entity.setFaceFeature(cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12));
+        entity.setFacePicture(cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13));
+        entity.setCardPicture(cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14));
+        entity.setPassNumber(cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15));
+        entity.setIssueCount(cursor.isNull(offset + 16) ? null : cursor.getString(offset + 16));
+        entity.setChineseName(cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17));
+        entity.setVersion(cursor.isNull(offset + 18) ? null : cursor.getString(offset + 18));
+        entity.setScore(cursor.isNull(offset + 19) ? null : cursor.getString(offset + 19));
+        entity.setRegisterTime(cursor.isNull(offset + 20) ? null : registerTimeConverter.convertToEntityProperty(cursor.getLong(offset + 20)));
+        entity.setCategoryId(cursor.getLong(offset + 21));
      }
     
     @Override

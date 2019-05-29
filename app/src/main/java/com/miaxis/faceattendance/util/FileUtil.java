@@ -29,6 +29,7 @@ public class FileUtil {
     public static final String LICENCE_PATH = PATH + File.separator + "NFaceId_ST" + File.separator + "st_lic.txt";
     public static final String IMG_PATH = MAIN_PATH + File.separator + "zzFaces";
     public static final String FACE_IMG_PATH = MAIN_PATH + File.separator + "faceImg";
+    public static final String CARD_IMG_PATH = MAIN_PATH + File.separator + "cardImg";
     public static final String MODEL_PATH = MAIN_PATH + File.separator + "zzFaceModel";
     public static final String LOG_FILE = MAIN_PATH + File.separator + "log.txt";
 
@@ -50,6 +51,10 @@ public class FileUtil {
             path.mkdirs();
         }
         path = new File(FileUtil.FACE_IMG_PATH);
+        if (!path.exists()) {
+            path.mkdirs();
+        }
+        path = new File(FileUtil.CARD_IMG_PATH);
         if (!path.exists()) {
             path.mkdirs();
         }

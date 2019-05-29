@@ -14,17 +14,19 @@ public class FeatureEvent {
     private MXFaceInfoEx mxFaceInfoEx;
     private String message;
     private RGBImage rgbImage;
+    private String mark;
 
     public FeatureEvent(int mode, String message) {
         this.mode = mode;
         this.message = message;
     }
 
-    public FeatureEvent(int mode, RGBImage rgbImage, byte[] feature, MXFaceInfoEx mxFaceInfoEx) {
+    public FeatureEvent(int mode, RGBImage rgbImage, byte[] feature, MXFaceInfoEx mxFaceInfoEx, String mark) {
         this.mode = mode;
         this.rgbImage = rgbImage;
         this.feature = feature;
         this.mxFaceInfoEx = mxFaceInfoEx;
+        this.mark = mark;
     }
 
     public int getMode() {
@@ -65,5 +67,13 @@ public class FeatureEvent {
 
     public void setRgbImage(RGBImage rgbImage) {
         this.rgbImage = rgbImage;
+    }
+
+    public String getMark() {
+        return mark;
+    }
+
+    public void setMark(String mark) {
+        this.mark = mark;
     }
 }

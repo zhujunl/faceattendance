@@ -87,7 +87,7 @@ public class VerifyFragment extends BaseFragment {
 
     //    private VerifyAdapter<VerifyPerson> verifyAdapter;
     private OnFragmentInteractionListener mListener;
-    private boolean cardMode = false;
+    private volatile boolean cardMode = false;
     private IDCardRecord idCardRecord;
     private FeatureEvent cameraFeatureData;
     private Handler handler = new MyHandler(this);
@@ -231,7 +231,7 @@ public class VerifyFragment extends BaseFragment {
                                 RecordManager.getInstance().uploadWhiteCardRecord(idCardRecord);
                             } else {
                                 setHintMessage("开 始 人 证 核 验");
-                                FaceManager.getInstance().getFeatureByBitmap(idCardRecord.getCardBitmap(), false);
+                                FaceManager.getInstance().getFeatureByBitmap(idCardRecord.getCardBitmap(), false, "card");
                             }
                         }
                     });
@@ -398,7 +398,7 @@ public class VerifyFragment extends BaseFragment {
     private void sendClearMessage() {
         handler.removeMessages(DISMISS_VERIFY_PERSON);
         Message msg = handler.obtainMessage(DISMISS_VERIFY_PERSON);
-        handler.sendMessageDelayed(msg, 10 * 1000);
+        handler.sendMessageDelayed(msg, 60 * 1000);
     }
 
 }

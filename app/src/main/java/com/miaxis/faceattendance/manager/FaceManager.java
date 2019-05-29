@@ -135,7 +135,7 @@ public class FaceManager {
                     if (activeVerify) {
                         verifyPersonFace(new RGBImage(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT), feature);
                     } else {
-                        EventBus.getDefault().post(new FeatureEvent(FeatureEvent.CAMERA_FACE, new RGBImage(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT), feature, pFaceBuffer[0]));
+                        EventBus.getDefault().post(new FeatureEvent(FeatureEvent.CAMERA_FACE, new RGBImage(zoomedRgbData, ZOOM_WIDTH, ZOOM_HEIGHT), feature, pFaceBuffer[0], "camera"));
                     }
                 }
                 extractWorking = false;
@@ -173,10 +173,10 @@ public class FaceManager {
      * 通过Bitmap图像获取特征
      * @param bitmap
      */
-    public void getFeatureByBitmap(Bitmap bitmap, boolean strict) {
+    public void getFeatureByBitmap(Bitmap bitmap, boolean strict, String mark) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(bitmap.getByteCount());
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-        getFeatureByImage(outputStream.toByteArray(), bitmap.getWidth(), bitmap.getHeight(), strict);
+        getFeatureByImage(outputStream.toByteArray(), bitmap.getWidth(), bitmap.getHeight(), strict, mark);
     }
 
     /**
@@ -185,7 +185,7 @@ public class FaceManager {
      * @param width
      * @param height
      */
-    public void getFeatureByImage(byte[] data, int width, int height, boolean strict) {
+    public void getFeatureByImage(byte[] data, int width, int height, boolean strict, String mark) {
         byte[] rgbData = imageFileDecode(data, width, height);
         if (rgbData == null) {
             EventBus.getDefault().post(new FeatureEvent(FeatureEvent.IMAGE_FACE, "提取RGB图像数据失败"));
@@ -203,7 +203,7 @@ public class FaceManager {
                         : pFaceBuffer[0].quality > ConfigManager.getInstance().getConfig().getVerifyQualityScore())) {
                     byte[] feature = extractFeature(rgbData, width, height, pFaceBuffer[0]);
                     if (feature != null) {
-                        EventBus.getDefault().post(new FeatureEvent(FeatureEvent.IMAGE_FACE, new RGBImage(rgbData, width, height), feature, pFaceBuffer[0]));
+                        EventBus.getDefault().post(new FeatureEvent(FeatureEvent.IMAGE_FACE, new RGBImage(rgbData, width, height), feature, pFaceBuffer[0], mark));
                         return;
                     }
                     message = "提取人脸特征失败";
