@@ -199,7 +199,7 @@
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:text="服务器地址："
+                        android:text="设备地址："
                         android:paddingStart="16dp"
                         android:gravity="center|start"
                         android:layout_weight="1"

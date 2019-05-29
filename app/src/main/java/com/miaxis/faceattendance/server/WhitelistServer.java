@@ -6,14 +6,13 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.miaxis.faceattendance.model.WhiteCardModel;
 import com.miaxis.faceattendance.model.entity.WhiteCard;
+import com.miaxis.faceattendance.model.net.NanoHTTPD;
 import com.miaxis.faceattendance.model.net.ResponseEntity;
 import com.miaxis.faceattendance.util.ValueUtil;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import fi.iki.elonen.NanoHTTPD;
 
 public class WhitelistServer {
 

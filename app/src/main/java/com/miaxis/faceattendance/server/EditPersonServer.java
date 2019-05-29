@@ -9,6 +9,7 @@ import com.miaxis.faceattendance.manager.CategoryManager;
 import com.miaxis.faceattendance.manager.FaceManager;
 import com.miaxis.faceattendance.model.PersonModel;
 import com.miaxis.faceattendance.model.entity.Person;
+import com.miaxis.faceattendance.model.net.NanoHTTPD;
 import com.miaxis.faceattendance.model.net.ResponseEntity;
 import com.miaxis.faceattendance.service.HttpCommServerService;
 import com.miaxis.faceattendance.util.FileUtil;
@@ -22,8 +23,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import fi.iki.elonen.NanoHTTPD;
 
 public class EditPersonServer {
 

@@ -7,12 +7,12 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.miaxis.faceattendance.model.net.NanoHTTPD;
 import com.miaxis.faceattendance.server.AttendanceServer;
 
 import java.io.IOException;
 
 import androidx.fragment.app.Fragment;
-import fi.iki.elonen.NanoHTTPD;
 
 public class HttpCommServerService extends Service {
 

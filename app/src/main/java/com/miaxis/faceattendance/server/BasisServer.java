@@ -14,6 +14,7 @@ import com.miaxis.faceattendance.model.CategoryModel;
 import com.miaxis.faceattendance.model.ConfigModel;
 import com.miaxis.faceattendance.model.entity.Category;
 import com.miaxis.faceattendance.model.entity.Config;
+import com.miaxis.faceattendance.model.net.NanoHTTPD;
 import com.miaxis.faceattendance.model.net.ResponseEntity;
 import com.miaxis.faceattendance.service.HttpCommServerService;
 import com.miaxis.faceattendance.util.ValueUtil;
@@ -26,8 +27,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import fi.iki.elonen.NanoHTTPD;
 
 public class BasisServer {
 
