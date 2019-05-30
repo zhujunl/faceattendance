@@ -62,7 +62,6 @@ public class RecordManager {
     /** ================================ 静态内部类单例 ================================ **/
 
     private Subscription subscription;
-    private ConcurrentLinkedQueue<Record> recordQueue = new ConcurrentLinkedQueue<>();
 
     public void saveRecord(VerifyPersonEvent event, String time) {
         Observable.create((ObservableOnSubscribe<Record>) emitter -> {
@@ -97,7 +96,14 @@ public class RecordManager {
                     FaceManager.getInstance().saveRGBImageData(imagePath, rgbImage.getRgbImage(), rgbImage.getWidth(), rgbImage.getHeight());
                     record.setFacePicture(imagePath);
                     RecordModel.saveRecord(record);
-                    uploadAllNotUploadedRecord(record);
+                    new Thread(() -> {
+                        try {
+                            uploadAllNotUploadedRecord();
+                        } catch (MalformedURLException e) {
+                            Log.e("asd", "上传日志外围：" + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }).start();
                 }, Throwable::printStackTrace);
     }
 
@@ -216,27 +222,27 @@ public class RecordManager {
         }
     }
 
-    public void uploadAllNotUploadedRecord(Record mRecord) throws MalformedURLException {
-        if (!recordQueue.isEmpty()) {
-            recordQueue.offer(mRecord);
-            if (subscription != null) {
-                subscription.cancel();
-            }
-        } else {
-            for (Record record : RecordModel.loadAllNotUploadedRecord()) {
-                recordQueue.offer(record);
-            }
-        }
+    public void uploadAllNotUploadedRecord() throws MalformedURLException {
         String uploadUrl = ConfigManager.getInstance().getConfig().getUploadUrl();
         if (TextUtils.isEmpty(uploadUrl)) return;
+        if (subscription != null) {
+            subscription.cancel();
+        }
         URL url = new URL(uploadUrl);
         Retrofit retrofit = FaceAttendanceApp.RETROFIT.baseUrl("http://" + url.getHost() + ":" + url.getPort() + "/").build();
         UpLoadRecordNet upLoadRecordNet = retrofit.create(UpLoadRecordNet.class);
         Flowable.create((FlowableOnSubscribe<Record>) emitter -> {
-            while (!recordQueue.isEmpty() && !emitter.isCancelled()) {
-                if (emitter.requested() == 0) continue;
-                Record poll = recordQueue.poll();
-                emitter.onNext(poll);
+            while (!emitter.isCancelled()) {
+                if (emitter.requested() == 0) {
+                    Thread.sleep(500);
+                    return;
+                }
+                Record record = RecordModel.loadNotUploadedRecord();
+                if (record != null) {
+                    emitter.onNext(record);
+                } else {
+                    break;
+                }
             }
             if (!emitter.isCancelled()) {
                 emitter.onComplete();
@@ -281,11 +287,14 @@ public class RecordManager {
 
                     @Override
                     public void onError(Throwable t) {
+                        subscription.cancel();
                         t.printStackTrace();
+                        Log.e("asd", "上传日志" + t.getMessage());
                     }
 
                     @Override
                     public void onComplete() {
+                        subscription.cancel();
                         clearRecordByThreshold();
                     }
                 });
@@ -296,19 +305,27 @@ public class RecordManager {
         if (!TextUtils.isEmpty(uploadUrl)) {
             Observable.create((ObservableOnSubscribe<UploadPerson>) emitter -> {
                 String facePicture = FileUtil.pathToBase64(person.getFacePicture());
+                String cardPicture = FileUtil.pathToBase64(person.getCardPicture());
                 UploadPerson uploadPerson = new UploadPerson.Builder()
+                        .cardType(person.getCardType())
+                        .cardId(person.getCardId())
                         .name(person.getName())
+                        .birthday(person.getBirthday())
+                        .address(person.getAddress())
                         .sex(person.getSex())
                         .cardNumber(person.getCardNumber())
                         .nation(person.getNation())
-                        .address(person.getAddress())
                         .validateStart(person.getValidateStart())
                         .validateEnd(person.getValidateEnd())
                         .issuingAuthority(person.getIssuingAuthority())
-                        .birthday(person.getBirthday())
-                        .cardId(person.getCardId())
+                        .passNumber(person.getPassNumber())
+                        .issueCount(person.getIssueCount())
+                        .chineseName(person.getChineseName())
+                        .version(person.getVersion())
                         .faceFeature(person.getFaceFeature())
                         .facePicture(facePicture)
+                        .cardPicture(cardPicture)
+                        .score(person.getScore())
                         .registerTime(person.getRegisterTime())
                         .categoryId(person.getCategoryId())
                         .mode("3")

@@ -116,17 +116,12 @@ public class VerifyFragment extends BaseFragment {
 
     @Override
     protected void initView() {
-//        verifyAdapter = new VerifyAdapter<>(getContext(), new ArrayList<>());
-//        rvVerify.setAdapter(verifyAdapter);
-//        rvVerify.setLayoutManager(new LinearLayoutManager(getContext()));
         tvServerIp.setText(ValueUtil.getIP(FaceAttendanceApp.getInstance()));
         tvVersion.setText(ValueUtil.getCurVersion(getContext()));
         tvOpenVerify.setOnClickListener(new OnLimitClickHelper(v -> {
             if (TextUtils.equals(tvOpenVerify.getText().toString(), "比对开关：开") && !cardMode) {
                 FaceManager.getInstance().setVerify(false);
                 tvOpenVerify.setText("比对开关：关");
-//                verifyAdapter.setDataList(new ArrayList<>());
-//                verifyAdapter.notifyDataSetChanged();
                 setSetHintInvisible();
             } else if (TextUtils.equals(tvOpenVerify.getText().toString(), "比对开关：关") && !cardMode) {
                 tvOpenVerify.setText("比对开关：开");
@@ -180,20 +175,6 @@ public class VerifyFragment extends BaseFragment {
         } else {
             setHintMessage("您 已 经 考 勤");
         }
-//        if (!verifyAdapter.containsName(person.getCardNumber())) {
-//            VerifyPerson verifyPerson = new VerifyPerson.Builder()
-//                    .cardNumber(person.getCardNumber())
-//                    .name(person.getName())
-//                    .facePicturePath(person.getFacePicture())
-//                    .time(ValueUtil.simpleDateFormat.format(new Date()))
-//                    .build();
-//            verifyAdapter.insertData(0, verifyPerson);
-//            rvVerify.scrollToPosition(0);
-//            TTSManager.getInstance().playVoiceMessageFlush(ConfigManager.getInstance().getConfig().getAttendancePrompt());
-//            RecordManager.getInstance().saveRecord(event, verifyPerson.getTime());
-//        } else {
-//            setHintMessage("您 已 经 考 勤");
-//        }
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)

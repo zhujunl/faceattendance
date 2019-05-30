@@ -65,6 +65,7 @@ public class PersonServer {
                 List<Person> personList = PersonModel.loadPersonList(pageNum, pageSize);
                 for (Person person : personList) {
                     person.setFacePicture(FileUtil.pathToBase64(person.getFacePicture()));
+                    person.setCardPicture(FileUtil.pathToBase64(person.getCardPicture()));
                 }
                 return new ResponseEntity<>(AttendanceServer.SUCCESS, "分页获取人员成功", personList);
             }

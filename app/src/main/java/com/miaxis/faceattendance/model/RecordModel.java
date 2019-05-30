@@ -72,11 +72,19 @@ public class RecordModel {
         DaoManager.getInstance().getDaoSession().getRecordDao().deleteInTx(recordList);
     }
 
-    public static List<Record> loadAllNotUploadedRecord() {
+    public static List<Record> loadNotUploadedRecordList() {
         return DaoManager.getInstance().getDaoSession().getRecordDao().queryBuilder()
                 .where(RecordDao.Properties.Upload.eq(Boolean.FALSE))
                 .orderAsc(RecordDao.Properties.VerifyTime)
                 .list();
+    }
+
+    public static Record loadNotUploadedRecord() {
+        return DaoManager.getInstance().getDaoSession().getRecordDao().queryBuilder()
+                .where(RecordDao.Properties.Upload.eq(Boolean.FALSE))
+                .orderAsc(RecordDao.Properties.VerifyTime)
+                .limit(1)
+                .unique();
     }
 
 }

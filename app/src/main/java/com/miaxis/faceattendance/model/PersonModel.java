@@ -43,6 +43,7 @@ public class PersonModel {
 
     public static void deletePerson(Person person) {
         FileUtil.deletefile(person.getFacePicture());
+        FileUtil.deletefile(person.getCardPicture());
         DaoManager.getInstance().getDaoSession().getPersonDao().delete(person);
     }
 
