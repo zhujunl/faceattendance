@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dl_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start"
+    tools:context=".view.activity.MainActivity">
+
+    <FrameLayout
+        android:id="@+id/fl_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <RelativeLayout
+            android:id="@+id/rl_toolbar"
+            android:background="@color/colorPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/custom_toolbar_height">
+
+            <ImageView
+                android:id="@+id/iv_drawer"
+                android:src="@drawable/ic_action_drawer_white"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:padding="10dp"
+                android:layout_width="@dimen/custom_toolbar_height"
+                android:layout_height="@dimen/custom_toolbar_height" />
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:text="@string/title"
+                android:textSize="20sp"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_init"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/iv_loading"
+                android:layout_centerInParent="true"
+                android:layout_width="60dp"
+                android:layout_height="60dp" />
+
+            <TextView
+                android:id="@+id/tv_loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_below="@id/iv_loading"
+                android:textColor="@color/black"
+                android:text="@string/loading"/>
+
+        </RelativeLayout>
+
+    </FrameLayout>
+
+    <include layout="@layout/left_drawer_layout_860s" />
+
+</androidx.drawerlayout.widget.DrawerLayout>

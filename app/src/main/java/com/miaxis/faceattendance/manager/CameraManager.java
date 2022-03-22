@@ -1,11 +1,15 @@
 package com.miaxis.faceattendance.manager;
 
 import android.hardware.Camera;
+import android.os.SystemClock;
 import android.view.SurfaceHolder;
 
+import com.miaxis.faceattendance.constant.Constants;
 import com.miaxis.faceattendance.event.OpenCameraEvent;
 
 import org.greenrobot.eventbus.EventBus;
+
+import java.util.List;
 
 public class CameraManager {
 
@@ -28,6 +32,7 @@ public class CameraManager {
     public static final int PIC_HEIGHT = 480;
     private static final int RETRY_TIMES = 3;
 
+    public static int ORIENTATION = 180;
     private Camera mCamera;
     private int retryTime = 0;
 
@@ -38,13 +43,33 @@ public class CameraManager {
     public void openCamera(SurfaceHolder holder, Camera.PreviewCallback previewCallback) {
         try {
             EventBus.getDefault().post(new OpenCameraEvent(PRE_WIDTH, PRE_HEIGHT));
-            mCamera = Camera.open();
+            for (int i = 0; i < RETRY_TIMES; i++) {
+                if (mCamera==null){
+                    try {
+                        mCamera = Camera.open(0);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    if (mCamera!=null){
+                        break;
+                    }
+                    SystemClock.sleep(500);
+                }
+            }
             Camera.Parameters parameters = mCamera.getParameters();
 //            List<Camera.Size> sizeList = parameters.getSupportedPreviewSizes();
+            List<Camera.Size> supportedPreviewSizes = parameters.getSupportedPreviewSizes();
+            int maxWidth = 0;
+            int maxHeight = 0;
+            for (Camera.Size size : supportedPreviewSizes) {
+                maxWidth = Math.max(size.width, maxWidth);
+                maxHeight = Math.max(size.height, maxHeight);
+            }
+            ORIENTATION = maxWidth * maxHeight >= (200 * 10000) ? 0 : (!Constants.VERSION?0:180);
             parameters.setPreviewSize(PRE_WIDTH, PRE_HEIGHT);
             parameters.setPictureSize(PIC_WIDTH, PIC_HEIGHT);
             mCamera.setParameters(parameters);
-            mCamera.setDisplayOrientation(180);
+            mCamera.setDisplayOrientation(ORIENTATION);
             mCamera.setPreviewDisplay(holder);
             mCamera.setPreviewCallback(previewCallback);
             mCamera.startPreview();

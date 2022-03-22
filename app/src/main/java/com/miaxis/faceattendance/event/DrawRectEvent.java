@@ -1,6 +1,7 @@
 package com.miaxis.faceattendance.event;
 
-import org.zz.faceapi.MXFaceInfoEx;
+
+import org.zz.api.MXFaceInfoEx;
 
 public class DrawRectEvent {
 

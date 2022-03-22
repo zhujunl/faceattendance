@@ -18,15 +18,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.miaxis.faceattendance.R;
 import com.miaxis.faceattendance.app.FaceAttendanceApp;
 import com.miaxis.faceattendance.app.GlideApp;
+import com.miaxis.faceattendance.constant.Constants;
 import com.miaxis.faceattendance.event.InitFaceEvent;
 import com.miaxis.faceattendance.manager.CardManager;
 import com.miaxis.faceattendance.manager.ConfigManager;
@@ -52,8 +48,11 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.net.URL;
 
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -119,7 +118,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
 
     @Override
     protected int setContentView() {
-        return R.layout.activity_main;
+        return Constants.VERSION?R.layout.activity_main:R.layout.activity_main_860s;
     }
 
     @Override

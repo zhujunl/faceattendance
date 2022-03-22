@@ -10,7 +10,8 @@ import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import org.zz.faceapi.MXFaceInfoEx;
+import org.zz.api.MXFaceInfoEx;
+
 
 public class RectSurfaceView extends SurfaceView {
 

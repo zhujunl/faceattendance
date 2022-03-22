@@ -11,6 +11,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
 
+import com.miaxis.faceattendance.constant.Constants;
+
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -38,7 +40,7 @@ public class ValueUtil {
     public static final String DEFAULT_ATTENDANCE_PROMPT = "考勤成功";
     public static final String DEFAULT_CARD_VERIFY_PROMPT = "人证核验通过";
     public static final String DEFAULT_WHITELIST_PROMPT = "白名单已校验";
-    public static final String DEFAULT_DEVICE_ID = "MR860";
+    public static final String DEFAULT_DEVICE_ID = Constants.VERSION?"MR860":"MR860S";
 
     public static final int GET_CARD_ID = 0;
     public static final int NO_CARD     = 134;

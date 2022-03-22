@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:layout_width="300dp"
+    android:layout_height="match_parent"
+    android:layout_gravity="start">
+
+    <LinearLayout
+        android:background="@color/colorPrimary"
+        android:orientation="vertical"
+        android:paddingStart="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="150dp">
+
+        <TextView
+            android:text="@string/title"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:layout_marginTop="50dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tv_server_status"
+            android:textSize="15sp"
+            android:textColor="@color/white"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tv_server_ip"
+            android:textSize="15sp"
+            android:textColor="@color/white"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <View
+        android:background="@color/darkgrey"
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
+
+    <LinearLayout
+        android:background="@color/lightgrey"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView style="@style/draw_item_style"
+            android:id="@+id/tv_verify"
+            android:text="@string/verify_fragment" />
+
+        <TextView style="@style/draw_item_style"
+            android:id="@+id/tv_person"
+            android:text="@string/person_fragment"/>
+
+        <TextView style="@style/draw_item_style"
+            android:id="@+id/tv_add_person"
+            android:text="@string/add_person"/>
+
+        <TextView style="@style/draw_item_style"
+            android:id="@+id/tv_whitelist"
+            android:text="@string/whitelist_fragment"/>
+
+        <TextView style="@style/draw_item_style"
+            android:id="@+id/tv_category"
+            android:text="@string/category_fragment"/>
+
+        <TextView style="@style/draw_item_style"
+            android:id="@+id/tv_record"
+            android:text="@string/record_fragment"/>
+
+        <TextView style="@style/draw_item_style"
+            android:id="@+id/tv_setting"
+            android:text="@string/setting_fragment"/>
+
+        <TextView style="@style/draw_item_style"
+            android:id="@+id/tv_quit"
+            android:text="@string/quit"/>
+
+    </LinearLayout>
+
+</LinearLayout>

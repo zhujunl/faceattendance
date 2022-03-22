@@ -4,6 +4,10 @@ import android.app.Application;
 import android.app.smdt.SmdtManager;
 import android.content.Context;
 import android.os.Build;
+import android.os.SystemClock;
+
+import com.miaxis.faceattendance.app.FaceAttendanceApp;
+import com.miaxis.faceattendance.constant.Constants;
 
 public class GpioManager {
 
@@ -54,6 +58,12 @@ public class GpioManager {
     }
 
     public void resetCameraGpio() {
+        if(!Constants.VERSION){
+            FaceAttendanceApp.getInstance().sendBroadcast(Constants.MOLD_POWER,Constants.TYPE_LED,false);
+            SystemClock.sleep(800);
+            FaceAttendanceApp.getInstance().sendBroadcast(Constants.MOLD_POWER,Constants.TYPE_CAMERA,true);
+            return;
+        }
         smdtManager.smdtSetGpioValue(2, false);
         try {
             Thread.sleep(800);
@@ -72,6 +82,10 @@ public class GpioManager {
      * 打开闪光灯
      */
     public void openLed() {
+        if(!Constants.VERSION){
+            FaceAttendanceApp.getInstance().sendBroadcast(Constants.MOLD_POWER,Constants.TYPE_LED,true);
+            return;
+        }
         try {
             Thread.sleep(GPIO_INTERVAL);
             smdtManager.smdtSetGpioValue(3, true);
@@ -84,6 +98,10 @@ public class GpioManager {
      * 关闭闪光灯
      */
     public void closeLed() {
+        if(!Constants.VERSION){
+            FaceAttendanceApp.getInstance().sendBroadcast(Constants.MOLD_POWER,Constants.TYPE_LED,false);
+            return;
+        }
         try {
             Thread.sleep(GPIO_INTERVAL);
             smdtManager.smdtSetGpioValue(3, false);

@@ -11,11 +11,11 @@
     </style>
 
     <style name="draw_item_style">
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">15sp</item>
         <item name="android:gravity">start|center</item>
-        <item name="android:paddingStart">50dp</item>
+        <item name="android:paddingStart">40dp</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">60dp</item>
+        <item name="android:layout_height">40dp</item>
     </style>
 
     <style name="SettingItem">

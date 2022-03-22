@@ -1,10 +1,13 @@
 package com.miaxis.faceattendance.app;
 
 import android.app.Application;
+import android.content.Intent;
+import android.os.SystemClock;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.liulishuo.filedownloader.FileDownloader;
 import com.miaxis.faceattendance.MyEventBusIndex;
+import com.miaxis.faceattendance.constant.Constants;
 import com.miaxis.faceattendance.event.InitFaceEvent;
 import com.miaxis.faceattendance.manager.AmapManager;
 import com.miaxis.faceattendance.manager.CardManager;
@@ -19,9 +22,6 @@ import com.miaxis.faceattendance.util.FileUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.concurrent.TimeUnit;
-
-import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -55,7 +55,14 @@ public class FaceAttendanceApp extends Application {
         DaoManager.getInstance().initDbHelper(getApplicationContext(), "FaceAttendance.db");
         TTSManager.getInstance().init(getApplicationContext());
         AmapManager.getInstance().startLocation(this);
-        GpioManager.getInstance().init(this);
+        if(Constants.VERSION){
+            GpioManager.getInstance().init(this);
+        }else{
+            SystemClock.sleep(2000);
+            sendBroadcast(Constants.MOLD_POWER,Constants.TYPE_ID_FP,true);
+            sendBroadcast(Constants.MOLD_POWER,Constants.TYPE_CAMERA,true);
+            SystemClock.sleep(1000);
+        }
         ConfigManager.getInstance().checkConfig();
         CategoryManager.getInstance().checkCategory();
         CrashExceptionManager.getInstance().init(this);
@@ -64,4 +71,13 @@ public class FaceAttendanceApp extends Application {
         EventBus.getDefault().post(new InitFaceEvent(faceResult));
     }
 
+    public void sendBroadcast(String mold,int type,boolean value){
+        if(!Constants.VERSION){
+            Intent intent = new Intent(mold);
+            if(type!=-1)intent.putExtra("type",type);
+            intent.putExtra("value",value);
+            getInstance().sendBroadcast(intent);
+        }
+
+    }
 }

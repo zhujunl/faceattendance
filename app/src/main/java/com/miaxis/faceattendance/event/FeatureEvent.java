@@ -2,7 +2,8 @@ package com.miaxis.faceattendance.event;
 
 import com.miaxis.faceattendance.model.entity.RGBImage;
 
-import org.zz.faceapi.MXFaceInfoEx;
+import org.zz.api.MXFaceInfoEx;
+
 
 public class FeatureEvent {
 

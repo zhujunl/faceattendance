@@ -48,11 +48,11 @@
 
             <ImageView
                 android:id="@+id/iv_verify_frame"
-                android:src="@mipmap/add_person_background"
-                android:scaleType="fitXY"
-                android:layout_gravity="center"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:scaleType="fitXY"
+                android:src="@mipmap/add_person_background" />
 
             <TextView
                 android:id="@+id/tv_hint"

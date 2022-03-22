@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -273,6 +274,7 @@ public class BasisServer {
 
     private ResponseEntity handleSetDeviceId(NanoHTTPD.IHTTPSession session) {
         Map<String, List<String>> parameters = session.getParameters();
+        Log.e("Devicesss:","::"+parameters);
         if (parameters.get("deviceId") != null) {
             String deviceId = parameters.get("deviceId").get(0);
             if (!TextUtils.isEmpty(deviceId)) {

@@ -3,14 +3,11 @@ package com.miaxis.faceattendance.manager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Rect;
-import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
 import com.miaxis.faceattendance.event.DrawRectEvent;
 import com.miaxis.faceattendance.event.FeatureEvent;
-import com.miaxis.faceattendance.event.InitFaceEvent;
 import com.miaxis.faceattendance.event.VerifyPersonEvent;
 import com.miaxis.faceattendance.model.PersonModel;
 import com.miaxis.faceattendance.model.entity.Person;
@@ -18,8 +15,8 @@ import com.miaxis.faceattendance.model.entity.RGBImage;
 import com.miaxis.faceattendance.util.FileUtil;
 
 import org.greenrobot.eventbus.EventBus;
-import org.zz.faceapi.MXFaceAPI;
-import org.zz.faceapi.MXFaceInfoEx;
+import org.zz.api.MXFaceAPI;
+import org.zz.api.MXFaceInfoEx;
 import org.zz.jni.mxImageTool;
 
 import java.io.ByteArrayOutputStream;
@@ -72,12 +69,12 @@ public class FaceManager {
      */
     public int initFaceST(Context context, String szModelPath, String licencePath) {
         final String sLicence = FileUtil.readLicence(licencePath);
-        if (TextUtils.isEmpty(sLicence)) {
-            return InitFaceEvent.ERR_LICENCE;
-        }
+//        if (TextUtils.isEmpty(sLicence)) {
+//            return InitFaceEvent.ERR_LICENCE;
+//        }
         int re = initFaceModel(context, szModelPath);
         if (re == 0) {
-            re = mxFaceAPI.mxInitAlgN(context, szModelPath, sLicence);
+            re = mxFaceAPI.mxInitAlg(context, szModelPath, "");
         }
         return re;
     }
@@ -447,13 +444,13 @@ public class FaceManager {
      * @param faceInfo
      * @return
      */
-    private byte[] extractFeatureYUV(byte[] pImage, int width, int height, MXFaceInfoEx faceInfo) {
-        synchronized (lock1) {
-            byte[] feature = new byte[mxFaceAPI.mxGetFeatureSize()];
-            int result = mxFaceAPI.mxFeatureExtractYUV(pImage, width, height, 1, new MXFaceInfoEx[]{faceInfo}, feature);
-            return result == 0 ? feature : null;
-        }
-    }
+//    private byte[] extractFeatureYUV(byte[] pImage, int width, int height, MXFaceInfoEx faceInfo) {
+//        synchronized (lock1) {
+//            byte[] feature = new byte[mxFaceAPI.mxGetFeatureSize()];
+//            int result = mxFaceAPI.mxFeatureExtractYUV(pImage, width, height, 1, new MXFaceInfoEx[]{faceInfo}, feature);
+//            return result == 0 ? feature : null;
+//        }
+//    }
 
     /**
      * RGB裸图像数据提取人脸特征

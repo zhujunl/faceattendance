@@ -14,12 +14,11 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import androidx.fragment.app.Fragment;
-
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.miaxis.faceattendance.R;
+import com.miaxis.faceattendance.constant.Constants;
 import com.miaxis.faceattendance.event.CardEvent;
 import com.miaxis.faceattendance.event.FeatureEvent;
 import com.miaxis.faceattendance.manager.CameraManager;
@@ -48,11 +47,11 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.util.List;
 
+import androidx.fragment.app.Fragment;
 import butterknife.BindView;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -97,7 +96,7 @@ public class AddPersonFragment extends BaseFragment {
 
     @Override
     protected int setContentView() {
-        return R.layout.fragment_add_person;
+        return Constants.VERSION?R.layout.fragment_add_person:R.layout.fragment_add_person_860s;
     }
 
     @Override
