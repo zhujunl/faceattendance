@@ -1,8 +1,9 @@
 package com.miaxis.faceattendance.manager;
 
+import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.SystemClock;
-import android.view.SurfaceHolder;
+import android.view.TextureView;
 
 import com.miaxis.faceattendance.constant.Constants;
 import com.miaxis.faceattendance.event.OpenCameraEvent;
@@ -40,7 +41,7 @@ public class CameraManager {
         this.retryTime = 0;
     }
 
-    public void openCamera(SurfaceHolder holder, Camera.PreviewCallback previewCallback) {
+    public void openCamera(TextureView textureView, SurfaceTexture holder, Camera.PreviewCallback previewCallback) {
         try {
             EventBus.getDefault().post(new OpenCameraEvent(PRE_WIDTH, PRE_HEIGHT));
             for (int i = 0; i < RETRY_TIMES; i++) {
@@ -70,7 +71,8 @@ public class CameraManager {
             parameters.setPictureSize(PIC_WIDTH, PIC_HEIGHT);
             mCamera.setParameters(parameters);
             mCamera.setDisplayOrientation(ORIENTATION);
-            mCamera.setPreviewDisplay(holder);
+            mCamera.setPreviewTexture(holder);
+            textureView.setRotationY(ORIENTATION);
             mCamera.setPreviewCallback(previewCallback);
             mCamera.startPreview();
         } catch (Exception e) {
@@ -79,7 +81,7 @@ public class CameraManager {
                 if (retryTime <= RETRY_TIMES) {
                     GpioManager.getInstance().resetCameraGpio();
                     retryTime++;
-                    openCamera(holder, previewCallback);
+                    openCamera(textureView,holder, previewCallback);
                 }
             }).start();
         }

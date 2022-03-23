@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.miaxis.faceattendance.R;
 import com.miaxis.faceattendance.app.FaceAttendanceApp;
 import com.miaxis.faceattendance.app.GlideApp;
+import com.miaxis.faceattendance.constant.Constants;
 import com.miaxis.faceattendance.event.CardEvent;
 import com.miaxis.faceattendance.event.DrawRectEvent;
 import com.miaxis.faceattendance.event.FeatureEvent;
@@ -24,6 +25,7 @@ import com.miaxis.faceattendance.manager.CardManager;
 import com.miaxis.faceattendance.manager.CategoryManager;
 import com.miaxis.faceattendance.manager.ConfigManager;
 import com.miaxis.faceattendance.manager.FaceManager;
+import com.miaxis.faceattendance.manager.GpioManager;
 import com.miaxis.faceattendance.manager.RecordManager;
 import com.miaxis.faceattendance.manager.TTSManager;
 import com.miaxis.faceattendance.manager.WhitelistManager;
@@ -103,7 +105,7 @@ public class VerifyFragment extends BaseFragment {
 
     @Override
     protected int setContentView() {
-        return R.layout.fragment_verify;
+        return Constants.VERSION?R.layout.fragment_verify:R.layout.fragment_verify_860s;
     }
 
     @Override
@@ -112,6 +114,7 @@ public class VerifyFragment extends BaseFragment {
         FaceManager.getInstance().clearVerifyList();
         FaceManager.getInstance().setIntervelTime(FaceManager.DEFAULT_INTERVEL_TIME);
         FaceManager.getInstance().setDelay(true);
+        FaceManager.getInstance().startLoop();
     }
 
     @Override
@@ -194,6 +197,7 @@ public class VerifyFragment extends BaseFragment {
     public void onCardEvent(CardEvent event) {
         switch (event.getMode()) {
             case CardEvent.FIND_CARD:
+                GpioManager.getInstance().openLed();
                 cardMode = true;
                 setHintMessage("开 始 读 卡");
                 FaceManager.getInstance().setIntervelTime(500);
@@ -219,6 +223,7 @@ public class VerifyFragment extends BaseFragment {
                 }
                 break;
             case CardEvent.NO_CARD:
+                GpioManager.getInstance().closeLed();
                 if (cardMode) {
                     cardMode = false;
                     FaceManager.getInstance().setActiveVerify(true);
@@ -273,6 +278,7 @@ public class VerifyFragment extends BaseFragment {
     public void onStop() {
         super.onStop();
         FaceManager.getInstance().setVerify(false);
+        FaceManager.getInstance().stopLoop();
         CardManager.getInstance().setNeedReadCard(false);
     }
 

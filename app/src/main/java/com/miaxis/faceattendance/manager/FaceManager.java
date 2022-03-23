@@ -3,6 +3,9 @@ package com.miaxis.faceattendance.manager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Message;
 import android.util.Base64;
 import android.util.Log;
 
@@ -60,6 +63,8 @@ public class FaceManager {
 
     private List<Person> personList;
 
+    private byte[] lastVisiblePreviewData;
+
     /**
      * 初始化人脸算法
      * @param context 设备上下文
@@ -76,6 +81,7 @@ public class FaceManager {
         if (re == 0) {
             re = mxFaceAPI.mxInitAlg(context, szModelPath, "");
         }
+        initThread();
         return re;
     }
 
@@ -195,9 +201,7 @@ public class FaceManager {
         if (result) {
             if (pFaceNum[0] == 1) {
                 result = faceQuality(rgbData, width, height, pFaceNum[0], pFaceBuffer);
-                if (result && (strict
-                        ? pFaceBuffer[0].quality > ConfigManager.getInstance().getConfig().getRegisterQualityScore()
-                        : pFaceBuffer[0].quality > ConfigManager.getInstance().getConfig().getVerifyQualityScore())) {
+                if (result) {
                     byte[] feature = extractFeature(rgbData, width, height, pFaceBuffer[0]);
                     if (feature != null) {
                         EventBus.getDefault().post(new FeatureEvent(FeatureEvent.IMAGE_FACE, new RGBImage(rgbData, width, height), feature, pFaceBuffer[0], mark));
@@ -205,7 +209,7 @@ public class FaceManager {
                     }
                     message = "提取人脸特征失败";
                 } else {
-                    message = "人脸质量评分过低";
+                    message = "身份证人脸检测失败";
                 }
             } else if (pFaceNum[0] > 1) {
                 message = "检测到多张人脸";
@@ -504,4 +508,50 @@ public class FaceManager {
         }
     }
 
+    private HandlerThread asyncDetectThread;
+    private Handler asyncDetectHandler;
+    private volatile boolean detectLoop = true;
+    public void setLastVisiblePreviewData(byte[] lastVisiblePreviewData) {
+        this.lastVisiblePreviewData = lastVisiblePreviewData;
+    }
+
+    public void startLoop() {
+        detectLoop = true;
+        lastVisiblePreviewData = null;
+        asyncDetectHandler.sendEmptyMessage(0);
+    }
+
+    public void stopLoop() {
+        detectLoop = false;
+        lastVisiblePreviewData = null;
+        asyncDetectHandler.removeMessages(0);
+    }
+
+    private void previewDataLoop() {
+        try {
+            if (this.lastVisiblePreviewData != null) {
+                verify(lastVisiblePreviewData);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            asyncDetectHandler.sendEmptyMessage(0);
+        }
+    }
+
+    private void initThread() {
+        asyncDetectThread = new HandlerThread("detect_thread");
+        asyncDetectThread.start();
+        asyncDetectHandler = new Handler(asyncDetectThread.getLooper()) {
+            public void handleMessage(Message msg) {
+                if (detectLoop) {
+                    try {
+                        previewDataLoop();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+    }
 }

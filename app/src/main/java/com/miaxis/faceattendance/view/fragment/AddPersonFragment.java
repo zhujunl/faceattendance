@@ -26,6 +26,7 @@ import com.miaxis.faceattendance.manager.CardManager;
 import com.miaxis.faceattendance.manager.CategoryManager;
 import com.miaxis.faceattendance.manager.ConfigManager;
 import com.miaxis.faceattendance.manager.FaceManager;
+import com.miaxis.faceattendance.manager.GpioManager;
 import com.miaxis.faceattendance.manager.RecordManager;
 import com.miaxis.faceattendance.manager.TTSManager;
 import com.miaxis.faceattendance.manager.ToastManager;
@@ -101,6 +102,7 @@ public class AddPersonFragment extends BaseFragment {
 
     @Override
     protected void initData() {
+        FaceManager.getInstance().startLoop();
         EventBus.getDefault().register(this);
     }
 
@@ -136,6 +138,7 @@ public class AddPersonFragment extends BaseFragment {
     public void onCardEvent(CardEvent event) {
         switch (event.getMode()) {
             case CardEvent.READ_CARD:
+                GpioManager.getInstance().openLed();
                 this.idCardRecord = event.getIdCardRecord();
                 tvName.setText(event.getIdCardRecord().getName());
                 tvSex.setText(event.getIdCardRecord().getSex());
@@ -145,6 +148,7 @@ public class AddPersonFragment extends BaseFragment {
             case CardEvent.OVERDUE:
                 TTSManager.getInstance().playVoiceMessageFlush("已过期");
             case CardEvent.NO_CARD:
+                GpioManager.getInstance().closeLed();
                 if (facePicture != null) {
                     tvTakePicture.performClick();
                     facePicture = null;
@@ -209,6 +213,7 @@ public class AddPersonFragment extends BaseFragment {
     @Override
     public void onStop() {
         super.onStop();
+        FaceManager.getInstance().stopLoop();
         CardManager.getInstance().setNeedReadCard(false);
     }
 

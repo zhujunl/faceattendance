@@ -1,17 +1,16 @@
 package com.miaxis.faceattendance.view.custom;
 
 import android.content.Context;
+import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.view.TextureView;
 
 import com.miaxis.faceattendance.manager.CameraManager;
 import com.miaxis.faceattendance.manager.FaceManager;
-import com.miaxis.faceattendance.manager.GpioManager;
 
-public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Camera.PreviewCallback {
+public class CameraSurfaceView extends TextureView {
 
     private Context mContext;
     private SurfaceHolder mSurfaceHolder;
@@ -19,31 +18,38 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
     public CameraSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-        mSurfaceHolder = getHolder();
-        mSurfaceHolder.addCallback(this);
-        mSurfaceHolder.setFormat(SurfaceHolder.SURFACE_TYPE_NORMAL);
+        this.setSurfaceTextureListener(listner);
     }
 
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        CameraManager.getInstance().resetRetryTime();
-        CameraManager.getInstance().openCamera(mSurfaceHolder, this);
-    }
+    TextureView.SurfaceTextureListener listner=new SurfaceTextureListener() {
+        @Override
+        public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+            CameraManager.getInstance().resetRetryTime();
+            CameraManager.getInstance().openCamera(CameraSurfaceView.this,surface,mPreviewCallback);
+        }
 
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-    }
+        @Override
+        public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
 
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        CameraManager.getInstance().closeCamera();
-    }
+        }
 
-    @Override
-    public void onPreviewFrame(byte[] data, Camera camera) {
-        FaceManager.getInstance().verify(data);
-    }
+        @Override
+        public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+            return false;
+        }
 
+        @Override
+        public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
+        }
+    };
+
+    Camera.PreviewCallback mPreviewCallback=new Camera.PreviewCallback() {
+        @Override
+        public void onPreviewFrame(byte[] data, Camera camera) {
+            FaceManager.getInstance().setLastVisiblePreviewData(data);
+        }
+    };
     public interface OnCameraSizeSelect {
         void resetSize();
     }

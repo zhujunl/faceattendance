@@ -7,8 +7,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.fragment.app.Fragment;
-
 import com.miaxis.faceattendance.R;
 import com.miaxis.faceattendance.manager.ConfigManager;
 import com.miaxis.faceattendance.manager.ToastManager;
@@ -16,6 +14,7 @@ import com.miaxis.faceattendance.model.entity.Config;
 import com.miaxis.faceattendance.util.ValueUtil;
 import com.miaxis.faceattendance.view.listener.OnFragmentInteractionListener;
 
+import androidx.fragment.app.Fragment;
 import butterknife.BindView;
 
 /**
@@ -37,6 +36,10 @@ public class SettingFragment extends BaseFragment {
     EditText etPersonUploadUrl;
     @BindView(R.id.et_device_id)
     EditText etDeviceId;
+    @BindView(R.id.et_Verify)
+    EditText etVerify;
+    @BindView(R.id.et_Quality)
+    EditText etQuality;
 
     private Config config;
     private OnFragmentInteractionListener mListener;
@@ -67,6 +70,8 @@ public class SettingFragment extends BaseFragment {
         etPersonUploadUrl.setText(config.getPersonUploadUrl());
         etDeviceId.setText(config.getDeviceId());
         etPassword.setText(config.getPassword());
+        etQuality.setText(String.valueOf(config.getVerifyQualityScore()));
+        etVerify.setText(String.valueOf(config.getVerifyScore()));
         ivSaveConfig.setOnClickListener(v -> saveConfig());
     }
 
@@ -120,6 +125,8 @@ public class SettingFragment extends BaseFragment {
         config.setPersonUploadUrl(etPersonUploadUrl.getText().toString());
         config.setPassword(etPassword.getText().toString());
         config.setDeviceId(etDeviceId.getText().toString());
+        config.setVerifyScore(Float.parseFloat(etVerify.getText().toString()));
+        config.setVerifyQualityScore(Float.parseFloat(etQuality.getText().toString()));
         ConfigManager.getInstance().saveConfig(config, aBoolean -> {
             if (aBoolean) {
                 ToastManager.toast(getContext(), "设置保存成功", ToastManager.SUCCESS);
