@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.miaxis.faceattendance.R;
+import com.miaxis.faceattendance.constant.Constants;
 import com.miaxis.faceattendance.manager.ConfigManager;
 import com.miaxis.faceattendance.manager.ToastManager;
 import com.miaxis.faceattendance.model.entity.Config;
@@ -54,7 +55,7 @@ public class SettingFragment extends BaseFragment {
 
     @Override
     protected int setContentView() {
-        return R.layout.fragment_setting;
+        return Constants.VERSION? R.layout.fragment_setting:R.layout.fragment_setting_860s;
     }
 
     @Override

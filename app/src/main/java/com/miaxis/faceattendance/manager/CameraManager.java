@@ -7,6 +7,7 @@ import android.view.TextureView;
 
 import com.miaxis.faceattendance.constant.Constants;
 import com.miaxis.faceattendance.event.OpenCameraEvent;
+import com.miaxis.faceattendance.view.custom.CameraSurfaceView;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -36,11 +37,106 @@ public class CameraManager {
     public static int ORIENTATION = 180;
     private Camera mCamera;
     private int retryTime = 0;
+    private CameraSurfaceView mCameraSurfaceView;
+    private SurfaceTexture surface;
 
     public void resetRetryTime() {
         this.retryTime = 0;
     }
 
+//    public synchronized void openCamera(@NonNull CameraSurfaceView textureView) {
+//        try {
+//            mCameraSurfaceView=textureView;
+//
+//
+//            resetRetryTime();
+//            openVisibleCamera();
+//                mCameraSurfaceView.setSurfaceTextureListener(textureListener);
+//
+//            mCameraSurfaceView.setRotationY(CameraManager.ORIENTATION);
+//
+//            //            if (surfaceTexture == null) {
+//            //                textureView.setSurfaceTextureListener(textureListener);
+//            //            } else {
+//            //                camera.setPreviewTexture(surfaceTexture);
+//            //            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    private void openVisibleCamera() {
+//        //        try {
+//        for (int i = 0; i < RETRY_TIMES; i++) {
+//            if (mCamera==null){
+//                try {
+//                    mCamera = Camera.open(0);
+//                }catch (Exception e){
+//                    e.printStackTrace();
+//                }
+//                if (mCamera!=null){
+//                    break;
+//                }
+//                SystemClock.sleep(500);
+//            }
+//        }
+//        Camera.Parameters parameters = mCamera.getParameters();
+//        List<Camera.Size> supportedPreviewSizes = parameters.getSupportedPreviewSizes();
+//        int maxWidth = 0;
+//        int maxHeight = 0;
+//        for (Camera.Size size : supportedPreviewSizes) {
+//            maxWidth = Math.max(size.width, maxWidth);
+//            maxHeight = Math.max(size.height, maxHeight);
+//        }
+//        ORIENTATION = maxWidth * maxHeight >= (200 * 10000) ? 0 : (!Constants.VERSION?0:180);
+//        parameters.setPreviewSize(PRE_WIDTH, PRE_HEIGHT);
+//        parameters.setPictureSize(PIC_WIDTH, PIC_HEIGHT);
+//        //对焦模式设置
+//        List<String> supportedFocusModes = parameters.getSupportedFocusModes();
+//        if (supportedFocusModes != null && supportedFocusModes.size() > 0) {
+//            if (supportedFocusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+//                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+//            } else if (supportedFocusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
+//                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+//            } else if (supportedFocusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
+//                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+//            }
+//        }
+//        try {
+//            mCamera.setParameters(parameters);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//        mCamera.setDisplayOrientation(ORIENTATION);
+//        mCamera.setPreviewCallback(mPreviewCallback);
+//        mCamera.startPreview();
+//        //        } catch (Exception e) {
+//        //            e.printStackTrace();
+//        ////            new Thread(() -> {
+//        ////                if (retryTime <= RETRY_TIMES) {
+//        ////                    retryTime++;
+//        ////                    openVisibleCamera();
+//        ////                }
+//        ////            }).start();
+//        //        }
+//    }
+
+//    public void openCamera(@NonNull CameraSurfaceView CameraSurfaceView){
+//        try {
+//            CameraManager.getInstance().resetRetryTime();
+//            mCameraSurfaceView=CameraSurfaceView;
+//            if (surface == null) {
+//                mCameraSurfaceView.setSurfaceTextureListener(textureListener);
+//            }
+//            openCamera(mCameraSurfaceView,mPreviewCallback);
+//            if (surface != null) {
+//                mCamera.setPreviewTexture(surface);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
     public void openCamera(TextureView textureView, SurfaceTexture holder, Camera.PreviewCallback previewCallback) {
         try {
             EventBus.getDefault().post(new OpenCameraEvent(PRE_WIDTH, PRE_HEIGHT));
@@ -58,7 +154,6 @@ public class CameraManager {
                 }
             }
             Camera.Parameters parameters = mCamera.getParameters();
-//            List<Camera.Size> sizeList = parameters.getSupportedPreviewSizes();
             List<Camera.Size> supportedPreviewSizes = parameters.getSupportedPreviewSizes();
             int maxWidth = 0;
             int maxHeight = 0;
@@ -81,7 +176,7 @@ public class CameraManager {
                 if (retryTime <= RETRY_TIMES) {
                     GpioManager.getInstance().resetCameraGpio();
                     retryTime++;
-                    openCamera(textureView,holder, previewCallback);
+                    openCamera(textureView, holder,previewCallback);
                 }
             }).start();
         }

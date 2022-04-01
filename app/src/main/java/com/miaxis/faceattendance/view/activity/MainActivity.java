@@ -5,8 +5,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -26,6 +29,7 @@ import com.miaxis.faceattendance.constant.Constants;
 import com.miaxis.faceattendance.event.InitFaceEvent;
 import com.miaxis.faceattendance.manager.CardManager;
 import com.miaxis.faceattendance.manager.ConfigManager;
+import com.miaxis.faceattendance.manager.GpioManager;
 import com.miaxis.faceattendance.manager.ToastManager;
 import com.miaxis.faceattendance.service.HttpCommServerService;
 import com.miaxis.faceattendance.util.ValueUtil;
@@ -117,6 +121,21 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     }
 
     @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (!Constants.VERSION&& Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if ( !Settings.canDrawOverlays(this)) {
+                //若未授权则请求权限
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                intent.setData(Uri.parse("package:" + getPackageName()));
+                Log.e("Main==","startActivityForResult");
+                startActivityForResult(intent, 0);
+                Log.e("Main==","startActivityForResult++++++++");
+            }
+        }
+    }
+
+    @Override
     protected int setContentView() {
         return Constants.VERSION?R.layout.activity_main:R.layout.activity_main_860s;
     }
@@ -188,6 +207,17 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
         }
     }
 
+    private boolean again=false;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+//        if (again){
+//            onInitFace();
+//            again=false;
+//        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -197,7 +227,10 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     @Override
     protected void onStop() {
         super.onStop();
-        stop = true;
+        System.exit(0);
+//        CameraManager.getInstance().closeCamera();
+//        stop = true;
+//        again=true;
     }
 
     @Override
@@ -269,7 +302,8 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
         bindService(intent, serviceConnection, BIND_AUTO_CREATE);
         rlInit.setVisibility(View.GONE);
         rlToolbar.setVisibility(View.VISIBLE);
-        CardManager.getInstance().startReadCard();
+        if (!stop)
+            CardManager.getInstance().startReadCard();
         getSupportFragmentManager().beginTransaction().replace(R.id.fl_main, verifyFragment = VerifyFragment.newInstance()).commit();
     }
 
@@ -421,7 +455,10 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
         quitDialog = new MaterialDialog.Builder(this)
                 .title("确认退出？")
                 .positiveText("确认")
-                .onPositive((dialog, which) -> finish())
+                .onPositive((dialog, which) -> {
+                    GpioManager.getInstance().closeLed();
+                    finish();
+                })
                 .negativeText("取消")
                 .build();
     }

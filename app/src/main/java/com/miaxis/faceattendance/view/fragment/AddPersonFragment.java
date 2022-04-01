@@ -292,7 +292,7 @@ public class AddPersonFragment extends BaseFragment {
                 .build();
         new Thread(() -> {
             Matrix matrix = new Matrix();
-            matrix.postRotate(180);
+            if(Constants.VERSION)matrix.postRotate(180);
             Bitmap picture = Bitmap.createBitmap(facePicture, 0, 0, facePicture.getWidth(), facePicture.getHeight(), matrix, true);
             FaceManager.getInstance().getFeatureByBitmap(picture, true, "picture");
         }).start();

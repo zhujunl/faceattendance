@@ -11,9 +11,12 @@
         <entry key="..\:/AndroidProject/faceattendance/app/src/main/res/layout/activity_main.xml" value="0.1703125" />
         <entry key="..\:/AndroidProject/faceattendance/app/src/main/res/layout/activity_main_860s.xml" value="0.19635416666666666" />
         <entry key="..\:/AndroidProject/faceattendance/app/src/main/res/layout/fragment_add_person.xml" value="0.1703125" />
-        <entry key="..\:/AndroidProject/faceattendance/app/src/main/res/layout/fragment_add_person_860s.xml" value="0.3482051282051282" />
+        <entry key="..\:/AndroidProject/faceattendance/app/src/main/res/layout/fragment_add_person_860s.xml" value="0.12" />
         <entry key="..\:/AndroidProject/faceattendance/app/src/main/res/layout/fragment_person.xml" value="0.1703125" />
-        <entry key="..\:/AndroidProject/faceattendance/app/src/main/res/layout/fragment_verify.xml" value="0.1703125" />
+        <entry key="..\:/AndroidProject/faceattendance/app/src/main/res/layout/fragment_setting.xml" value="0.19635416666666666" />
+        <entry key="..\:/AndroidProject/faceattendance/app/src/main/res/layout/fragment_setting_860s.xml" value="0.2" />
+        <entry key="..\:/AndroidProject/faceattendance/app/src/main/res/layout/fragment_verify.xml" value="0.1" />
+        <entry key="..\:/AndroidProject/faceattendance/app/src/main/res/layout/fragment_verify_860s.xml" value="0.1875" />
         <entry key="..\:/AndroidProject/faceattendance/app/src/main/res/layout/left_drawer_layout.xml" value="0.19635416666666666" />
         <entry key="..\:/AndroidProject/faceattendance/app/src/main/res/layout/left_drawer_layout_860s.xml" value="0.19635416666666666" />
       </map>
