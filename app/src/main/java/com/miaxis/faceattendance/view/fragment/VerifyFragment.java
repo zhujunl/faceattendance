@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -248,7 +249,7 @@ public class VerifyFragment extends BaseFragment {
     public void onFeatureEvent(FeatureEvent event) {
         switch (event.getMode()) {
             case FeatureEvent.IMAGE_FACE:
-                if (event.getFeature() != null) {
+                if (event!=null&&event.getFeature() != null) {
                     idCardRecord.setCardFeature(event.getFeature());
                 } else {
                     TTSManager.getInstance().playVoiceMessageFlush("请重试");
@@ -358,7 +359,8 @@ public class VerifyFragment extends BaseFragment {
                 emitter.onNext(score);
             })
                     .subscribe(score -> {
-                        if (score > ConfigManager.getInstance().getConfig().getVerifyScore()) {
+                        Log.e("Verify:","人证Score"+score);
+                        if (score > ConfigManager.getInstance().getConfig().getCardVerifyScore()) {
                             setHintMessage("核 验 成 功");
                             TTSManager.getInstance().playVoiceMessageFlush(ConfigManager.getInstance().getConfig().getCardVerifyPrompt());
                             RecordManager.getInstance().uploadCardRecord(idCardRecord, cameraEvent.getRgbImage(), score);

@@ -178,7 +178,13 @@ public class AddPersonFragment extends BaseFragment {
                         && event.getMxFaceInfoEx() != null
                         && idCardRecord != null
                         && idCardRecord.getCardFeature() != null) {
-                    onFeatureExtract(event);
+                    if (event.getMxFaceInfoEx().quality>ConfigManager.getInstance().getConfig().getRegisterQualityScore()){
+                        onFeatureExtract(event);
+                    }else {
+                        waitDialog.dismiss();
+                        tvTakePicture.performClick();
+                        ToastManager.toast(getActivity(),"人像质量不够，请重试,质量为"+event.getMxFaceInfoEx().quality,ToastManager.ERROR);
+                    }
                 } else {
                     waitDialog.dismiss();
                     ToastManager.toast(getContext(), event.getMessage(), ToastManager.INFO);
@@ -292,7 +298,7 @@ public class AddPersonFragment extends BaseFragment {
                 .build();
         new Thread(() -> {
             Matrix matrix = new Matrix();
-            if(Constants.VERSION)matrix.postRotate(180);
+            matrix.postRotate(CameraManager.ORIENTATION);
             Bitmap picture = Bitmap.createBitmap(facePicture, 0, 0, facePicture.getWidth(), facePicture.getHeight(), matrix, true);
             FaceManager.getInstance().getFeatureByBitmap(picture, true, "picture");
         }).start();
@@ -308,8 +314,8 @@ public class AddPersonFragment extends BaseFragment {
                 .observeOn(Schedulers.io())
                 .doOnNext(featureEvent -> {
                     float score = FaceManager.getInstance().matchFeature(idCardRecord.getCardFeature(), featureEvent.getFeature());
-                    if (score < ConfigManager.getInstance().getConfig().getVerifyScore()) {
-                        throw new MyException("人证核验失败");
+                    if (score < ConfigManager.getInstance().getConfig().getCardVerifyScore()) {
+                        throw new MyException("人证核验失败,人证比对值："+score);
                     }
                     person.setScore(String.valueOf(score));
                 })
@@ -359,6 +365,7 @@ public class AddPersonFragment extends BaseFragment {
                     clear();
                     ToastManager.toast(getContext(), "添加人员成功", ToastManager.SUCCESS);
                 }, throwable -> {
+                    throwable.printStackTrace();
                     tvTakePicture.performClick();
                     waitDialog.dismiss();
                     String errorMessage = "保存过程中出错，请对准摄像头画面中心后重新添加";

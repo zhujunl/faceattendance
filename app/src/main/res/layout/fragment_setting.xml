@@ -164,7 +164,7 @@
                 <View style="@style/VerticalLine"/>
 
                 <TextView style="@style/SettingName"
-                    android:text="比对阈值" />
+                    android:text="人像比对阈值" />
 
                 <View style="@style/VerticalLine"/>
 
@@ -184,12 +184,54 @@
                 <View style="@style/VerticalLine"/>
 
                 <TextView style="@style/SettingName"
-                    android:text="质量阈值" />
+                    android:text="人像质量阈值" />
 
                 <View style="@style/VerticalLine"/>
 
                 <EditText style="@style/SettingBody"
                     android:id="@+id/et_Quality"
+                    android:background="@color/white"
+                    android:textSize="20sp"
+                    android:singleLine="true" />
+
+                <View style="@style/VerticalLine"/>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalLine"/>
+
+
+            <LinearLayout style="@style/SettingItem">
+
+                <View style="@style/VerticalLine"/>
+
+                <TextView style="@style/SettingName"
+                    android:text="人证比对阈值" />
+
+                <View style="@style/VerticalLine"/>
+
+                <EditText style="@style/SettingBody"
+                    android:id="@+id/et_Verify_Card"
+                    android:background="@color/white"
+                    android:textSize="20sp"
+                    android:singleLine="true" />
+
+                <View style="@style/VerticalLine"/>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalLine"/>
+            <LinearLayout style="@style/SettingItem">
+
+                <View style="@style/VerticalLine"/>
+
+                <TextView style="@style/SettingName"
+                    android:text="注册质量阈值" />
+
+                <View style="@style/VerticalLine"/>
+
+                <EditText style="@style/SettingBody"
+                    android:id="@+id/et_Quality_Card"
                     android:background="@color/white"
                     android:textSize="20sp"
                     android:singleLine="true" />

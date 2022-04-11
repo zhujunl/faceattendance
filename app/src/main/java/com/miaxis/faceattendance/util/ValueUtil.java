@@ -32,10 +32,10 @@ public class ValueUtil {
     public static final String DEFAULT_CARD_UPLOAD_URL = "";
     public static final String DEFAULT_PERSON_UPLOAD_URL = "";
     public static final String DEFAULT_PASSWORD = "666666";
-    public static final float DEFAULT_VERIFY_QUALITY_SCORE = 80f;
+    public static final float DEFAULT_VERIFY_QUALITY_SCORE = 50f;
     public static final float DEFAULT_REGISTER_QUALITY_SCORE = 90f;
-    public static final float DEFAULT_VERIFY_SCORE = 0.8f;
-    public static final float DEFAULT_CARD_VERIFY_SCORE = 0.7f;
+    public static final float DEFAULT_VERIFY_SCORE = 0.76f;
+    public static final float DEFAULT_CARD_VERIFY_SCORE = 0.73f;
     public static final int DEFAULT_RECORD_CLEAR_THRESHOLD = 500;
     public static final String DEFAULT_ATTENDANCE_PROMPT = "考勤成功";
     public static final String DEFAULT_CARD_VERIFY_PROMPT = "人证核验通过";

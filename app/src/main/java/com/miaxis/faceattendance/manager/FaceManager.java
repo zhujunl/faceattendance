@@ -117,7 +117,7 @@ public class FaceManager {
         if (!detectFlag || !checkDelay()) {
             return;
         }
-        byte[] zoomedRgbData = cameraPreviewConvert(data, CameraManager.PRE_WIDTH, CameraManager.PRE_HEIGHT, 180, ZOOM_WIDTH, ZOOM_HEIGHT);
+        byte[] zoomedRgbData = cameraPreviewConvert(data, CameraManager.PRE_WIDTH, CameraManager.PRE_HEIGHT, CameraManager.ORIENTATION, ZOOM_WIDTH, ZOOM_HEIGHT);
         if (zoomedRgbData == null) {
             EventBus.getDefault().post(new DrawRectEvent(0, null));
             return;

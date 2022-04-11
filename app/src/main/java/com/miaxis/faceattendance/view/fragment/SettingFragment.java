@@ -41,6 +41,10 @@ public class SettingFragment extends BaseFragment {
     EditText etVerify;
     @BindView(R.id.et_Quality)
     EditText etQuality;
+    @BindView(R.id.et_Verify_Card)
+    EditText etVerifyCard;
+    @BindView(R.id.et_Quality_Card)
+    EditText etQualityCard;
 
     private Config config;
     private OnFragmentInteractionListener mListener;
@@ -73,6 +77,8 @@ public class SettingFragment extends BaseFragment {
         etPassword.setText(config.getPassword());
         etQuality.setText(String.valueOf(config.getVerifyQualityScore()));
         etVerify.setText(String.valueOf(config.getVerifyScore()));
+        etVerifyCard.setText(String.valueOf(config.getCardVerifyScore()));
+        etQualityCard.setText(String.valueOf(config.getRegisterQualityScore()));
         ivSaveConfig.setOnClickListener(v -> saveConfig());
     }
 
@@ -121,6 +127,11 @@ public class SettingFragment extends BaseFragment {
             ToastManager.toast(getContext(), "设备标识不能为空", ToastManager.INFO);
             return;
         }
+        if(TextUtils.isEmpty(etVerify.getText().toString())||TextUtils.isEmpty(etQuality.getText().toString())||
+                TextUtils.isEmpty(etQualityCard.getText().toString())||TextUtils.isEmpty(etVerifyCard.getText().toString())){
+            ToastManager.toast(getContext(), "比对阈值或质量阈值不能为空", ToastManager.INFO);
+            return;
+        }
         config.setUploadUrl(etAttendanceUrl.getText().toString());
         config.setCardUploadUrl(etCardVerifyUrl.getText().toString());
         config.setPersonUploadUrl(etPersonUploadUrl.getText().toString());
@@ -128,6 +139,8 @@ public class SettingFragment extends BaseFragment {
         config.setDeviceId(etDeviceId.getText().toString());
         config.setVerifyScore(Float.parseFloat(etVerify.getText().toString()));
         config.setVerifyQualityScore(Float.parseFloat(etQuality.getText().toString()));
+        config.setRegisterQualityScore(Float.parseFloat(etQualityCard.getText().toString()));
+        config.setCardVerifyScore(Float.parseFloat(etVerifyCard.getText().toString()));
         ConfigManager.getInstance().saveConfig(config, aBoolean -> {
             if (aBoolean) {
                 ToastManager.toast(getContext(), "设置保存成功", ToastManager.SUCCESS);
