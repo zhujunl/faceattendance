@@ -227,6 +227,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     @Override
     protected void onStop() {
         super.onStop();
+        GpioManager.getInstance().closeLed();
         System.exit(0);
 //        CameraManager.getInstance().closeCamera();
 //        stop = true;
@@ -309,6 +310,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
 
     private OnLimitClickListener drawerClickListener = v -> {
         dlMain.closeDrawer(GravityCompat.START);
+        GpioManager.getInstance().closeLed();
         switch (v.getId()) {
             case R.id.tv_verify:
                 if (!(getVisibleFragment() instanceof VerifyFragment)) {

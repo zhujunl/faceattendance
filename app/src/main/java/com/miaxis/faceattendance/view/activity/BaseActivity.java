@@ -1,19 +1,12 @@
 package com.miaxis.faceattendance.view.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
-import com.miaxis.faceattendance.manager.GpioManager;
 import com.trello.rxlifecycle3.components.support.RxAppCompatActivity;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -66,7 +59,8 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        bind.unbind();
+        if(bind!=null)
+            bind.unbind();
     }
 
     protected Fragment getVisibleFragment(){

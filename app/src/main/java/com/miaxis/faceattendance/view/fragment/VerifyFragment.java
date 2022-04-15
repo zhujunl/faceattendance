@@ -91,6 +91,7 @@ public class VerifyFragment extends BaseFragment {
     //    private VerifyAdapter<VerifyPerson> verifyAdapter;
     private OnFragmentInteractionListener mListener;
     private volatile boolean cardMode = false;
+    private volatile boolean faceMode=false;
     private IDCardRecord idCardRecord;
     private FeatureEvent cameraFeatureData;
     private Handler handler = new MyHandler(this);
@@ -123,11 +124,11 @@ public class VerifyFragment extends BaseFragment {
         tvServerIp.setText(ValueUtil.getIP(FaceAttendanceApp.getInstance()));
         tvVersion.setText(ValueUtil.getCurVersion(getContext()));
         tvOpenVerify.setOnClickListener(new OnLimitClickHelper(v -> {
-            if (TextUtils.equals(tvOpenVerify.getText().toString(), "比对开关：开") && !cardMode) {
+            if (TextUtils.equals(tvOpenVerify.getText().toString(), "比对开关：开") && !cardMode&&!faceMode) {
                 FaceManager.getInstance().setVerify(false);
                 tvOpenVerify.setText("比对开关：关");
                 setSetHintInvisible();
-            } else if (TextUtils.equals(tvOpenVerify.getText().toString(), "比对开关：关") && !cardMode) {
+            } else if (TextUtils.equals(tvOpenVerify.getText().toString(), "比对开关：关") && !cardMode&&!faceMode) {
                 tvOpenVerify.setText("比对开关：开");
                 FaceManager.getInstance().setVerify(true);
             }
@@ -183,13 +184,18 @@ public class VerifyFragment extends BaseFragment {
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onDrawRectEvent(DrawRectEvent event) {
+        int i=event.getFaceNum();
         if (event.getFaceNum() == 0) {
             if (!cardMode) {
+                faceMode=false;
+                GpioManager.getInstance().closeLed();
                 setSetHintInvisible();
             }
         } else if (event.getFaceNum() == -1) {
             setHintMessage("请 正 对 屏 幕");
         } else {
+            faceMode=true;
+            GpioManager.getInstance().openLed();
             setHintMessage("检 测 到 人 脸");
         }
     }
@@ -224,7 +230,8 @@ public class VerifyFragment extends BaseFragment {
                 }
                 break;
             case CardEvent.NO_CARD:
-                GpioManager.getInstance().closeLed();
+                if (!faceMode)
+                    GpioManager.getInstance().closeLed();
                 if (cardMode) {
                     cardMode = false;
                     FaceManager.getInstance().setActiveVerify(true);

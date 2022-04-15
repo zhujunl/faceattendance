@@ -35,6 +35,7 @@ public class CameraSurfaceView extends TextureView {
 
         @Override
         public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+            CameraManager.getInstance().closeCamera();
             return false;
         }
 

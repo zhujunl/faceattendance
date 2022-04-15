@@ -81,6 +81,7 @@ public class FaceManager {
         if (re == 0) {
             re = mxFaceAPI.mxInitAlg(context, szModelPath, "");
         }
+        Log.e("算法版本:",mxFaceAPI.mxAlgVersion());
         initThread();
         return re;
     }
@@ -157,12 +158,14 @@ public class FaceManager {
         float maxScore = 0;
         Person maxScorePerson = null;
         for (Person person : personList) {
+            Log.e("verifyPersonFace:","正在比对.....");
             float score = matchFeature(feature, Base64.decode(person.getFaceFeature(), Base64.NO_WRAP));
             if (score > maxScore) {
                 maxScore = score;
                 maxScorePerson = person;
             }
         }
+        Log.e("verifyPersonFace:","maxScore："+maxScore);
         if (maxScore > ConfigManager.getInstance().getConfig().getVerifyScore()) {
             EventBus.getDefault().post(new VerifyPersonEvent(maxScorePerson, rgbImage, maxScore));
         }
