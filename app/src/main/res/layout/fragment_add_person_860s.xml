@@ -36,16 +36,16 @@
                 android:layout_alignParentTop="true"
                 android:layout_marginTop="40dp"
                 android:layout_width="480dp"
-                android:layout_height="360dp" />
+                android:layout_height="270dp" />
 
             <ImageView
-                android:src="@mipmap/add_person_background"
-                android:scaleType="fitXY"
-                android:layout_centerInParent="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginTop="40dp"
                 android:layout_width="480dp"
-                android:layout_height="360dp" />
+                android:layout_height="360dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="40dp"
+                android:scaleType="fitXY"
+                android:src="@mipmap/add_person_background" />
 
             <RelativeLayout
                 android:layout_below="@id/csv_camera"

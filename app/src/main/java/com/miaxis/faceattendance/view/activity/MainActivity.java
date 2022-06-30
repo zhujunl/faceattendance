@@ -15,6 +15,7 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -123,6 +124,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (!Constants.VERSION&& Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if ( !Settings.canDrawOverlays(this)) {
                 //若未授权则请求权限
@@ -291,6 +293,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (normal) {
             EventBus.getDefault().unregister(this);
             unbindService(serviceConnection);
@@ -436,7 +439,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
             dlMain.openDrawer(GravityCompat.START);
         }
     }
-
+String TAG="passwordDialog";
     private void initDialog() {
         passwordDialog = new MaterialDialog.Builder(this)
                 .title("请输入设备密码")
@@ -453,6 +456,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
                 })
                 .negativeText("取消")
                 .build();
+        passwordDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
         passwordDialog.getInputEditText().setFilters(new InputFilter[]{new InputFilter.LengthFilter(6)});
         quitDialog = new MaterialDialog.Builder(this)
                 .title("确认退出？")

@@ -77,11 +77,62 @@ public class GpioManager {
             e.printStackTrace();
         }
     }
+    /*
+    * 摄像头上电*/
+    public void openCameraGpio() {
+        if(!Constants.VERSION){
+            FaceAttendanceApp.getInstance().sendBroadcast(Constants.MOLD_POWER,Constants.TYPE_CAMERA,true);
+            return;
+        }
+        try {
+            for (int i = 0; i < 3; i++) {
+                Thread.sleep(GPIO_INTERVAL);
+                int re = smdtManager.smdtSetGpioValue(2, false);
+                if (re == 0) {
+                    break;
+                }
+            }
+            Thread.sleep(GPIO_INTERVAL);
+            for (int i = 0; i < 3; i++) {
+                Thread.sleep(GPIO_INTERVAL);
+                int re = smdtManager.smdtSetGpioValue(2, true);
+                if (re == 0) {
+                    break;
+                }
+            }
+            Thread.sleep(800);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /*
+     * 摄像头下电*/
+    public void closeCameraGpio() {
+        if(!Constants.VERSION){
+            FaceAttendanceApp.getInstance().sendBroadcast(Constants.MOLD_POWER,Constants.TYPE_LED,false);
+            return;
+        }
+        try {
+            for (int i = 0; i < 3; i++) {
+                int result = smdtManager.smdtSetGpioValue(2, false);
+                if (result == 0) {
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 打开闪光灯
      */
     public void openLed() {
+        if (!FaceAttendanceApp.getInstance().getSP().getBoolean("light",true)){
+            return;
+        }
         if(!Constants.VERSION){
             FaceAttendanceApp.getInstance().sendBroadcast(Constants.MOLD_POWER,Constants.TYPE_LED,true);
             return;
@@ -98,6 +149,9 @@ public class GpioManager {
      * 关闭闪光灯
      */
     public void closeLed() {
+        if (!FaceAttendanceApp.getInstance().getSP().getBoolean("light",true)){
+            return;
+        }
         if(!Constants.VERSION){
             FaceAttendanceApp.getInstance().sendBroadcast(Constants.MOLD_POWER,Constants.TYPE_LED,false);
             return;

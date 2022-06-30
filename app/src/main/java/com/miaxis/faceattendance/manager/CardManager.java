@@ -97,7 +97,7 @@ public class CardManager {
             if (checkIsOutValidate(idCardRecord)) {
                 EventBus.getDefault().post(new CardEvent(CardEvent.OVERDUE));
             } else {
-                EventBus.getDefault().post(new CardEvent(idCardRecord));
+                EventBus.getDefault().post(new CardEvent(idCardRecord,type));
             }
         }
     }

@@ -6,9 +6,9 @@ android {
     defaultConfig {
         applicationId "com.miaxis.faceattendance"
         minSdkVersion 19
-        targetSdkVersion 28
-        versionCode 8
-        versionName "1.0.7"
+        targetSdkVersion 29
+        versionCode 9
+        versionName "1.0.8"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
             annotationProcessorOptions {
@@ -91,6 +91,7 @@ dependencies {
     implementation 'com.afollestad.material-dialogs:commons:0.9.6.0'
     implementation 'jp.wasabeef:recyclerview-animators:3.0.0'
     implementation 'com.liulishuo.filedownloader:library:1.7.5'
+    implementation 'com.tencent:mmkv:1.0.23'
 
     implementation files('src/main/libs/SM80FingerAPI.jar')
     implementation files('src/main/libs/AMap_Location_V4.5.0_20190121.jar')

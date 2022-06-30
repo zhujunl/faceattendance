@@ -1,7 +1,9 @@
 package com.miaxis.faceattendance.app;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.SystemClock;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -28,6 +30,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class FaceAttendanceApp extends Application {
 
     private static FaceAttendanceApp instance;
+    private  SharedPreferences sp;
 
 //    private static final OkHttpClient CLIENT = new OkHttpClient.Builder().
 //            connectTimeout(5, TimeUnit.SECONDS).
@@ -42,12 +45,15 @@ public class FaceAttendanceApp extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
+        sp=getSharedPreferences("pref", Context.MODE_PRIVATE);
         EventBus.builder().addIndex(new MyEventBusIndex()).installDefaultEventBus();
     }
 
     public static FaceAttendanceApp getInstance() {
         return instance;
     }
+
+    public  SharedPreferences getSP(){return sp;}
 
     public void initApplicationAsync() {
         FileUtil.initDirectory();

@@ -55,7 +55,7 @@ public class WhitelistServer {
             for (WhiteCard whiteCard : whiteCardList) {
                 if (TextUtils.isEmpty(whiteCard.getName())
                         || TextUtils.isEmpty(whiteCard.getCardNumber())
-                        || !ValueUtil.isIDNumber(whiteCard.getCardNumber())) {
+                        || !ValueUtil.isIDNumber(whiteCard.getCardNumber(),false)) {
                     check = false;
                     break;
                 } else {

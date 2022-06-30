@@ -13,6 +13,8 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+
 public class CameraManager {
 
     private CameraManager() {
@@ -38,108 +40,39 @@ public class CameraManager {
     private Camera mCamera;
     private int retryTime = 0;
     private CameraSurfaceView mCameraSurfaceView;
-    private SurfaceTexture surface;
+    private  SurfaceTexture surfaceTexture = null;
+    private OnCameraOpenListener listener;
+
+    private volatile boolean monitorFlag = false;
+    private long lastCameraCallBackTime;
+    private MonitorThread monitorThread;
+
+
 
     public void resetRetryTime() {
         this.retryTime = 0;
     }
 
-//    public synchronized void openCamera(@NonNull CameraSurfaceView textureView) {
-//        try {
-//            mCameraSurfaceView=textureView;
-//
-//
-//            resetRetryTime();
-//            openVisibleCamera();
-//                mCameraSurfaceView.setSurfaceTextureListener(textureListener);
-//
-//            mCameraSurfaceView.setRotationY(CameraManager.ORIENTATION);
-//
-//            //            if (surfaceTexture == null) {
-//            //                textureView.setSurfaceTextureListener(textureListener);
-//            //            } else {
-//            //                camera.setPreviewTexture(surfaceTexture);
-//            //            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    private void openVisibleCamera() {
-//        //        try {
-//        for (int i = 0; i < RETRY_TIMES; i++) {
-//            if (mCamera==null){
-//                try {
-//                    mCamera = Camera.open(0);
-//                }catch (Exception e){
-//                    e.printStackTrace();
-//                }
-//                if (mCamera!=null){
-//                    break;
-//                }
-//                SystemClock.sleep(500);
-//            }
-//        }
-//        Camera.Parameters parameters = mCamera.getParameters();
-//        List<Camera.Size> supportedPreviewSizes = parameters.getSupportedPreviewSizes();
-//        int maxWidth = 0;
-//        int maxHeight = 0;
-//        for (Camera.Size size : supportedPreviewSizes) {
-//            maxWidth = Math.max(size.width, maxWidth);
-//            maxHeight = Math.max(size.height, maxHeight);
-//        }
-//        ORIENTATION = maxWidth * maxHeight >= (200 * 10000) ? 0 : (!Constants.VERSION?0:180);
-//        parameters.setPreviewSize(PRE_WIDTH, PRE_HEIGHT);
-//        parameters.setPictureSize(PIC_WIDTH, PIC_HEIGHT);
-//        //对焦模式设置
-//        List<String> supportedFocusModes = parameters.getSupportedFocusModes();
-//        if (supportedFocusModes != null && supportedFocusModes.size() > 0) {
-//            if (supportedFocusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
-//                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-//            } else if (supportedFocusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
-//                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
-//            } else if (supportedFocusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
-//                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-//            }
-//        }
-//        try {
-//            mCamera.setParameters(parameters);
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//        mCamera.setDisplayOrientation(ORIENTATION);
-//        mCamera.setPreviewCallback(mPreviewCallback);
-//        mCamera.startPreview();
-//        //        } catch (Exception e) {
-//        //            e.printStackTrace();
-//        ////            new Thread(() -> {
-//        ////                if (retryTime <= RETRY_TIMES) {
-//        ////                    retryTime++;
-//        ////                    openVisibleCamera();
-//        ////                }
-//        ////            }).start();
-//        //        }
-//    }
-
-//    public void openCamera(@NonNull CameraSurfaceView CameraSurfaceView){
-//        try {
-//            CameraManager.getInstance().resetRetryTime();
-//            mCameraSurfaceView=CameraSurfaceView;
-//            if (surface == null) {
-//                mCameraSurfaceView.setSurfaceTextureListener(textureListener);
-//            }
-//            openCamera(mCameraSurfaceView,mPreviewCallback);
-//            if (surface != null) {
-//                mCamera.setPreviewTexture(surface);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-    public void openCamera(TextureView textureView, SurfaceTexture holder, Camera.PreviewCallback previewCallback) {
+    public synchronized void openCamera(@NonNull TextureView textureView, @NonNull OnCameraOpenListener listener){
+        this.listener=listener;
         try {
-            EventBus.getDefault().post(new OpenCameraEvent(PRE_WIDTH, PRE_HEIGHT));
+            openCamera();
+            openMonitor();
+            textureView.setSurfaceTextureListener(textureListener);
+            if (surfaceTexture != null) {
+                mCamera.setPreviewTexture(surfaceTexture);
+            }
+            textureView.setRotationY(ORIENTATION);
+            listener.onCameraOpen(mCamera.getParameters().getPreviewSize(), "");
+        } catch (Exception e) {
+            e.printStackTrace();
+            listener.onCameraOpen(null, "异常: "+e);
+        }
+    }
+
+    public void openCamera() {
+//        try {
+        EventBus.getDefault().post(new OpenCameraEvent(PRE_WIDTH, PRE_HEIGHT));
             for (int i = 0; i < RETRY_TIMES; i++) {
                 if (mCamera==null){
                     try {
@@ -166,24 +99,25 @@ public class CameraManager {
             parameters.setPictureSize(PIC_WIDTH, PIC_HEIGHT);
             mCamera.setParameters(parameters);
             mCamera.setDisplayOrientation(ORIENTATION);
-            mCamera.setPreviewTexture(holder);
-            textureView.setRotationY(ORIENTATION);
-            mCamera.setPreviewCallback(previewCallback);
+//            mCamera.setPreviewTexture(holder);
+//            textureView.setRotationY(ORIENTATION);
+            mCamera.setPreviewCallback(mPreviewCallback);
             mCamera.startPreview();
-        } catch (Exception e) {
-            e.printStackTrace();
-            new Thread(() -> {
-                if (retryTime <= RETRY_TIMES) {
-                    GpioManager.getInstance().resetCameraGpio();
-                    retryTime++;
-                    openCamera(textureView, holder,previewCallback);
-                }
-            }).start();
-        }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+////            new Thread(() -> {
+////                if (retryTime <= RETRY_TIMES) {
+////                    GpioManager.getInstance().resetCameraGpio();
+////                    retryTime++;
+////                    openCamera(textureView, holder,previewCallback,listener);
+////                }
+////            }).start();
+//        }
     }
 
     public void closeCamera() {
         try {
+            closeMonitor();
             if (mCamera != null) {
                 mCamera.setPreviewCallback(null);
                 mCamera.stopPreview();
@@ -195,20 +129,102 @@ public class CameraManager {
         }
     }
 
+    public TextureView.SurfaceTextureListener textureListener=new TextureView.SurfaceTextureListener() {
+            @Override
+            public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+                try {
+                    surfaceTexture=surface;
+                    if (mCamera!=null){
+                        mCamera.setPreviewTexture(surfaceTexture);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+
+            }
+
+            @Override
+            public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+                //            closeCamera();
+                //            clearSur();
+                return false;
+            }
+
+            @Override
+            public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
+            }
+        };
+
+
+    Camera.PreviewCallback mPreviewCallback= (data, camera) -> {
+        lastCameraCallBackTime = System.currentTimeMillis();
+        FaceManager.getInstance().setLastVisiblePreviewData(data);
+    };
+
     public void takePicture(Camera.PictureCallback jpeg) {
         mCamera.takePicture(null, null, jpeg);
     }
 
     public void startPreview() {
         if (mCamera != null) {
+            mCamera.setPreviewCallback(mPreviewCallback);
             mCamera.startPreview();
+            openMonitor();
         }
     }
 
     public void stopPreview() {
         if (mCamera != null) {
+            mCamera.setPreviewCallback(null);
             mCamera.stopPreview();
+            closeMonitor();
         }
     }
 
+    private class MonitorThread extends Thread {
+        @Override
+        public void run() {
+            lastCameraCallBackTime = System.currentTimeMillis();
+            while (!interrupted()) {
+                try {
+                    Thread.sleep(1000);
+                    if (monitorFlag) {
+                        long cur = System.currentTimeMillis();
+                        if ((cur - lastCameraCallBackTime) >= (4 * 1000L)) {
+                            if (listener != null) {
+                                listener.onCameraError();
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void openMonitor() {
+        lastCameraCallBackTime = System.currentTimeMillis();
+        monitorFlag = true;
+        if (monitorThread == null) {
+            monitorThread = new MonitorThread();
+            monitorThread.start();
+        }
+    }
+
+    private void closeMonitor() {
+        monitorFlag = false;
+    }
+
+
+
+    public interface OnCameraOpenListener {
+        void onCameraOpen(Camera.Size previewSize, String message);
+        void onCameraError();
+    }
 }

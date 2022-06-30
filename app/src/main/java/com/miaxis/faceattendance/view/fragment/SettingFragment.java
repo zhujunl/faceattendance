@@ -2,12 +2,15 @@ package com.miaxis.faceattendance.view.fragment;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.miaxis.faceattendance.R;
+import com.miaxis.faceattendance.app.FaceAttendanceApp;
 import com.miaxis.faceattendance.constant.Constants;
 import com.miaxis.faceattendance.manager.ConfigManager;
 import com.miaxis.faceattendance.manager.ToastManager;
@@ -15,6 +18,7 @@ import com.miaxis.faceattendance.model.entity.Config;
 import com.miaxis.faceattendance.util.ValueUtil;
 import com.miaxis.faceattendance.view.listener.OnFragmentInteractionListener;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import butterknife.BindView;
 
@@ -45,9 +49,15 @@ public class SettingFragment extends BaseFragment {
     EditText etVerifyCard;
     @BindView(R.id.et_Quality_Card)
     EditText etQualityCard;
+    @BindView(R.id.switch_Light)
+    Switch swLight;
+    @BindView(R.id.CL_Light)
+    ConstraintLayout ClLight;
 
     private Config config;
     private OnFragmentInteractionListener mListener;
+
+    private boolean light;
 
     public static SettingFragment newInstance() {
         return new SettingFragment();
@@ -64,11 +74,13 @@ public class SettingFragment extends BaseFragment {
 
     @Override
     protected void initData() {
+        light=FaceAttendanceApp.getInstance().getSP().getBoolean("light",true);
         config = ConfigManager.getInstance().getConfig();
     }
 
     @Override
     protected void initView() {
+        swLight.setChecked(light);
         tvVersion.setText(ValueUtil.getCurVersion(getContext()));
         etAttendanceUrl.setText(config.getUploadUrl());
         etCardVerifyUrl.setText(config.getCardUploadUrl());
@@ -80,6 +92,13 @@ public class SettingFragment extends BaseFragment {
         etVerifyCard.setText(String.valueOf(config.getCardVerifyScore()));
         etQualityCard.setText(String.valueOf(config.getRegisterQualityScore()));
         ivSaveConfig.setOnClickListener(v -> saveConfig());
+        ClLight.setOnClickListener(v->{
+            light=!light;
+            swLight.setChecked(light);
+        });
+        swLight.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            light=isChecked;
+        });
     }
 
     @Override
@@ -132,6 +151,22 @@ public class SettingFragment extends BaseFragment {
             ToastManager.toast(getContext(), "比对阈值或质量阈值不能为空", ToastManager.INFO);
             return;
         }
+        if (Float.parseFloat(etVerify.getText().toString().trim())<0||Float.parseFloat(etVerify.getText().toString().trim())>1){
+            ToastManager.toast(getContext(), "人像比对阈值应在0~1之间", ToastManager.INFO);
+            return;
+        }
+        if (Float.parseFloat(etQuality.getText().toString().trim())<0||Float.parseFloat(etQuality.getText().toString().trim())>100){
+            ToastManager.toast(getContext(), "人像质量阈值应在0~100之间", ToastManager.INFO);
+            return;
+        }
+        if (Float.parseFloat(etVerifyCard.getText().toString().trim())<0||Float.parseFloat(etVerifyCard.getText().toString().trim())>1){
+            ToastManager.toast(getContext(), "人证比对阈值应在0~1之间", ToastManager.INFO);
+            return;
+        }
+        if (Float.parseFloat(etQualityCard.getText().toString().trim())<0||Float.parseFloat(etQualityCard.getText().toString().trim())>100){
+            ToastManager.toast(getContext(), "注册阈值应在0~100之间", ToastManager.INFO);
+            return;
+        }
         config.setUploadUrl(etAttendanceUrl.getText().toString());
         config.setCardUploadUrl(etCardVerifyUrl.getText().toString());
         config.setPersonUploadUrl(etPersonUploadUrl.getText().toString());
@@ -143,6 +178,9 @@ public class SettingFragment extends BaseFragment {
         config.setCardVerifyScore(Float.parseFloat(etVerifyCard.getText().toString()));
         ConfigManager.getInstance().saveConfig(config, aBoolean -> {
             if (aBoolean) {
+                SharedPreferences.Editor editor=FaceAttendanceApp.getInstance().getSP().edit();
+                editor.putBoolean("light",light);
+                editor.apply();
                 ToastManager.toast(getContext(), "设置保存成功", ToastManager.SUCCESS);
             } else {
                 ToastManager.toast(getContext(), "设置保存失败", ToastManager.ERROR);

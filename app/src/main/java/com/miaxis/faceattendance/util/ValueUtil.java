@@ -39,7 +39,7 @@ public class ValueUtil {
     public static final int DEFAULT_RECORD_CLEAR_THRESHOLD = 500;
     public static final String DEFAULT_ATTENDANCE_PROMPT = "考勤成功";
     public static final String DEFAULT_CARD_VERIFY_PROMPT = "人证核验通过";
-    public static final String DEFAULT_WHITELIST_PROMPT = "白名单已校验";
+    public static final String DEFAULT_WHITELIST_PROMPT = "白名单校验通过";
     public static final String DEFAULT_DEVICE_ID = Constants.VERSION?"MR860":"MR860S";
 
     public static final int GET_CARD_ID = 0;
@@ -221,9 +221,12 @@ public class ValueUtil {
         return result;
     }
 
-    public static boolean isIDNumber(String IDNumber) {
+    public static boolean isIDNumber(String IDNumber,boolean foreign) {
         if (IDNumber == null || "".equals(IDNumber)) {
             return false;
+        }
+        if (foreign){
+            return foreign;
         }
         // 定义判别用户身份证号的正则表达式（15位或者18位，最后一位可以为字母）
         String regularExpression = "(^[1-9]\\d{5}(18|19|20)\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$)|" +

@@ -133,12 +133,16 @@ public class VerifyFragment extends BaseFragment {
                 FaceManager.getInstance().setVerify(true);
             }
         }));
+
+
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onOpenCameraEvent(OpenCameraEvent event) {
         int rootWidth = rlRoot.getWidth();
         int rootHeight = rootWidth * event.getPreviewHeight() / event.getPreviewWidth();
+        Log.e("Verify:", "rootHeight=" +rootHeight );
 //        int rootHeight = (int) (ValueUtil.getScreenHeight(getContext()) - ValueUtil.getStateBarHeight(getContext()) - getContext().getResources().getDimension(R.dimen.custom_toolbar_height));
 //        int rootWidth = rootHeight * event.getPreviewWidth() / event.getPreviewHeight();
         resetLayoutParams(rlRoot, rootWidth, rootHeight);
@@ -366,7 +370,7 @@ public class VerifyFragment extends BaseFragment {
                 emitter.onNext(score);
             })
                     .subscribe(score -> {
-                        Log.e("Verify:","人证Score"+score);
+                        Log.d("Verify:","人证Score"+score);
                         if (score > ConfigManager.getInstance().getConfig().getCardVerifyScore()) {
                             setHintMessage("核 验 成 功");
                             TTSManager.getInstance().playVoiceMessageFlush(ConfigManager.getInstance().getConfig().getCardVerifyPrompt());

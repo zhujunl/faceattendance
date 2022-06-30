@@ -9,6 +9,7 @@ import android.os.Message;
 import android.util.Base64;
 import android.util.Log;
 
+import com.miaxis.faceattendance.app.BitmapFeature;
 import com.miaxis.faceattendance.event.DrawRectEvent;
 import com.miaxis.faceattendance.event.FeatureEvent;
 import com.miaxis.faceattendance.event.VerifyPersonEvent;
@@ -81,7 +82,7 @@ public class FaceManager {
         if (re == 0) {
             re = mxFaceAPI.mxInitAlg(context, szModelPath, "");
         }
-        Log.e("算法版本:",mxFaceAPI.mxAlgVersion());
+        Log.d("算法版本:",mxFaceAPI.mxAlgVersion());
         initThread();
         return re;
     }
@@ -152,20 +153,22 @@ public class FaceManager {
     }
 
     private synchronized void verifyPersonFace(RGBImage rgbImage, byte[] feature) {
+        Log.d("Facemaneger:","verifyPersonFace");
         if (personList == null) {
             personList = PersonModel.loadAllPerson();
         }
         float maxScore = 0;
         Person maxScorePerson = null;
+        Log.d("Facemaneger:","verifyPersonFace:开始比对");
         for (Person person : personList) {
-            Log.e("verifyPersonFace:","正在比对.....");
+            Log.d("Facemaneger:","verifyPersonFace：正在比对.....");
             float score = matchFeature(feature, Base64.decode(person.getFaceFeature(), Base64.NO_WRAP));
             if (score > maxScore) {
                 maxScore = score;
                 maxScorePerson = person;
             }
         }
-        Log.e("verifyPersonFace:","maxScore："+maxScore);
+        Log.d("Facemaneger:","verifyPersonFace:"+"maxScore："+maxScore);
         if (maxScore > ConfigManager.getInstance().getConfig().getVerifyScore()) {
             EventBus.getDefault().post(new VerifyPersonEvent(maxScorePerson, rgbImage, maxScore));
         }
@@ -182,7 +185,8 @@ public class FaceManager {
     public void getFeatureByBitmap(Bitmap bitmap, boolean strict, String mark) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(bitmap.getByteCount());
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-        getFeatureByImage(outputStream.toByteArray(), bitmap.getWidth(), bitmap.getHeight(), strict, mark);
+        Message msg=FeatureHandler.obtainMessage(1,new BitmapFeature(outputStream.toByteArray(), bitmap.getWidth(), bitmap.getHeight(), strict, mark));
+        FeatureHandler.sendMessage(msg);
     }
 
     /**
@@ -513,6 +517,9 @@ public class FaceManager {
 
     private HandlerThread asyncDetectThread;
     private Handler asyncDetectHandler;
+
+    private HandlerThread  FeatureThread;
+    private Handler FeatureHandler;
     private volatile boolean detectLoop = true;
     public void setLastVisiblePreviewData(byte[] lastVisiblePreviewData) {
         this.lastVisiblePreviewData = lastVisiblePreviewData;
@@ -553,6 +560,19 @@ public class FaceManager {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                }
+            }
+        };
+
+        FeatureThread=new HandlerThread("feature_thread");
+        FeatureThread.start();
+        FeatureHandler=new Handler(FeatureThread.getLooper()){
+            @Override
+            public void handleMessage(Message msg) {
+                if (msg.what==1){
+                    BitmapFeature bitmapFeature=(BitmapFeature) msg.obj;
+                    getFeatureByImage(bitmapFeature.data, bitmapFeature.width,bitmapFeature.height, bitmapFeature.strict, bitmapFeature.mark);
+                    FeatureHandler.removeMessages(1);
                 }
             }
         };

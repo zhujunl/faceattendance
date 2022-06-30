@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".view.fragment.SettingFragment">
 
@@ -153,6 +154,35 @@
                     android:background="@color/white"
                     android:textSize="20sp"
                     android:singleLine="true" />
+
+                <View style="@style/VerticalLine"/>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalLine"/>
+            <LinearLayout style="@style/SettingItem">
+
+                <View style="@style/VerticalLine"/>
+
+                <TextView style="@style/SettingName"
+                    android:text="补光灯设置" />
+
+                <View style="@style/VerticalLine"/>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/CL_Light"
+                    android:layout_weight="2"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent">
+                    <Switch
+                        android:id="@+id/switch_Light"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View style="@style/VerticalLine"/>
 

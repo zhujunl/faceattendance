@@ -3,29 +3,23 @@ package com.miaxis.faceattendance.view.fragment;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.miaxis.faceattendance.R;
-import com.miaxis.faceattendance.adapter.RecordAdapter;
 import com.miaxis.faceattendance.adapter.WhitelistAdapter;
 import com.miaxis.faceattendance.adapter.listener.EndLessOnScrollListener;
-import com.miaxis.faceattendance.app.FaceAttendanceApp;
 import com.miaxis.faceattendance.contract.WhitelistContract;
 import com.miaxis.faceattendance.event.CardEvent;
 import com.miaxis.faceattendance.manager.CardManager;
 import com.miaxis.faceattendance.manager.TTSManager;
 import com.miaxis.faceattendance.manager.ToastManager;
-import com.miaxis.faceattendance.model.WhiteCardModel;
 import com.miaxis.faceattendance.model.entity.WhiteCard;
 import com.miaxis.faceattendance.presenter.WhitelistPresenter;
 import com.miaxis.faceattendance.util.ValueUtil;
 import com.miaxis.faceattendance.view.listener.OnFragmentInteractionListener;
 import com.miaxis.faceattendance.view.listener.OnLimitClickHelper;
-import com.miaxis.faceattendance.view.listener.OnLimitClickListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -34,7 +28,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -66,6 +59,7 @@ public class WhitelistFragment extends BaseFragment implements WhitelistContract
     private EndLessOnScrollListener endLessOnScrollListener;
     private MaterialDialog checkDialog;
     private MaterialDialog waitDialog;
+    private boolean foreign=false;
 
     public static WhitelistFragment newInstance() {
         return new WhitelistFragment();
@@ -182,9 +176,11 @@ public class WhitelistFragment extends BaseFragment implements WhitelistContract
             case CardEvent.READ_CARD:
                 etName.setText(event.getIdCardRecord().getName());
                 etCardNumber.setText(event.getIdCardRecord().getCardNumber());
+                foreign=event.getType().equals("I");
                 break;
             case CardEvent.OVERDUE:
                 TTSManager.getInstance().playVoiceMessageFlush("已过期");
+                break;
         }
     }
 
@@ -255,7 +251,7 @@ public class WhitelistFragment extends BaseFragment implements WhitelistContract
     private boolean checkInput() {
         if (TextUtils.isEmpty(etName.getText().toString())
                 || TextUtils.isEmpty(etCardNumber.getText().toString())
-                || !ValueUtil.isIDNumber(etCardNumber.getText().toString())) {
+                || !ValueUtil.isIDNumber(etCardNumber.getText().toString(),foreign)) {
             return false;
         }
         return true;

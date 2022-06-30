@@ -13,7 +13,7 @@ public class CardEvent {
 
     private int mode;
     private IDCardRecord idCardRecord;
-
+    private String type;
     public CardEvent(int mode) {
         this.mode = mode;
     }
@@ -21,6 +21,12 @@ public class CardEvent {
     public CardEvent(@NonNull IDCardRecord idCardRecord) {
         this.mode = READ_CARD;
         this.idCardRecord = idCardRecord;
+    }
+
+    public CardEvent(@NonNull IDCardRecord idCardRecord, String type) {
+        this.mode = READ_CARD;
+        this.idCardRecord = idCardRecord;
+        this.type = type;
     }
 
     public int getMode() {
@@ -37,5 +43,13 @@ public class CardEvent {
 
     public void setIdCardRecord(IDCardRecord idCardRecord) {
         this.idCardRecord = idCardRecord;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
