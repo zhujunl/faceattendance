@@ -124,11 +124,13 @@ public class VerifyFragment extends BaseFragment {
         tvServerIp.setText(ValueUtil.getIP(FaceAttendanceApp.getInstance()));
         tvVersion.setText(ValueUtil.getCurVersion(getContext()));
         tvOpenVerify.setOnClickListener(new OnLimitClickHelper(v -> {
+            Log.e("VerifyFrag:Text==    ", "faceMode==" +faceMode+"     cardMode=="+cardMode );
             if (TextUtils.equals(tvOpenVerify.getText().toString(), "比对开关：开") && !cardMode&&!faceMode) {
                 FaceManager.getInstance().setVerify(false);
                 tvOpenVerify.setText("比对开关：关");
                 setSetHintInvisible();
             } else if (TextUtils.equals(tvOpenVerify.getText().toString(), "比对开关：关") && !cardMode&&!faceMode) {
+                faceMode=false;
                 tvOpenVerify.setText("比对开关：开");
                 FaceManager.getInstance().setVerify(true);
             }
@@ -200,6 +202,7 @@ public class VerifyFragment extends BaseFragment {
         } else {
             faceMode=true;
             GpioManager.getInstance().openLed();
+            Log.e("VerifyFrag:Face==    ", "faceMode==" +faceMode+"     cardMode=="+cardMode );
             setHintMessage("检 测 到 人 脸");
         }
     }
@@ -217,6 +220,7 @@ public class VerifyFragment extends BaseFragment {
                 break;
             case CardEvent.READ_CARD:
                 if (cardMode) {
+                    Log.e("VerifyFrag:Card==    ", "faceMode==" +faceMode+"     cardMode=="+cardMode );
                     setHintMessage("读 卡 成 功");
                     idCardRecord = event.getIdCardRecord();
                     WhitelistManager.getInstance().checkWhitelist(idCardRecord.getCardNumber(), result -> {
